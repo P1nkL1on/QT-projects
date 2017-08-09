@@ -132,7 +132,7 @@ struct TTriangle
         parametric[3] = -(x1 * (y2 * z3 - y3 * z2) + x2 * (y3 * z1 - y1 * z3) + x3 * (y1 * z2 - y2 * z1));//-(x1 * (y2 * z3 - y3 * z2) + x2 * (y3 * z1 - y1 * z3) + x3 * (y1 * z2 - y2 * z1));
 
     }
-    void CalculateNormal (){
+    void CalculateNormal (bool reverse_normal){
         // высчитывает нормаль полигона.
         // также выставляет знаения поля center_node && normal_node
 
@@ -146,7 +146,9 @@ struct TTriangle
         center_node = {(pps[0]->X+pps[1]->X+pps[2]->X)/3.0,
                        (pps[0]->Y+pps[1]->Y+pps[2]->Y)/3.0,
                        (pps[0]->Z+pps[1]->Z+pps[2]->Z)/3.0,};
-        normal_node = {center_node.X + kX, center_node.Y - kY, center_node.Z + kZ};
+
+        int k = (reverse_normal == true)? -1 : 1;
+        normal_node = {center_node.X + kX * k, center_node.Y - kY * k, center_node.Z + kZ * k};
     }
 
     double GetValue (TPoint* point){
@@ -398,7 +400,7 @@ struct Camera {
     TPoint watch;   // second point
     bool perspective;
 };
-
+QColor use_shader (QColor first_color);
 QColor ray_colors[4] = {QColor (Qt::lightGray), QColor(Qt::green), QColor(Qt::yellow), QColor (Qt::red)};
 void DrawRayCast (QGraphicsScene *Scene, Camera* camera,
                   TTriangle* polygons, int polygon_count,
@@ -571,7 +573,7 @@ void DrawRayCast (QGraphicsScene *Scene, Camera* camera,
             // final
             int pixel_x = x_offset  + i, pixel_y = y_offset  - j;
             line = new QGraphicsLineItem(pixel_x,pixel_y,pixel_x,pixel_y);
-            pen.setColor(final_color);
+            pen.setColor(use_shader(final_color));
             line->setPen(pen);
             Scene->addItem(line);
         }
@@ -687,33 +689,33 @@ int main(int argc, char *argv[])
     TTriangle tt[2000];
 
     // lightsources
-    LightSourse ls[2] = {{{-25, 0.0, 25},150.0,0,255}, {{-20,20,20},60.0,0, 255}};
+    LightSourse ls[2] = {{{0.0, 0.0, 50},250.0,0,255}, {{-55,25, 15},150.0, 0, 255}};
     LightSourse* rls[2] = {&(ls[0]), &(ls[1])};
     //Camera camera = {{-30.0,0,0},{45.0,0,0}, false};
     Camera camera = {{-20, 0, 0}, {60, 0, 0}, true};
     Camera* cm = &camera;
     scene->clear();
 
-    LoadModel("D:/QT projects/!models/cubes.obj", false, .1,
-              point_count, ps, polygon_count, tt);
+    LoadModel("D:/QT-projects/QT-projects/!models/cube.txt", false, 2.6,
+               point_count, ps, polygon_count, tt);
     std::cout<<"Point count: "<<point_count << "  Polygon count:"<<polygon_count<< endl;
 
     for (int j =0; j<polygon_count; j++)
-        {tt[j].CalculateParametric(); tt[j].CalculateNormal(); tt[j].mirror = .0; tt[j].self_color = QColor(Qt::white);}
+        {tt[j].CalculateParametric(); tt[j].CalculateNormal( false );        // <-------false
+         tt[j].mirror = .0; tt[j].self_color = QColor(Qt::white);}
 
     // creating a plane with different colors
-
     //spheres
     // sphere creating
-    TPoint sp1_c = {0,-7,0}, sp2_c = {0, 7, 0}, sp3_c = {0,0, 15}, sp4_c = {0, -5, 5};
-    sf[0] = TSphere{&sp1_c, 3, 0.6, QColor(Qt::white)};
-    sf[1] = TSphere{&sp2_c, 3, 0.6, QColor(Qt::white)};
+    TPoint sp1_c = {0,-11,0}, sp2_c = {0, 11, 0}, sp3_c = {0,0, -10}, sp4_c = {0, -5, 5};
+    sf[0] = TSphere{&sp1_c, 5, 0.5, QColor(Qt::red)};
+    sf[1] = TSphere{&sp2_c, 5, 0.5, QColor(Qt::blue)};
     sf[2] = TSphere{&sp3_c, 8, 0.5, QColor(Qt::white)};
     sf[3] = TSphere{&sp4_c, 4.5, 0.8};
-    sphere_count = 0;
+    sphere_count = 2;
 
 
-    zoom = 155;
+    zoom = 2;
     X_mult = 0.0;
     DrawCenter(scene,6);
     for (int j =0; j<polygon_count; j++)
@@ -726,7 +728,7 @@ int main(int argc, char *argv[])
                  tt, polygon_count,
                  sf, sphere_count,
                  ls, sizeof(ls)/sizeof(ls[0]),
-            200, 200, .05, 1, 0, -300);
+            600, 600, .3, 1, 0, -300);
 
 
     //sizeof(ls)/sizeof(ls[0])
@@ -817,7 +819,7 @@ QColor TTriangle::GetColor (
                         (lights[l].max_light - lights[l].min_light) + lights[l].min_light;
                 // влияние угла, под которым повернут к свету полигон на светотень.
                 double ang_k =  1 - angle_betw(&(lights[l].center), &(center_node), &(normal_node)) / M_PI;
-                if (!(ang_k != ang_k))add_light *= max(0.0, ang_k * 2.0 - 1.0);
+                if (!(ang_k != ang_k))add_light *= max(0.0,( ang_k * 2.0 - 1.0));
 
                 R += add_light; G += add_light; B += add_light;
             }
@@ -826,4 +828,17 @@ QColor TTriangle::GetColor (
     return (QColor{min(254,max(0,(int)(R * this->self_color.red() / 255.0))),
                    min(254,max(0,(int)(G * this->self_color.green() / 255.0))),
                    min(254,max(0,(int)(B * this->self_color.blue() / 255.0)))});
+}
+QColor use_shader (QColor first_color){
+
+    double K[3]; K[0] = first_color.red(); K[1] = first_color.green(); K[2] = first_color.blue();
+
+    // monochrom
+    //    return QColor((R+G+B) / 3.0, (R+G+B) / 3.0, (R + G + B) / 3.0);
+
+    // make it harder
+   for (int i = 0; i < 3; i++)
+       K[i] = K[i] * 1.8 - 255 * .4;
+
+   return QColor (max(0.0,(min(255.0, K[0]))),max(0.0,(min(255.0, K[1]))),max(0.0,(min(255.0, K[2]))));
 }
