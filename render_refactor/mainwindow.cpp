@@ -20,15 +20,18 @@ void MainWindow::paintEvent(QPaintEvent *e){
     short wid = scr_width(), hei = scr_heigh();
 
     QPainter qp (this);
+    QPen pen;
+    pen.setWidth(2);
 
     for (int i = 0; i < hei; i++)
         for (int j = 0; j < wid; j++)
             {
-                qp.setPen(QPen(QColor(
-                       result_matrix[i][j].R(),
-                       result_matrix[i][j].G(),
-                       result_matrix[i][j].B())));
-                qp.drawPoint(50 + i, 50 + j);
+                pen.setColor(QColor(
+                    (int)result_matrix[i][j].R(),
+                    (int)result_matrix[i][j].G(),
+                    (int)result_matrix[i][j].B()));
+                qp.setPen(pen);
+                qp.drawPoint(50 + i*2, 50 + j*2);
             }
     // after drawing
     // clear the buffer

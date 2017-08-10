@@ -155,7 +155,7 @@ Vertex p1 = Vertex(0, -5, 5), p2 = Vertex(0, 5, 5), p3 = Vertex (0, 0, -15),
 
 Vertex* pp[3] = {&p1, &p2, &p3};
 Triangle tt1 = Triangle(pp, 0, Color(0,255,150));
-Vertex* pp2[3] = {&p6, &p5, &p4};
+Vertex* pp2[3] = {&p4, &p5, &p6};
 Triangle tt2 = Triangle(pp2, 0, Color(255,255,0));
 
 Triangle* TT[] = {&tt1, &tt2};
@@ -167,9 +167,8 @@ Sphere sp3 = Sphere(Vertex(-3, -3, -3), 3, 0, Color(0,255,0));
 Sphere* SP[] = {&sp1, &sp2, &sp3};
 // all light
 Light lg1 = Light(Vertex(-10, -5, 0), 20, 0, 400);
-Light lg2 = Light(Vertex(-30, -4, 30), 80);
-Light lg3 = Light(Vertex(-30, -4, 20), 80);
-Light* LS[] = {/*&lg1, */&lg2, &lg3};
+Light lg2 = Light(Vertex(-10, 0, -30), 150);
+Light* LS[] = {&lg1, &lg2};
 
 int main(int argc, char *argv[])
 {
@@ -431,13 +430,9 @@ Color Triangle::GetColor(const Vertex* current_intersect){
         Vertex blocker = RayCast(current_intersect ,&(LS[l]->center),
                         dist_to_nearest_blocker, blocker_number, fin);
         if (fin == ' ' && dist_to_nearest_blocker > 0){
-            double ang_k =  1 - angle_betw(&(LS[l]->center), &(this->normal_start),
-                               &(this->normal_end)) / M_PI;
             double lk =
                     std::max(0.0,(LS[l]->max_dist - dist_to_light)) / LS[l]->max_dist *
                     (LS[l]->max_light - LS[l]->min_light) + LS[l]->min_light;
-            //lk  *= std::max(0.0, ang_k * 2.0 - 1.0);
-
             final = CSumm (final, CMult (Color(255.0),lk / 255.0));
         }
     }
@@ -459,7 +454,7 @@ Color Sphere::GetColor(const Vertex *current_intersect){
             double lk =
                     std::max(0.0,(LS[l]->max_dist - dist_to_light)) / LS[l]->max_dist *
                     (LS[l]->max_light - LS[l]->min_light) + LS[l]->min_light;
-            //lk  *= std::max(0.0, ang_k * 2.0 - 1.0);
+            lk  *= std::max(0.0, ang_k * 2.0 - 1.0);
 
             final = CSumm (final, CMult (Color(255.0),lk / 255.0));
         }

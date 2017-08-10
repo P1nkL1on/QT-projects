@@ -13,11 +13,11 @@ public:
     Color (int R, int G, int B);
     Color (int clr);
     Color (double R, double G, double B);
-    Color operator + (const Color& clr) const;
-    Color operator * (const double k) const;
-    int R();
-    int G();
-    int B();
+//    Color operator + (const Color& clr) const;
+//    Color operator * (const double k) const;
+    double R();
+    double G();
+    double B();
 };
 
 #endif // COLOR_H

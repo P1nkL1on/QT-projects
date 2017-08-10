@@ -30,19 +30,19 @@ Color::Color(int R, int G, int B)
     this->blue = std::max(0, std::min(255, B));
 }
 
-Color Color::operator + (const Color& clr) const{
-    return Color( red + clr.red, green + clr.green, blue + clr.blue );
-}
-Color Color::operator *(const double k) const{
-    return Color (red * k, green * k, blue * k);
-}
+//Color Color::operator + (const Color& clr) const{
+//    return Color( red + clr.red, green + clr.green, blue + clr.blue );
+//}
+//Color Color::operator *(const double k) const{
+//    return Color (red * k, green * k, blue * k);
+//}
 
-int Color::R (){
+double Color::R (){
     return red;
 }
-int Color::G() {
+double Color::G() {
     return green;
 }
-int Color::B (){
+double Color::B (){
     return blue;
 }
