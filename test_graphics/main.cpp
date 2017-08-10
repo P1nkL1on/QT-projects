@@ -689,14 +689,14 @@ int main(int argc, char *argv[])
     TTriangle tt[2000];
 
     // lightsources
-    LightSourse ls[2] = {{{0.0, 0.0, 50},250.0,0,255}, {{-55,25, 15},150.0, 0, 255}};
+    LightSourse ls[2] = {{{0.0, 0.0, 50},250.0,0,255}, {{ -25,25, 25},150.0, 0, 255}};
     LightSourse* rls[2] = {&(ls[0]), &(ls[1])};
     //Camera camera = {{-30.0,0,0},{45.0,0,0}, false};
     Camera camera = {{-20, 0, 0}, {60, 0, 0}, true};
     Camera* cm = &camera;
     scene->clear();
 
-    LoadModel("D:/QT-projects/QT-projects/!models/cube.txt", false, 2.6,
+    LoadModel("D:/QT-projects/QT-projects/!models/cube.txt", false, 1,
                point_count, ps, polygon_count, tt);
     std::cout<<"Point count: "<<point_count << "  Polygon count:"<<polygon_count<< endl;
 
@@ -707,15 +707,14 @@ int main(int argc, char *argv[])
     // creating a plane with different colors
     //spheres
     // sphere creating
-    TPoint sp1_c = {0,-11,0}, sp2_c = {0, 11, 0}, sp3_c = {0,0, -10}, sp4_c = {0, -5, 5};
+    TPoint sp1_c = {0,-8,0}, sp2_c = {0, 8, 0}, sp3_c = {0,0, -10}, sp4_c = {0, -5, 5};
     sf[0] = TSphere{&sp1_c, 5, 0.5, QColor(Qt::red)};
-    sf[1] = TSphere{&sp2_c, 5, 0.5, QColor(Qt::blue)};
+    sf[1] = TSphere{&sp2_c, 5, 0.5, QColor(Qt::green)};
     sf[2] = TSphere{&sp3_c, 8, 0.5, QColor(Qt::white)};
     sf[3] = TSphere{&sp4_c, 4.5, 0.8};
-    sphere_count = 2;
+    sphere_count = 3;
 
-
-    zoom = 2;
+    zoom = 20;
     X_mult = 0.0;
     DrawCenter(scene,6);
     for (int j =0; j<polygon_count; j++)
@@ -724,11 +723,12 @@ int main(int argc, char *argv[])
         ls[j].DrawLight(scene);
 
     //polygon_count
+    //if (false)
     DrawRayCast (scene, cm,
                  tt, polygon_count,
                  sf, sphere_count,
                  ls, sizeof(ls)/sizeof(ls[0]),
-            600, 600, .3, 1, 0, -300);
+            1000, 1000, .06, 1, 0, -300);
 
 
     //sizeof(ls)/sizeof(ls[0])
