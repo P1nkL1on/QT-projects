@@ -168,7 +168,7 @@ Triangle* TT[] = {&tt1, &tt2};
 Sphere sp1 = Sphere(Vertex(0, 0, 0), 2, 0, Color(255,255,0));
 Sphere sp2 = Sphere(Vertex(0, 0, 4), 2, 0, Color(255,0,0));
 Sphere sp3 = Sphere(Vertex(3, -3, -3), 6, .5, Color(0,255,0));
-Sphere sp4 = Sphere(Vertex(-6, -8, 0), 2, 0, Color(255));
+Sphere sp4 = Sphere(Vertex(-6, -4, 0), 4, 0, Color(255));
 
 Sphere* SP[] = {&sp1, &sp2, &sp3, &sp4};
 // all light
