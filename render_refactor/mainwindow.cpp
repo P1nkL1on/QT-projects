@@ -21,7 +21,7 @@ void MainWindow::paintEvent(QPaintEvent *e){
 
     QPainter qp (this);
     QPen pen;
-    pen.setWidth(2);
+    pen.setWidth(1);
 
     for (int i = 0; i < hei; i++)
         for (int j = 0; j < wid; j++)
@@ -31,7 +31,7 @@ void MainWindow::paintEvent(QPaintEvent *e){
                     (int)result_matrix[i][j].G(),
                     (int)result_matrix[i][j].B()));
                 qp.setPen(pen);
-                qp.drawPoint(50 + i*2, 50 + j*2);
+                qp.drawPoint(50 + i*pen.width(), 50 + j*pen.width());
             }
     // after drawing
     // clear the buffer

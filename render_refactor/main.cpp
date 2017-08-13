@@ -2,6 +2,7 @@
 #include <QApplication>
 #include "color.h"
 #include <iostream>
+#include <windows.h>
 
 double epsilon = .0001;
 
@@ -150,34 +151,37 @@ public:
 };
 
 Vertex RayCast (const Vertex* from, const Vertex* to, double& distance, int& itnersected_object_number, char& intersected_object_type );
-Color RenderPixel (short i, short j);
+Color RenderRay (const Vertex* from, const Vertex* to);
 void RenderScene (Camera*);
 
 
 // all polygons
-Vertex p1 = Vertex(0, -5, 5), p2 = Vertex(0, 5, 5), p3 = Vertex (0, 0, -15),
-       p4 = Vertex(5, -5, -12), p5 = Vertex(5, 5,- 9), p6 = Vertex (5, 0, 15);
+Vertex p1 = Vertex(0, 5, 5), p2 = Vertex(-10, 1, 5), p3 = Vertex (-5, 3, -15),
+       p4 = Vertex(15, -5, -12), p5 = Vertex(15, 5,- 9), p6 = Vertex (-5, 0, 15);
 
-Vertex* pp[3] = {&p1, &p2, &p3};
-Triangle tt1 = Triangle(pp, 0, Color(0,255,150));
+Vertex* pp[3] = {&p3, &p2, &p1};
+Triangle tt1 = Triangle(pp,  .0, Color(255, 0 ,0));
 Vertex* pp2[3] = {&p6, &p5, &p4};
-Triangle tt2 = Triangle(pp2, 0, Color(255,255,0));
+Triangle tt2 = Triangle(pp2, .0, Color(255,255,0));
 
 Triangle* TT[] = {&tt1, &tt2};
 // all spheres
-Sphere sp1 = Sphere(Vertex(0, 0, 0), 2, 0, Color(255,255,0));
-Sphere sp2 = Sphere(Vertex(0, 0, 4), 2, 0, Color(255,0,0));
-Sphere sp3 = Sphere(Vertex(3, -3, -3), 6, .5, Color(0,255,0));
-Sphere sp4 = Sphere(Vertex(-6, -8, 0), 2, 0, Color(255));
+Sphere sp1 = Sphere(Vertex(0, 0, 0), 2,     .0, Color(255,255,0));
+Sphere sp2 = Sphere(Vertex(0, 0, 4), 2,     .0, Color(255,0,0));
+Sphere sp3 = Sphere(Vertex(3, -3, -3), 6,   .6, Color(0,255,0));
+Sphere sp4 = Sphere(Vertex(-6, -8, 0), 2,   .0, Color(255));
+Sphere sp5 = Sphere(Vertex(-6, -12, 0), 2,  .0, Color(0, 255, 255));
+Sphere sp6 = Sphere(Vertex(3, -3, 14), 6,   .6, Color(255));
+Sphere sp7 = Sphere(Vertex(3, -3, -16), 6,   .6, Color(255,0,0));
 
-Sphere* SP[] = {&sp1, &sp2, &sp3, &sp4};
+Sphere* SP[] = {&sp1, &sp2, &sp3, &sp4, &sp5, &sp6, &sp7};
 // all light
 Light   lg1 = Light(Vertex(-10, 0, -10), 20, 0, 255),//Light(Vertex(-10, -5, 0), 20, 0, 400);
         lg2 = Light(Vertex(-10, -10, 0), 20),
-        lg3 = Light(Vertex(-30, -4, 20), 80),
+        lg3 = Light(Vertex(0, -15, 0), 80),
         lg4 =  Light(Vertex(-10, 0, 10), 20, 0, 255);
 
-Light* LS[] = {&lg1, &lg4 ,&lg2};
+Light* LS[] = {&lg1, &lg4 ,&lg2/*&lg3*/};
 
 int main(int argc, char *argv[])
 {
@@ -295,7 +299,7 @@ void Triangle::CalculateNormal(bool reverse_normal){
     Vertex add = Vertex(kX / kMax, kY / kMax, kZ / kMax);
     add = Mult (&add, (reverse_normal)? -1.0 : 1.0);
     normal_start = Middle (pps[0], pps[1], pps[2]);
-    normal_end = Summ ( &normal_end,  &add);
+    normal_end = Summ ( &normal_start,  &add);
     return;
 }
 bool Triangle::PointInTriangle (const Vertex* point){
@@ -559,7 +563,7 @@ Vertex RayCast(const Vertex* from, const Vertex* to, double& distance,
     return res;
 }
 
-Color RenderPixel(Vertex* from, Vertex* to){
+Color RenderRay(Vertex* from, Vertex* to){
     // дистанция по дефолту - jn ahjv lj ne
     // дефолтное попадание на конце камеры
     // пересеченный по умолчанию полигон - нулловый
@@ -571,16 +575,27 @@ Color RenderPixel(Vertex* from, Vertex* to){
 
     current_intersection = RayCast(from, to, intersection_dist, intersect_obj_number, what_we_are_intersecting);
     if (Dist(&current_intersection, to) > 0){
-        if (what_we_are_intersecting == 'T')
-            return TT[intersect_obj_number]->GetColor( &current_intersection );
+        if (what_we_are_intersecting == 'T'){
+            if (TT[intersect_obj_number]->mirror > 0.0)
+            {
+                Vertex reflect = Reflect(from, &current_intersection,
+                                 &(TT[intersect_obj_number]->normal_start), &(TT[intersect_obj_number]->normal_end));
+                return CSumm(
+                       CMult(TT[intersect_obj_number]->GetColor( &current_intersection ), 1.0 - TT[intersect_obj_number]->mirror),
+                       CMult(RenderRay(&current_intersection, &reflect), TT[intersect_obj_number]->mirror));
+            }
+            else
+                TT[intersect_obj_number]->GetColor( &current_intersection );
+        }
+
         if (what_we_are_intersecting == 'S'){
-            if (SP[intersect_obj_number]->mirror > 0){
+            if (SP[intersect_obj_number]->mirror > 0.0){
                 Vertex normal_end = SP[intersect_obj_number]->GetNormal(&current_intersection);
                 Vertex reflect = Reflect(from, &current_intersection,
                                          &current_intersection, &normal_end);
                 return CSumm(
-                            CMult(SP[intersect_obj_number]->GetColor( &current_intersection ), 1.0 - SP[intersect_obj_number]->mirror),
-                            CMult(RenderPixel(&current_intersection, &reflect), SP[intersect_obj_number]->mirror));
+                    CMult(SP[intersect_obj_number]->GetColor( &current_intersection ), 1.0 - SP[intersect_obj_number]->mirror),
+                    CMult(RenderRay(&current_intersection, &reflect), SP[intersect_obj_number]->mirror));
             }
             else
             return  SP[intersect_obj_number]->GetColor( &current_intersection ) ;
@@ -593,13 +608,20 @@ Color RenderPixel(Vertex* from, Vertex* to){
 }
 
 void RenderScene (Camera* cam){
-    screen_width = 400;
-    screen_height = 400;
+    short trace_perc = 10; SYSTEMTIME st; GetSystemTime(&st); int ms = st.wSecond * 1000 + st.wMilliseconds;
+
+    screen_width = 800;
+    screen_height = 800;
+    cam->frequency /= (std::min(screen_width, screen_height) / 400);
+
     int percent_done = 0;
     // обявление массива пикселей
     if (!matrix_is_created)
         pixels = (Color**) malloc (screen_height * (sizeof(Color*)));
     // выделили память под высоту
+    // time to see
+
+
     for (short i = 0; i < screen_height; i++){
         if (!matrix_is_created)
             pixels[i] = (Color*)malloc( screen_width * (sizeof(Color)) );
@@ -612,12 +634,13 @@ void RenderScene (Camera* cam){
                          (-screen_height / 2.0 + i) * cam->frequency * cam->perspective) ;
 
             // присваивание
-            pixels[i][j] = RenderPixel(&current_ray_start, &current_ray_end);
+            pixels[i][j] = RenderRay(&current_ray_start, &current_ray_end);
             // tracing
-            if ( j == screen_width-1 && i % (screen_height / (100) * 10) == 0)
+            if ( j == screen_width-1 && i % (screen_height / (100) * trace_perc - 1) == 0 && i >0)
             {
-                percent_done += 10;
-                std::cout << percent_done << "%" << std::endl;
+                percent_done += trace_perc; GetSystemTime(&st);
+                std::cout << percent_done << "%  time elapsed: " << st.wSecond * 1000 + st.wMilliseconds - ms<< " ms."<< std::endl;
+                ms = st.wSecond * 1000 + st.wMilliseconds;
             }
 
         }
