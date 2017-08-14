@@ -5,12 +5,14 @@ using namespace ModelLoader;
 using namespace SceneTools;
 
 void SceneTools::TriangulateScene(Scene& scene){
-    std::cout << "Start triangulating. Vertex indexes' count : "<< scene.polygon_vertex_indexes.length() << std::endl;
+    std::cout << "\tStart triangulating. \tPolygons in model total: \t"<< scene.polygon_start.length()-1 <<"; Vertex indexes' count : \t"<< scene.polygon_vertex_indexes.length() << std::endl;
 
+    unsigned int numberOfTriangulatedPolygons = 0;
     for (int currentPolygon = 1, numberInsertedPoints = 0; currentPolygon < scene.polygon_start.length(); currentPolygon ++){
 
         int currentPolygonVertexCount = scene.polygon_start[currentPolygon] - scene.polygon_start[currentPolygon-1];
         if (currentPolygonVertexCount > 3){
+            numberOfTriangulatedPolygons++;
             int polygon_start_in = scene.polygon_start[currentPolygon-1] + numberInsertedPoints;
 
             for (int currentVertInserted = 1; currentVertInserted < currentPolygonVertexCount - 2; currentVertInserted++){
@@ -29,7 +31,7 @@ void SceneTools::TriangulateScene(Scene& scene){
             }
         }
     }
-    std::cout << "Finish triangulating. Vertex indexes' count : "<< scene.polygon_vertex_indexes.length() << std::endl;
+    std::cout << "\tFinish triangulating. \tPolygons triangulated: \t"<< numberOfTriangulatedPolygons <<"; Vertex indexes' count : \t"<< scene.polygon_vertex_indexes.length() << std::endl;
 }
 
 
