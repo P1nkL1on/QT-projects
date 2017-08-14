@@ -100,4 +100,73 @@ void ModelLoaderTests::testInvalidPolygon04()
 
     QVERIFY(!errorStr.isEmpty());
 }
+void ModelLoaderTests::testInvalidPolygon05()
+{
+    // указано не число в индексах текстурных точек
+    QString s = "v 1 2 3\n"
+                "v -1 -2 -3\n"
+                "v 0 0 0\n"
+                "vt 0 0\n"
+                "vt 0 1\n"
+                "vt 1 1\n"
+                "f 1/1 2/2 3/babaka";
+    Scene scene;
+    QTextStream stream(&s);
+    QString errorStr = loadModel(stream,scene);
+    qDebug() << errorStr;
 
+    QVERIFY(!errorStr.isEmpty());
+}
+void ModelLoaderTests::testInvalidPolygon06()
+{
+    // указан индекс несуществующей точки
+    QString s = "v 1 2 3\n"
+                "v -1 -2 -3\n"
+                "v 0 0 0\n"
+                "vt 0 0\n"
+                "vt 0 1\n"
+                "vt 1 1\n"
+                "f 1/1 2/4 3/3";
+    Scene scene;
+    QTextStream stream(&s);
+    QString errorStr = loadModel(stream,scene);
+    qDebug() << errorStr;
+
+    QVERIFY(!errorStr.isEmpty());
+}
+void ModelLoaderTests::testInvalidVertex02()
+{
+    // некорректное задание текстурной точки
+    QString s = "v 1 2 3\n"
+                "v -1 -2 -3\n"
+                "v 0 0 0\n"
+                "vt     0  & %* $ ()@  \n"
+                "vt 0 1\n"
+                "vt 1 1\n"
+                "f 1/1 2/2 3/3";
+    Scene scene;
+    QTextStream stream(&s);
+    QString errorStr = loadModel(stream,scene);
+    qDebug() << errorStr;
+
+    QVERIFY(!errorStr.isEmpty());
+}
+void ModelLoaderTests::testInvalidPolygon07()
+{
+    // указаны индексы неопределенных точек
+    QString s = "v 1 2 3\n"
+                "v -1 -2 -3\n"
+                "v 0 0 0\n"
+                "vt 0 0\n"
+                "vt 1 1\n"
+                "vt 1 0\n"
+                "f 3/1 2/2 1/3\n"
+                "f 1/2 2/1 3/2\n" // повторяющиеся индексы
+                "f 1/3 2/2 3/1";
+    Scene scene;
+    QTextStream stream(&s);
+    QString errorStr = loadModel(stream,scene);
+    qDebug() << errorStr;
+
+    QVERIFY(!errorStr.isEmpty());
+}

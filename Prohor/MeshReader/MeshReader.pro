@@ -26,10 +26,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     modelloader.cpp \
-    modelloadertests.cpp
+    modelloadertests.cpp \
+    scenetools.cpp
 
 HEADERS  += mainwindow.h \
     modelloader.h \
-    modelloadertests.h
+    modelloadertests.h \
+    scenetools.h
 
 FORMS    += mainwindow.ui
