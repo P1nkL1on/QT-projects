@@ -46,6 +46,10 @@ void MainWindow::paintEvent(QPaintEvent *e){
         }
     }
 }
+void traceMatrix (QMatrix4x4 qm){
+    for (int i = 0; i < 4; i++)
+        std::cout << qm.column(i)[0] << " " << qm.column(i)[1] << " " << qm.column(i)[2] << " " << qm.column(i)[3] << std::endl;
+}
 
 
 void Rotate (QVector<Vertex>& incomeCoords, float angle, QVector3D os ){
@@ -61,7 +65,7 @@ void Rotate (QVector<Vertex>& incomeCoords, float angle, QVector3D os ){
 QVector<Vertex> MainWindow::vertexCloud( QVector<unsigned int>& triangleVertexIndexes){
     // first time loading
     if (cloud.length() == 0)
-        if (!loadModelByAdress("../Models/rabbit.txt", sc).isEmpty())
+        if (!loadModelByAdress("../Models/teapot.txt", sc).isEmpty())
             return {};
 
     QVector<Vertex> res = sc.vertexes;
@@ -80,6 +84,9 @@ QVector<Vertex> MainWindow::vertexCloud( QVector<unsigned int>& triangleVertexIn
                         1),
                  perspectiveMatrix = QMatrix4x4();
     perspectiveMatrix.frustum(-10, 10, -10, 10, 20, 200);
+    traceMatrix(viewMatrix);
+    traceMatrix(perspectiveMatrix);
+
     for (int i = 0; i< res.length(); i++){
         QVector4D pointCoordinations(res[i].X , res[i].Y, res[i].Z, 1.0);
 

@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i< names.length(); i++){
         Scene sc = Scene();
         std::cout <<"> "<< names[i].toStdString() << " : "<<std::endl;
-        QString err = loadModelByAdress("C:/Projects/Prohor/Models/" + QString( names[i] ), sc);
+        QString err = loadModelByAdress("../Models/" + QString( names[i] ), sc);
 
         if (!err.isEmpty()){
             std::cout << "\tError : " << err.toStdString() << std::endl;
