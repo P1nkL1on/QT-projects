@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_ModelLoaderTests_t {
-    QByteArrayData data[6];
-    char stringdata0[95];
+    QByteArrayData data[13];
+    char stringdata0[241];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,12 +36,22 @@ QT_MOC_LITERAL(1, 17, 17), // "testNormalModel01"
 QT_MOC_LITERAL(2, 35, 0), // ""
 QT_MOC_LITERAL(3, 36, 17), // "testEmptyString01"
 QT_MOC_LITERAL(4, 54, 19), // "testInvalidVertex01"
-QT_MOC_LITERAL(5, 74, 20) // "testInvalidPolygon01"
+QT_MOC_LITERAL(5, 74, 19), // "testInvalidVertex02"
+QT_MOC_LITERAL(6, 94, 20), // "testInvalidPolygon01"
+QT_MOC_LITERAL(7, 115, 20), // "testInvalidPolygon02"
+QT_MOC_LITERAL(8, 136, 20), // "testInvalidPolygon03"
+QT_MOC_LITERAL(9, 157, 20), // "testInvalidPolygon04"
+QT_MOC_LITERAL(10, 178, 20), // "testInvalidPolygon05"
+QT_MOC_LITERAL(11, 199, 20), // "testInvalidPolygon06"
+QT_MOC_LITERAL(12, 220, 20) // "testInvalidPolygon07"
 
     },
     "ModelLoaderTests\0testNormalModel01\0\0"
     "testEmptyString01\0testInvalidVertex01\0"
-    "testInvalidPolygon01"
+    "testInvalidVertex02\0testInvalidPolygon01\0"
+    "testInvalidPolygon02\0testInvalidPolygon03\0"
+    "testInvalidPolygon04\0testInvalidPolygon05\0"
+    "testInvalidPolygon06\0testInvalidPolygon07"
 };
 #undef QT_MOC_LITERAL
 
@@ -51,7 +61,7 @@ static const uint qt_meta_data_ModelLoaderTests[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -59,12 +69,26 @@ static const uint qt_meta_data_ModelLoaderTests[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   34,    2, 0x08 /* Private */,
-       3,    0,   35,    2, 0x08 /* Private */,
-       4,    0,   36,    2, 0x08 /* Private */,
-       5,    0,   37,    2, 0x08 /* Private */,
+       1,    0,   69,    2, 0x08 /* Private */,
+       3,    0,   70,    2, 0x08 /* Private */,
+       4,    0,   71,    2, 0x08 /* Private */,
+       5,    0,   72,    2, 0x08 /* Private */,
+       6,    0,   73,    2, 0x08 /* Private */,
+       7,    0,   74,    2, 0x08 /* Private */,
+       8,    0,   75,    2, 0x08 /* Private */,
+       9,    0,   76,    2, 0x08 /* Private */,
+      10,    0,   77,    2, 0x08 /* Private */,
+      11,    0,   78,    2, 0x08 /* Private */,
+      12,    0,   79,    2, 0x08 /* Private */,
 
  // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -82,7 +106,14 @@ void ModelLoaderTests::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         case 0: _t->testNormalModel01(); break;
         case 1: _t->testEmptyString01(); break;
         case 2: _t->testInvalidVertex01(); break;
-        case 3: _t->testInvalidPolygon01(); break;
+        case 3: _t->testInvalidVertex02(); break;
+        case 4: _t->testInvalidPolygon01(); break;
+        case 5: _t->testInvalidPolygon02(); break;
+        case 6: _t->testInvalidPolygon03(); break;
+        case 7: _t->testInvalidPolygon04(); break;
+        case 8: _t->testInvalidPolygon05(); break;
+        case 9: _t->testInvalidPolygon06(); break;
+        case 10: _t->testInvalidPolygon07(); break;
         default: ;
         }
     }
@@ -114,13 +145,13 @@ int ModelLoaderTests::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 11;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
+        if (_id < 11)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 4;
+        _id -= 11;
     }
     return _id;
 }

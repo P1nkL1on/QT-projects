@@ -1,14 +1,14 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-08-14T11:21:06
+# Project created by QtCreator 2017-08-15T10:50:25
 #
 #-------------------------------------------------
 
-QT       += core gui testlib
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = MeshReader
+TARGET = Rasterizator
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -22,16 +22,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-include(ModelLoader/ModelLoader.pri)
-
+include(../MeshReader/ModelLoader/ModelLoader.pri)
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    modelloadertests.cpp \
-    scenetools.cpp
+        mainwindow.cpp
 
-HEADERS  += mainwindow.h \
-    modelloadertests.h \
-    scenetools.h
+HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
