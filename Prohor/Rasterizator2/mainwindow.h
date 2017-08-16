@@ -15,6 +15,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    void drawCanvas(const QVector<QVector2D> resPoints, const QVector<unsigned int> vertIndexes,
+                    const QVector<unsigned int> polIndStart, const int screenWidth, const int screenHeight);
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 

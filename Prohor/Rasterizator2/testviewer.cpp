@@ -1,8 +1,12 @@
 #include "testviewer.h"
 #include "iostream"
+
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
 TestViewer::TestViewer()
 {
-
+    previousResult = {};
 }
 
 QString TestViewer::rasterView(QVector<QVector2D>& resultPoints, const Scene scene, const Camera cam ){
@@ -31,6 +35,10 @@ QString TestViewer::rasterView(QVector<QVector2D>& resultPoints, const Scene sce
         resultPoints[i] = QVector2D((resultPoints[i][0] - minCrd) / (maxCrd - minCrd) * 2.0 - 1.0,
                                     (resultPoints[i][1] - minCrd) / (maxCrd - minCrd) * 2.0 - 1.0);
     }
+    // save the result
+    previousResult = resultPoints;
 
     return QString();
 }
+
+

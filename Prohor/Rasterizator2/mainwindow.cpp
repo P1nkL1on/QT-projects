@@ -42,7 +42,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 }
 
 void LoadModel (){
-    QString err = loadModelByAdress("../Models/roi.txt", sc);
+    QString err = loadModelByAdress("../Models/cow.txt", sc);
     if (!err.isEmpty())
     {
         qDebug() << err;
@@ -50,40 +50,51 @@ void LoadModel (){
     }
     // if everything is normal
     qDebug() << "Model loaded";
-    sc.polygon_vertex_indexes = triangulateMesh(sc.polygon_vertex_indexes, sc.polygon_start);
-    if (sc.vertexes_texture.length() > 0)
-        sc.polygon_texture_vertex_indexes = triangulateMesh(sc.polygon_texture_vertex_indexes, sc.polygon_start);
+    if (false){
+        sc.polygon_vertex_indexes = triangulateMesh(sc.polygon_vertex_indexes, sc.polygon_start);
+        if (sc.vertexes_texture.length() > 0)
+            sc.polygon_texture_vertex_indexes = triangulateMesh(sc.polygon_texture_vertex_indexes, sc.polygon_start);
+    }
 }
+
+QVector2D toScrCoords (const QVector2D point, const int screenWidth, const int screenHeight){
+    return QVector2D (screenWidth/2 + screenWidth/2 * (point[0]), screenHeight/2 + screenHeight/2 * (point[1]));
+}
+
+void MainWindow::drawCanvas(const QVector<QVector2D> resPoints, const QVector<unsigned int> vertIndexes,
+                const QVector<unsigned int> polIndStart, const int screenWidth, const int screenHeight)
+{
+    QPainter qp(this);
+    QPen pen;
+    pen.setWidth(1);
+    qp.setPen(pen);
+
+    for (int i = 0; i < polIndStart.length() - 1; i++){
+        QVector2D lastPointInPolygon = toScrCoords(resPoints[vertIndexes[polIndStart[i]] - 1], screenWidth, screenHeight);
+        for (int j = polIndStart[i]; j < polIndStart[i + 1]; j++){
+            QVector2D res = toScrCoords(resPoints[vertIndexes[j] - 1], screenWidth, screenHeight);
+            qp.drawLine((int)res[0],(int)res[1], (int)lastPointInPolygon[0], (int) lastPointInPolygon[1]);
+            lastPointInPolygon = res;
+        }
+    }
+}
+
 
 void MainWindow::paintEvent(QPaintEvent *e)
 {
     // call a loding
     if (sc.vertexes.length() == 0)
         LoadModel();
-    //
-    QPainter qp (this);
-    QPen pen;
-    pen.setWidth(1);
-    qp.setPen(pen);
-    QVector<QVector2D> points = {};
 
-    //traceMatrix(cam.viewingMatrix);
-    //traceMatrix(cam.perspectiveMatrix);
+    //QPainter qp (this);
+    QVector<QVector2D> points;
 
     QString err = tv.rasterView(points, sc, cam);
     if (!err.isEmpty()){
         qDebug() << "Error in rasterization";
         return;
     }
-    //qDebug() << "Rasterization success";
+    // qDebug() << "Rasterization success";
 
-    int wid = (int)(std::max(width(), height()) - 20), hei = wid;
-    for (int currentPoint = 0; currentPoint < sc.polygon_vertex_indexes.length() / 3; currentPoint ++){
-        qp.drawLine( (int)(20 + wid/2.0 + wid/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3]][0] ), (int)(30 + hei/2.0 - hei/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3]][1] ),
-                     (int)(20 + wid/2.0 + wid/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3 + 1]][0] ), (int)(30 + hei/2.0 - hei/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3 + 1]][1] ));
-        qp.drawLine( (int)(20 + wid/2.0 + wid/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3]][0] ), (int)(30 + hei/2.0 - hei/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3]][1] ),
-                     (int)(20 + wid/2.0 + wid/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3 + 2]][0] ), (int)(30 + hei/2.0 - hei/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3 + 2]][1] ));
-        qp.drawLine( (int)(20 + wid/2.0 + wid/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3 + 2]][0] ), (int)(30 + hei/2.0 - hei/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3 + 2]][1] ),
-                     (int)(20 + wid/2.0 + wid/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3 + 1]][0] ), (int)(30 + hei/2.0 - hei/2.0 * points[-1 + sc.polygon_vertex_indexes[currentPoint * 3 + 1]][1] ));
-    }
+    drawCanvas(points, sc.polygon_vertex_indexes, sc.polygon_start, std::min(width(), height()), std::min(width(), height()));
 }
