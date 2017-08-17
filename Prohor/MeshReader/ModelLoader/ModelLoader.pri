@@ -11,3 +11,11 @@ SOURCES += \
     $$PWD/modelloader.cpp
 }
 
+HEADERS += \
+    $$PWD/model.h \
+    $$PWD/graphicsobject.h
+
+SOURCES += \
+    $$PWD/model.cpp \
+    $$PWD/graphicsobject.cpp
+

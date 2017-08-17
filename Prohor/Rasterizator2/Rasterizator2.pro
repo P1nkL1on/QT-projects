@@ -24,6 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 include(../MeshReader/ModelLoader/ModelLoader.pri)
 include(../MeshReader/SceneTools/SceneTools.pri)
+include(Stereometry/Stereometry.pri)
 
 SOURCES += \
         main.cpp \

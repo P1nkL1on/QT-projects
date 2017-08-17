@@ -6,10 +6,25 @@
 
 TestViewer::TestViewer()
 {
-    previousResult = {};
+    objectsInScene = {};
 }
 
-QString TestViewer::rasterView(QVector<QVector2D>& resultPoints, const Scene scene, const Camera cam ){
+
+void TestViewer::addGraphicsObject(GraphicsObject *newObj)
+{
+    objectsInScene << newObj;
+}
+
+void TestViewer::drawOn(QPainter *painter, const Camera cam, const int wid, const int hei) const{
+    if (objectsInScene.length() == 0)
+        qDebug() << "No objects to rasterise.";
+
+    for (int currentModel = 0; currentModel < objectsInScene.length(); currentModel++)
+        objectsInScene[currentModel]->ApplyDrawToCanvas(painter, cam.viewingMatrix, cam.perspectiveMatrix, wid, hei);
+
+}
+
+/*QString TestViewer::rasterView(QVector<QVector2D>& resultPoints, const Scene scene, const Camera cam ){
     // corners add
     resultPoints = {};//{QVector2D(-1.0, -1.0), QVector2D(-1.0, 1.0), QVector2D(1.0, 1.0), QVector2D(1.0, -1.0)};
     // all other points
@@ -39,6 +54,6 @@ QString TestViewer::rasterView(QVector<QVector2D>& resultPoints, const Scene sce
     previousResult = resultPoints;
 
     return QString();
-}
+}*/
 
 

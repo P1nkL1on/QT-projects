@@ -1,9 +1,10 @@
 #include "modelloader.h"
 #include "QRegExp"
+#include "model.h"
 
-using namespace ModelLoader;
+using namespace  ModelStructs;
 
-QString ModelLoader::loadModelByAdress (QString path, Scene& ls)
+QString ModelLoader::loadModelByAdress (QString path, Model& model)
 {
     //loadedScene = Scene();
     QFile file(path);
@@ -11,10 +12,10 @@ QString ModelLoader::loadModelByAdress (QString path, Scene& ls)
         return "Can not load a file";
 
     QTextStream in(&file);
-    return loadModel (in, ls);
+    return loadModel (in, model);
 }
 
-QString ModelLoader::loadModel(QTextStream& textStream, Scene& loadedScene)
+QString ModelLoader::loadModel(QTextStream& textStream, Model& loadedModel)
 {
     bool traceInfo = false; unsigned int curPolNumber = 0, curVertNumber = 0, curTVertNumber = 0, lineNumber = 0;
 
@@ -49,10 +50,10 @@ QString ModelLoader::loadModel(QTextStream& textStream, Scene& loadedScene)
                 if (done < 3) return "Invalid vertex. Line: "+QString::number( lineNumber ); // if not enougth points
 
                 // now we have 3 coords in array
-                loadedScene.vertexes << Vertex(read_coords[0], read_coords[1], read_coords[2]);
+                loadedModel.vertexes << Vertex(read_coords[0], read_coords[1], read_coords[2]);
                 curVertNumber++;
                 if (traceInfo)
-                    std::cout << curVertNumber << ". Vertex read : ( " << loadedScene.vertexes[loadedScene.vertexes.length()-1].X << "  " << loadedScene.vertexes[loadedScene.vertexes.length()-1].Y << "  " <<loadedScene.vertexes[loadedScene.vertexes.length()-1].Z << " )  " << std::endl;
+                    std::cout << curVertNumber << ". Vertex read : ( " << loadedModel.vertexes[loadedModel.vertexes.length()-1].X << "  " << loadedModel.vertexes[loadedModel.vertexes.length()-1].Y << "  " <<loadedModel.vertexes[loadedModel.vertexes.length()-1].Z << " )  " << std::endl;
                 continue;
             }
         if (lineName == "vt"){
@@ -68,10 +69,10 @@ QString ModelLoader::loadModel(QTextStream& textStream, Scene& loadedScene)
                     }
 
                 // now we have 3 coords in array
-                loadedScene.vertexes_texture << VertexTexture(read_coords[0], read_coords[1]);
+                loadedModel.vertexes_texture << VertexTexture(read_coords[0], read_coords[1]);
                 curTVertNumber++;
                 if (traceInfo)
-                    std::cout << curTVertNumber << ". TVertex read : ( " << loadedScene.vertexes_texture[loadedScene.vertexes_texture.length()-1].X << "  " << loadedScene.vertexes_texture[loadedScene.vertexes_texture.length()-1].Y << " )"<<std::endl;
+                    std::cout << curTVertNumber << ". TVertex read : ( " << loadedModel.vertexes_texture[loadedModel.vertexes_texture.length()-1].X << "  " << loadedModel.vertexes_texture[loadedModel.vertexes_texture.length()-1].Y << " )"<<std::endl;
                 continue;
             }
         if (lineName == "f"){
@@ -93,10 +94,10 @@ QString ModelLoader::loadModel(QTextStream& textStream, Scene& loadedScene)
                                 return "Negative vertex index. Line: "+QString::number( lineNumber );
                             switch(currentVertexNumber){
                                 case 0:
-                                    loadedScene.polygon_vertex_indexes << currentVertexValue;
+                                    loadedModel.polygon_vertex_indexes << currentVertexValue;
                                     break;
                                 case 1:
-                                    loadedScene.polygon_texture_vertex_indexes << currentVertexValue;
+                                    loadedModel.polygon_texture_vertex_indexes << currentVertexValue;
                                     break;
                                 default:
                                     break;
@@ -113,7 +114,7 @@ QString ModelLoader::loadModel(QTextStream& textStream, Scene& loadedScene)
             if (foundedVertex < 3)
                 return "Invalid polygon. Line: "+QString::number( lineNumber );
 
-            loadedScene.polygon_start << (loadedScene.polygon_start[loadedScene.polygon_start.length() - 1] + foundedVertex);
+            loadedModel.polygon_start << (loadedModel.polygon_start[loadedModel.polygon_start.length() - 1] + foundedVertex);
             curPolNumber++;
             if (traceInfo)
                 std::cout <<curPolNumber<< ". Polygon read with "<< foundedVertex << " vertexes in it." << std::endl;
@@ -123,33 +124,33 @@ QString ModelLoader::loadModel(QTextStream& textStream, Scene& loadedScene)
     }
 
     // final check for invalid vertex numbers
-    unsigned int vertexCount = loadedScene.polygon_start[loadedScene.polygon_start.length() - 1];
+    unsigned int vertexCount = loadedModel.polygon_start[loadedModel.polygon_start.length() - 1];
     for (unsigned int vertIndex = 0, currentPolygonNumber = 0; vertIndex < vertexCount; vertIndex++){
 
-        if (loadedScene.polygon_vertex_indexes[vertIndex] > loadedScene.vertexes.length())
+        if (loadedModel.polygon_vertex_indexes[vertIndex] > loadedModel.vertexes.length())
             return "Vertex's index is out of range. Vertex number "+QString::number( vertIndex );
         // only if there are any texture coordinates
-        if (loadedScene.vertexes_texture.length() > 0 &&
-            loadedScene.polygon_texture_vertex_indexes[vertIndex] > loadedScene.vertexes_texture.length())
+        if (loadedModel.vertexes_texture.length() > 0 &&
+            loadedModel.polygon_texture_vertex_indexes[vertIndex] > loadedModel.vertexes_texture.length())
             return "Texture vertex's index is out of range. TVertex number "+QString::number( vertIndex );
 
         // checking of equal vertexs inside one polygon
         //if (vertIndex ==  loadedScene.polygon_start[currentPolygonNumber]){ // at the start of polygon
-        if (vertIndex ==  loadedScene.polygon_start[currentPolygonNumber + 1] - 1)
+        if (vertIndex ==  loadedModel.polygon_start[currentPolygonNumber + 1] - 1)
             currentPolygonNumber ++;
         else
             for (unsigned int compareWithIndex = vertIndex + 1;   // first elemtnt
-                 compareWithIndex < loadedScene.polygon_start[currentPolygonNumber + 1];                // third element
+                 compareWithIndex < loadedModel.polygon_start[currentPolygonNumber + 1];                // third element
                  compareWithIndex ++){
 //                    if (traceInfo){
 //                        std::cout << "Compare : "<< loadedScene.polygon_vertex_indexes[vertIndex] <<" <-> "<<loadedScene.polygon_vertex_indexes[compareWithIndex] << std::endl;
 //                        if (loadedScene.vertexes_texture.length() > 0)
 //                            std::cout << "!!!ompare:"<< loadedScene.polygon_texture_vertex_indexes[vertIndex] <<" <-> "<<loadedScene.polygon_texture_vertex_indexes[compareWithIndex] << std::endl;
 //                    }
-                    if (loadedScene.polygon_vertex_indexes[vertIndex] == loadedScene.polygon_vertex_indexes[compareWithIndex])
+                    if (loadedModel.polygon_vertex_indexes[vertIndex] == loadedModel.polygon_vertex_indexes[compareWithIndex])
                         return "Same vertexs' indexes in polygon. Polygon number "+QString::number( currentPolygonNumber+1 );
-                    if (loadedScene.vertexes_texture.length() > 0 &&   // if there is any texture points
-                        loadedScene.polygon_texture_vertex_indexes[vertIndex] == loadedScene.polygon_texture_vertex_indexes[compareWithIndex])
+                    if (loadedModel.vertexes_texture.length() > 0 &&   // if there is any texture points
+                        loadedModel.polygon_texture_vertex_indexes[vertIndex] == loadedModel.polygon_texture_vertex_indexes[compareWithIndex])
                         return "Same texture vertexs' indexes in polygon. Polygon number "+QString::number( currentPolygonNumber+1 );
 
             }

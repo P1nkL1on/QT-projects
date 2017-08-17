@@ -4,16 +4,19 @@
 #include "QVector2D"
 #include "camera.h"
 #include <QMainWindow>
+#include "QPainter"
+
+using namespace  GraphicsObjectStruct;
 
 
 class TestViewer
 {
 private:
-    double widHeiMult; // коэффицент отношения высоты к ширине (1.5, 2 и т.д.)
-    QVector<QVector2D> previousResult;
+    QVector<GraphicsObject*> objectsInScene;
 public:
     TestViewer();
-    QString rasterView(QVector<QVector2D>& resPoints, const Scene scene, const Camera cam );
+    void addGraphicsObject (GraphicsObject* newObj);
+    void drawOn (QPainter* painter, const Camera cam, const int wid, const int hei) const;
 };
 
 #endif // TESTVIEWER_H
