@@ -1,6 +1,8 @@
 #include "modelloader.h"
 #include "QRegExp"
 #include "model.h"
+#include "QVector3D"
+#include "QVector2D"
 
 using namespace  ModelStructs;
 
@@ -36,7 +38,7 @@ QString ModelLoader::loadModel(QTextStream& textStream, Model& loadedModel)
         QStringList fields = line.split(" ");
 
         if (lineName == "v"){
-                double read_coords[3];
+                float read_coords[3];
                 int done = 0;
                 for (int j = 1; (j<fields.count() && done < 3); j++ )
                     if (fields[j].length() > 0) // not a zero symbol
@@ -50,14 +52,14 @@ QString ModelLoader::loadModel(QTextStream& textStream, Model& loadedModel)
                 if (done < 3) return "Invalid vertex. Line: "+QString::number( lineNumber ); // if not enougth points
 
                 // now we have 3 coords in array
-                loadedModel.vertexes << Vertex(read_coords[0], read_coords[1], read_coords[2]);
+                loadedModel.vertexes << QVector3D(read_coords[0], read_coords[1], read_coords[2]);
                 curVertNumber++;
                 if (traceInfo)
-                    std::cout << curVertNumber << ". Vertex read : ( " << loadedModel.vertexes[loadedModel.vertexes.length()-1].X << "  " << loadedModel.vertexes[loadedModel.vertexes.length()-1].Y << "  " <<loadedModel.vertexes[loadedModel.vertexes.length()-1].Z << " )  " << std::endl;
+                    std::cout << curVertNumber << ". Vertex read : ( " << loadedModel.vertexes[loadedModel.vertexes.length()-1].x() << "  " << loadedModel.vertexes[loadedModel.vertexes.length()-1].y() << "  " <<loadedModel.vertexes[loadedModel.vertexes.length()-1].z() << " )  " << std::endl;
                 continue;
             }
         if (lineName == "vt"){
-                double read_coords[2];
+                float read_coords[2];
                 for (int j = 1, done = 0; (j<fields.count() && done < 2); j++ )
                     if (fields[j].length() > 0) // not a zero symbol
                     {
@@ -69,10 +71,10 @@ QString ModelLoader::loadModel(QTextStream& textStream, Model& loadedModel)
                     }
 
                 // now we have 3 coords in array
-                loadedModel.vertexes_texture << VertexTexture(read_coords[0], read_coords[1]);
+                loadedModel.vertexes_texture << QVector2D(read_coords[0], read_coords[1]);
                 curTVertNumber++;
                 if (traceInfo)
-                    std::cout << curTVertNumber << ". TVertex read : ( " << loadedModel.vertexes_texture[loadedModel.vertexes_texture.length()-1].X << "  " << loadedModel.vertexes_texture[loadedModel.vertexes_texture.length()-1].Y << " )"<<std::endl;
+                    std::cout << curTVertNumber << ". TVertex read : ( " << loadedModel.vertexes_texture[loadedModel.vertexes_texture.length()-1].x() << "  " << loadedModel.vertexes_texture[loadedModel.vertexes_texture.length()-1].y() << " )"<<std::endl;
                 continue;
             }
         if (lineName == "f"){

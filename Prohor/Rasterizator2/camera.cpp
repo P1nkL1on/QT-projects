@@ -2,35 +2,40 @@
 #include "modelloader.h"
 #include "QMatrix4x4"
 #include "QVector4D"
+#include "transforms.h"
+#include "QVector2D"
+#include "qdebug.h"
+#include "stereometry.h"
 using namespace ModelLoader;
 
 
 Camera::Camera(double fAngle, double fDist, double focusDist)
 {
     // make a props
-    cameraProps = { Vertex(-10, 0, 0), Vertex(0,0,0), Vertex(-10, 1, 0), Vertex(-10, 0, -1) };
+    cameraProps = { QVector3D(-10, 0, 0), QVector3D(0,0,0), QVector3D(-10, 1, 0), QVector3D(-10, 0, -1) };
     // make a focus props
     fieldAngle = fAngle / 180.0 * M_PI;
     fieldDistance = fDist;
     focusDistance = focusDist;
     calculateMatrixes(true, true);
+    prevMousePlace = {0,0};
 }
 
 void Camera::calculateMatrixes(bool perspective, bool viewing)
 {
-    Vertex up(cameraProps[2].X - cameraProps[0].X, cameraProps[2].Y - cameraProps[0].Y, cameraProps[2].Z - cameraProps[0].Z);
-    Vertex left(cameraProps[3].X - cameraProps[0].X, cameraProps[3].Y - cameraProps[0].Y, cameraProps[3].Z - cameraProps[0].Z);
-    Vertex forward( cameraProps[0].X - cameraProps[1].X, cameraProps[0].Y - cameraProps[1].Y, cameraProps[0].Z - cameraProps[1].Z );
+    QVector3D up(cameraProps[2].x() - cameraProps[0].x(), cameraProps[2].y() - cameraProps[0].y(), cameraProps[2].z() - cameraProps[0].z());
+    QVector3D left(cameraProps[3].x() - cameraProps[0].x(), cameraProps[3].y() - cameraProps[0].y(), cameraProps[3].z() - cameraProps[0].z());
+    QVector3D forward( cameraProps[0].x() - cameraProps[1].x(), cameraProps[0].y() - cameraProps[1].y(), cameraProps[0].z() - cameraProps[1].z() );
     // creating a view matrix
 
     if (viewing)
 
-        viewingMatrix = QMatrix4x4 ( left.X, up.X, forward.X, 0,
-                                    left.Y, up.Y, forward.Y, 0,
-                                    left.Z, up.Z, forward.Z, 0,
-                                    -left.X * cameraProps[0].X - left.Y * cameraProps[0].Y - left.Z * cameraProps[0].Z,
-                                    -up.X * cameraProps[0].X - up.Y * cameraProps[0].Y - up.Z * cameraProps[0].Z,
-                                    -forward.X * cameraProps[0].X - forward.Y * cameraProps[0].Y - forward.Z * cameraProps[0].Z, 1);
+        viewingMatrix = QMatrix4x4 ( left.x(), up.x(), forward.x(), 0,
+                                    left.y(), up.y(), forward.y(), 0,
+                                    left.z(), up.z(), forward.z(), 0,
+                                    -left.x() * cameraProps[0].x() - left.y() * cameraProps[0].y() - left.z() * cameraProps[0].z(),
+                                    -up.x() * cameraProps[0].x() - up.y() * cameraProps[0].y() - up.z() * cameraProps[0].z(),
+                                    -forward.x() * cameraProps[0].x() - forward.y() * cameraProps[0].y() - forward.z() * cameraProps[0].z(), 1);
     //
 
     if (!perspective) return;
@@ -41,22 +46,97 @@ void Camera::calculateMatrixes(bool perspective, bool viewing)
 
 
 }
-void Camera::Rotate (const float angle, const QVector3D os ){
-    QMatrix4x4 rot;
-    rot.rotate(angle, os);
-    for (int i = 0; i < cameraProps.length(); i++){
-        QVector4D coords = QVector4D( cameraProps[i].X, cameraProps[i].Y, cameraProps[i].Z, 1.0 );
-        coords = coords * rot;
-        cameraProps[i] = Vertex(coords[0] / coords[3], coords[1] / coords[3], coords[2] / coords[3]);
-    }
-}
 
-Vertex Camera::cameraCenter()
+
+QVector3D Camera::cameraCenter() const
 {
     return cameraProps[0];
 }
 
-Vertex Camera::cameraDirection()
+QVector3D Camera::cameraDirection() const
 {
     return cameraProps[1];
+}
+
+QMatrix4x4 Camera::getPerspectiveMatrix() const
+{
+    return perspectiveMatrix;
+}
+
+QMatrix4x4 Camera::getViewingMatrix() const
+{
+    return viewingMatrix;
+}
+
+void Camera::move(const QVector3D addCoordinates)
+{
+    cameraProps = Transforms::moveVertexes(cameraProps, addCoordinates);
+    calculateMatrixes(true, true);
+}
+
+void Camera::rotate(const float angle, const QVector3D os)
+{
+    cameraProps = Transforms::rotateVertexes(cameraProps, angle, os);
+    calculateMatrixes(true, true);
+}
+
+void Camera::scale(const double scale)
+{
+    cameraProps = Transforms::scaleVertexes(cameraProps, scale);
+    calculateMatrixes(true, true);
+}
+
+
+float Dist2D (const QVector2D a, const QVector2D b){
+    return std::sqrt(std::pow(a.x() - b.x(), 2) + std::pow(a.y() - b.y(), 2));
+}
+
+void Camera::transformByMouseMoving(const QVector2D currentMousePlace,
+                                    const unsigned short actionType)
+{
+
+    // save a previous state
+    if (prevMousePlace.x() == 0 && prevMousePlace.y() == 0){
+        prevMousePlace = currentMousePlace;
+        return;
+    }
+
+    if (prevMousePlace != currentMousePlace){
+        // rotation
+        if (actionType == 1){
+                float sensetive = 50.0,
+                      angleHorizont = (std::atan(std::abs(prevMousePlace.x() - currentMousePlace.x()) / sensetive)),
+                      angleVertical = (std::atan(std::abs(prevMousePlace.y() - currentMousePlace.y()) / sensetive));
+                rotate (angleHorizont * (currentMousePlace.x() - prevMousePlace.x()),
+                        QVector3D(0, 1, 0));
+                rotate (angleVertical * (currentMousePlace.y() - prevMousePlace.y()),
+                        QVector3D(0, 0, 1));
+        }
+        // scaling
+        if (actionType == 2){
+                float   sensetive = 100.0,
+                        distance = Dist2D( currentMousePlace, prevMousePlace ) / sensetive;
+                //(Dist2D( currentMousePlace, transformStartPoint ) - Dist2D( prevMousePlace, transformStartPoint ));
+                float zoom = 1 - distance * ((currentMousePlace.y() > prevMousePlace.y() )? 1 : -1);
+                scale(zoom);
+        }
+        if (actionType == 0){
+                float sensetive = 20.0;
+                QVector3D add = (Stereometry::Summ(Stereometry::Mult(Stereometry::Resid(cameraProps[2], cameraProps[0]),
+                                                        (currentMousePlace.y() - prevMousePlace.y())
+                                                        * 1.0 / (sensetive * Stereometry::Dist(cameraProps[2], cameraProps[0]))),
+                                       Stereometry::Mult(Stereometry::Resid(cameraProps[3], cameraProps[0]),
+                                                        -(currentMousePlace.x() - prevMousePlace.x())
+                                                        * 1.0 / (sensetive * Stereometry::Dist(cameraProps[3], cameraProps[0])))));
+                //qDebug () << cameraProps[0].x() << cameraProps[0].y() << cameraProps[0].z();
+
+                for (int i = 0; i < cameraProps.length(); i++)
+                    cameraProps[i] = Stereometry::Summ (cameraProps[i], add);
+                calculateMatrixes(true, true);
+        }
+
+
+        prevMousePlace = currentMousePlace;
+    }
+    return;
 }

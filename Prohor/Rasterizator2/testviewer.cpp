@@ -20,7 +20,7 @@ void TestViewer::drawOn(QPainter *painter, const Camera cam, const int wid, cons
         qDebug() << "No objects to rasterise.";
 
     for (int currentModel = 0; currentModel < objectsInScene.length(); currentModel++)
-        objectsInScene[currentModel]->ApplyDrawToCanvas(painter, cam.viewingMatrix, cam.perspectiveMatrix, wid, hei);
+        objectsInScene[currentModel]->ApplyDrawToCanvas(painter, cam.getViewingMatrix(), cam.getPerspectiveMatrix(), wid, hei);
 
 }
 

@@ -8,5 +8,6 @@ INPUT(
 ./debug\mainwindow.o
 ./debug\camera.o
 ./debug\testviewer.o
+./debug\transforms.o
 ./debug\moc_mainwindow.o
 );

@@ -30,12 +30,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     camera.cpp \
-    testviewer.cpp
+    testviewer.cpp \
+    transforms.cpp
 
 HEADERS += \
         mainwindow.h \
     camera.h \
-    testviewer.h
+    testviewer.h \
+    transforms.h
 
 FORMS += \
         mainwindow.ui

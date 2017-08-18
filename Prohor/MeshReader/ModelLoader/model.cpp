@@ -9,11 +9,11 @@ Model::Model()
     polygon_start = {0};
 }
 
-QString Model::DrawItSelf(QVector<QVector2D> &resultPoints, const QVector<Vertex> vertGiven,
+QString Model::DrawItSelf(QVector<QVector2D> &resultPoints, const QVector<QVector3D> vertGiven,
                           const QMatrix4x4 view, const QMatrix4x4 perspective){
 
     for (int i = 0; i < vertGiven.length(); i++){
-        QVector4D vertexCoords = QVector4D(vertGiven[i].X, vertGiven[i].Y, vertGiven[i].Z, 1.0 ) ;
+        QVector4D vertexCoords = QVector4D(vertGiven[i].x(), vertGiven[i].y(), vertGiven[i].z(), 1.0 ) ;
 
         vertexCoords = vertexCoords * view;// * cam.perspectiveMatrix;
         resultPoints << QVector2D (vertexCoords[0] / vertexCoords[3], vertexCoords[1] / vertexCoords[3]);
@@ -53,51 +53,19 @@ QString Model::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const
             lastPointInPolygon = res;
         }
     }
+    // draw normals
     pen.setColor(Qt::red);
     painter->setPen(pen);
+    if (false)
     if (errNormal.isEmpty() && normalPoints.length() > 0)
-        for (int i = 0; i < vertex_normals.length(); i++){
-            QVector2D point = toScrCoords(resPoints[i], width, height),
-                      pointN = toScrCoords(normalPoints[i], width, height);
+        for (int currentNormal = 0; currentNormal < vertex_normals.length(); currentNormal++){
+            QVector2D point = toScrCoords(resPoints[currentNormal], width, height),
+                      pointN = toScrCoords(normalPoints[currentNormal], width, height);
             painter->drawLine((int)point[0],(int)point[1], (int)pointN[0], (int) pointN[1]);
         }
     return QString();
 }
 
-QVector<QVector3D> Model::to3D(const QVector<Vertex> original) const
-{
-    QVector<QVector3D> res = {};
-    for (int i = 0; i < original.length(); i++)
-        res << QVector3D (original[i].X, original[i].Y, original[i].Z);
-    std::cout << "Vertex -> 3D" << std::endl;
-    return res;
-}
-
-QVector<Vertex> Model::from3D(const QVector<QVector3D> a3D) const
-{
-    QVector<Vertex> res = {};
-    for (int i = 0; i < a3D.length(); i++)
-        res << Vertex (a3D[i].x(),a3D[i].y(),a3D[i].z());
-    std::cout << "Vertex <- 3D" << std::endl;
-    return res;
-}
 
 }
-ModelStructs::Vertex::Vertex()
-{
-    X = 0; Y = 0; Z = 0;
-}
-ModelStructs::Vertex::Vertex(double x, double y, double z)
-{
-    X = x; Y = y; Z = z;
-}
-ModelStructs::VertexTexture::VertexTexture()
-{
-    X = 0; Y = 0;
-}
-ModelStructs::VertexTexture::VertexTexture(double x, double y)
-{
-    X = x; Y = y;
-}
 
-//}
