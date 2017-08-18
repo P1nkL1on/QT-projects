@@ -25,7 +25,8 @@ namespace ModelStructs {
     {
     private:
 
-        QString DrawItSelf(QVector<QVector2D> &points, const QMatrix4x4 view, const QMatrix4x4 perspective);
+        QString DrawItSelf(QVector<QVector2D> &points,const QVector<Vertex> vertGiven,
+                           const QMatrix4x4 view, const QMatrix4x4 perspective);
     public:
         QColor modelColor;
         Model();

@@ -5,7 +5,7 @@ using namespace std;
 
     void Stereometry::Normalize (const QVector3D constBegin, QVector3D& movingEnd){
         movingEnd = Summ (constBegin, Mult (Resid(movingEnd, constBegin),
-                                            1.0 / Dist(constBegin, movingEnd)));
+                                            1.0 / (Dist(constBegin, movingEnd) * 1.0)));
         // mE = cB + (mE - cB) / long
     }
 
@@ -41,10 +41,51 @@ using namespace std;
     }
 
     QVector3D Stereometry::Mult (const QVector3D vector, const double Koef){
-        return QVector3D(vector.x() / Koef, vector.y() / Koef, vector.z() / Koef);
+        return QVector3D(vector.x() * Koef, vector.y() * Koef, vector.z() * Koef);
     }   
 
     double Stereometry::Length(const QVector3D vert)
     {
         return sqrt( pow(vert.x(), 2)+ pow( vert.y(), 2)+ pow (vert.z(), 2) );
     }
+
+    QVector3D Stereometry::BallecenterCoord(const QVector3D pointInPolygon, const QVector<QVector3D> points)
+    {
+        if (points.length() != 3) return {0,0,0};
+        QVector3D squares = {0,0,0};
+        float totalSquare = 0;
+
+        for (int i = 0, j = 1, k = 2; i < 3; i++, j = (j+1)%3, k = (k+1)%3){
+            squares[i] = Dist( points[j], pointInPolygon ) * Dist (points[k], pointInPolygon)
+                        * sin (Angle( points[j], pointInPolygon, points[k] ));
+            totalSquare += squares[i];
+        }
+        for (int i = 0; i < 3; i++)
+            squares[i] /= totalSquare;
+        return squares;
+    }
+    float Geron (const float a, const float b, const float c){
+        float p = .5 * ( a + b + c);
+        return sqrt(p * ( p - a ) * ( p - b ) * ( p - c ));
+    }
+
+    QVector3D Stereometry::BallecenterCoordGeron(const QVector3D pointInPolygon, const QVector<QVector3D> points)
+    {
+        if (points.length() != 3) return {0,0,0};
+        float   d0 = Dist(points[0], pointInPolygon),
+                d1 = Dist(points[1], pointInPolygon),
+                d2 = Dist(points[2], pointInPolygon),
+                d01 = Dist(points[0], points[1]),
+                d12 = Dist(points[1], points[2]) ,
+                d20 = Dist(points[2], points[0]);
+
+        float s12 = Geron (d1,d2,d12),
+              s20 = Geron (d2,d0,d20),
+              s01 = Geron (d0,d1,d01),
+              s012 = Geron (d01,d12,d20);
+        if (abs (1000.0 * (s12 + s20 + s01 - s012)) > 2) return {0.0, 0.0, 0.0};
+
+        return QVector3D (s12 / s012, s20 / s012, (s012 - s12 - s20) / s012);
+    }
+
+

@@ -7,6 +7,9 @@
 #include "scenetools.h"
 #include "QVector3D"
 #include "QVector"
+#include "stereometry.h"
+
+#include "QtCore"
 
 using namespace SceneTools;
 using namespace ModelLoader;
@@ -16,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    //
+
 }
 
 MainWindow::~MainWindow()
@@ -45,6 +51,21 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 }
 
+void MainWindow::mouseMoveEvent(QMouseEvent *m)
+{
+
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *m)
+{
+
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *m)
+{
+
+}
+
 QString LoadModel (QString path, Model& model){
     QString err = loadModelByAdress(path, model);
     if (!err.isEmpty())  
@@ -52,7 +73,7 @@ QString LoadModel (QString path, Model& model){
 
     model.vertex_normals = model.from3D( calculateNormals(model.to3D(model.vertexes), model.polygon_vertex_indexes, model.polygon_start) );
    // model.vertex_normals = model.from3D(
-    if (false){
+    if (true){
         model.polygon_vertex_indexes = triangulateMesh(model.polygon_vertex_indexes, model.polygon_start);
         if (model.vertexes_texture.length() > 0)
             model.polygon_texture_vertex_indexes = triangulateMesh(model.polygon_texture_vertex_indexes, model.polygon_start);
@@ -61,16 +82,14 @@ QString LoadModel (QString path, Model& model){
 }
 
 
-QVector<QString> names = {"cubesquare.txt"/*"lamp.txt", "sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
-                          "dodecaedr.txt", "icosaedr.txt" */};
-QVector<QColor> colors = {QColor(Qt::red), QColor(Qt::yellow), QColor(Qt::blue), QColor(Qt::green), QColor(Qt::gray)};
-
+QVector<QString> names = {"cubesquare.txt"/*, "sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
+                          "icosaedr.txt","cubesquare.txt" */};
+QVector<QColor> colors = {QColor(Qt::lightGray), QColor(Qt::yellow), QColor(Qt::blue), QColor(Qt::green), QColor(Qt::gray)};
 void MainWindow::paintEvent(QPaintEvent *e)
 {
-    // call a loding
     if (sc.length() == 0){
 
-        for (int i =0, model_found = 0 ; i<1 ; i++){
+        for (int i = 0, model_found = 0 ; i<names.length() ; i++){
             Model newmodel;
             QString err = LoadModel("D:/QT-projects/Prohor/Models/"+QString(names[i]), newmodel);
             if (!err.isEmpty())
@@ -86,8 +105,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
             tv.addGraphicsObject(&(sc[i]));
     }
 
-    //QPainter qp (this);
-    QPainter qp(this);
 
+    QPainter qp(this);
     tv.drawOn(&qp, cam, std::min(width(), height()),std::min(width(), height()));
 }

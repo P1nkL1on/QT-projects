@@ -1,6 +1,7 @@
 #ifndef STEREOMETRY_H
 #define STEREOMETRY_H
 #include "QVector3D"
+#include "QVector"
 
 namespace Stereometry {
 
@@ -14,6 +15,8 @@ namespace Stereometry {
     QVector3D Resid (const QVector3D vector1, const QVector3D vector2);
     QVector3D Mult (const QVector3D vector, const double Koef);
 
+    QVector3D BallecenterCoord (const QVector3D pointInPolygon, const QVector<QVector3D> points);
+    QVector3D BallecenterCoordGeron(const QVector3D pointInPolygon, const QVector<QVector3D> points);
 }
 
 
