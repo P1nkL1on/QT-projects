@@ -19,11 +19,12 @@ namespace  KDTree {
         QVector<QVector3D> coordinates;
     public:
         BoundingBox ();
-        BoundingBox ( QVector<float> cords );
+        BoundingBox ( QVector<float> cords);
         QVector<float> minMax;
         QString ApplyDrawToCanvas(QPainter* painter, const QMatrix4x4 view, const QMatrix4x4 perspective,
                                const int width, const int height) override;
         float V ();
+        unsigned short MaxSide ();
     };
 
     class TestKDTree : public GraphicsObjectStruct::GraphicsObject
@@ -32,11 +33,14 @@ namespace  KDTree {
         BoundingBox rootBox;
         QVector<BoundingBox> leafBoxes;
         QVector<BoundingBox> treeBoxes;
+        unsigned short maxDepth;
+        void Slice (BoundingBox* curBox, unsigned short coord, unsigned int depth);
     public:
         TestKDTree();
-        TestKDTree(QVector<QVector3D> vertexes, QVector<unsigned int> vertex_indexes);
+        TestKDTree(QVector<QVector3D> vertexes, QVector<unsigned int> vertex_indexes, unsigned short maxDep );
         QString ApplyDrawToCanvas(QPainter* painter, const QMatrix4x4 view, const QMatrix4x4 perspective,
                                const int width, const int height) override;
+        void ReBuild (unsigned int newDepth);
     };
 
 }

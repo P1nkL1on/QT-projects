@@ -17,6 +17,7 @@ public:
     TestViewer();
     void addGraphicsObject (GraphicsObject* newObj);
     void drawOn (QPainter* painter, const Camera cam, const int wid, const int hei) const;
+
 };
 
 #endif // TESTVIEWER_H

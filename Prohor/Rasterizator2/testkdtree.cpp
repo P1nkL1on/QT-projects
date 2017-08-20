@@ -80,17 +80,31 @@ float BoundingBox::V()
     return (minMax[3] - minMax[0])*(minMax[4] - minMax[1])*(minMax[5] - minMax[2]);
 }
 
+unsigned short BoundingBox::MaxSide()
+{
+    float   a = (minMax[3] - minMax[0]),
+            b = (minMax[4] - minMax[1]),
+            c = (minMax[5] - minMax[2]);
+    if (c > b && c > a) return 2;
+    if (b > a && b > c) return 1;
+    return 0;
+}
+
+
+
 
 TestKDTree::TestKDTree()
 {
     rootBox = BoundingBox();
+    maxDepth = 2;
     //currentLeafInd = 0;
     //triangleBoxes = {1,2,3,4};
 }
 
-void countLeftRightBoxes (const unsigned short coord, const int splitCount,
+int countLeftRightBoxes (const unsigned short coord, const int splitCount,
                           const BoundingBox* bigBox, const QVector<BoundingBox> leafBoxes,
                           QVector<int>& leftSide, QVector<int>& rightSide){
+    int polygonCount = 0;
     float totalLength = bigBox->minMax[coord + 3] - bigBox->minMax[coord],
           partLengh = totalLength / splitCount;
     leftSide = QVector<int>(splitCount), rightSide = QVector<int>(splitCount);
@@ -99,30 +113,51 @@ void countLeftRightBoxes (const unsigned short coord, const int splitCount,
         {
             if (leafBoxes[j].minMax[coord] >= bigBox->minMax[coord] + partLengh * i - .00001
                 && leafBoxes[j].minMax[coord] < bigBox->minMax[coord] + partLengh * (i + 1))
-                    leftSide[i]++;
+                    {leftSide[i]++; polygonCount ++;}
             if (leafBoxes[j].minMax[coord + 3] > bigBox->minMax[coord] + partLengh * i
                 && leafBoxes[j].minMax[coord + 3] <= bigBox->minMax[coord] + partLengh * (i + 1) + .00001)
-                    rightSide[i]++;
+                    {rightSide[i]++; polygonCount ++;}
          }
-    qDebug() << leftSide;
-    qDebug() << rightSide;
+    // qDebug() << leftSide;
+    // qDebug() << rightSide;
 
     for (int i = leftSide.length() - 2; i >= 0; i--)
         leftSide[i] += leftSide[i+1];
     for (int i = 1; i < rightSide.length(); i++)
         rightSide[i] += rightSide[i-1];
+    return polygonCount;
 }
-QVector<int> SAH (const unsigned short coord, const BoundingBox* pater,
+int SAH (const unsigned short coord, const BoundingBox* pater,
                   const QVector<int> leftSide, const QVector<int> rightSide){
+    QVector<float> sahValues;
+    float maxVal = -1000; unsigned short bestInd;
+    for (int i = 1; i < leftSide.length(); i++){
+        float l = (pater->minMax[coord+3] - pater->minMax[coord]),
+              h = (pater->minMax[(coord+1)%3+3] - pater->minMax[(coord+1)%3]),
+              g = (pater->minMax[(coord+2)%3+3] - pater->minMax[(coord+2)%3]),
+              la = l / leftSide.length() * i,
+              lb = l - la,
 
-    return leftSide;
+              val = (la * h + la * g + h * g) * leftSide[i]
+                  + (lb * h + lb * g + h * g) * rightSide[i];
+        sahValues << val;
+        if (val >= maxVal)
+        {
+            maxVal = val;
+            bestInd = i;
+        }
+    }
+    qDebug() << sahValues;
+    return bestInd;
 }
 
-TestKDTree::TestKDTree(QVector<QVector3D> vertexes, QVector<unsigned int> vertexIndexes)
+
+TestKDTree::TestKDTree(QVector<QVector3D> vertexes, QVector<unsigned int> vertexIndexes, unsigned short maxDep)
 {
+    maxDepth = maxDep;
     qDebug() << "Income " << vertexes.length() << " verts.";
     //currentLeafInd = 0;
-    float soMuchValue = 20;
+    float soMuchValue = 2000;
     //triangleBoxes = {};
     QVector<float> resCoords =
     { soMuchValue, soMuchValue, soMuchValue, -soMuchValue, -soMuchValue, -soMuchValue };
@@ -149,21 +184,43 @@ TestKDTree::TestKDTree(QVector<QVector3D> vertexes, QVector<unsigned int> vertex
     rootBox = BoundingBox (resCoords);
     qDebug () << "Created a root BoundingBox";
 
+    // calculating a leaf bounding boxes
     for (int i = 0; i< leafCoords.length(); i++){
         leafBoxes << BoundingBox (leafCoords[i]);
         qDebug () << "Created a " << i << " leaf BoundingBox";
     }
 
-    //___________________________________________________________
-    // first slice
+    // start slicing
     treeBoxes = {};
-    BoundingBox* curBox = &rootBox; unsigned short coord = 0;
-    QVector<int> ll, rr;
-    countLeftRightBoxes(coord, 15, curBox, leafBoxes, ll, rr);
+    Slice (&rootBox, 0, 0);
+}
+void TestKDTree::Slice(BoundingBox* curBox, unsigned short coord, unsigned int depth)
+{
+    if (depth > maxDepth)
+        {qDebug() << "Exit by depth;"; return;} // return y deep barrier
 
-    qDebug() << ll;
-    qDebug() << rr;
-    qDebug() << "SAH: " << SAH (coord, curBox, ll,rr);
+    QVector<int> ll, rr;
+    int countPols = countLeftRightBoxes(coord, 10, curBox, leafBoxes, ll, rr);
+    if (countPols == 0)
+        {qDebug() << "Exit by no poligons"; return; }// return is there is no polygons in this bb
+
+    int separatorIndex = SAH (coord, curBox, ll,rr);
+    // creating a new bb
+
+    float separationCoordinate = curBox->minMax[coord] + (curBox->minMax[coord + 3] - curBox->minMax[coord]) * separatorIndex / ll.length();
+    QVector<float> coords = curBox->minMax;
+    coords[coord + 3] = separationCoordinate;
+        BoundingBox bLess = BoundingBox(coords);
+    coords = curBox->minMax;
+    coords[coord] = separationCoordinate;
+        BoundingBox bMore = BoundingBox(coords);
+
+    treeBoxes << bLess << bMore;
+    if (countPols == 1)
+        {qDebug() << "Exit by only 1 polygon"; return; }
+    // after adding go deeper
+    Slice (&bMore, bMore.MaxSide(), depth+1);
+    Slice (&bLess, bLess.MaxSide(), depth+1);
 }
 
 QString TestKDTree::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int height)
@@ -171,7 +228,7 @@ QString TestKDTree::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, 
     if (rootBox.minMax.length() <= 0)
         return "There is no root bounding box in a tree!";
 
-    for (int i = 0; i<leafBoxes.length(); i++)
+    for (int i = 0; i<leafBoxes.length() * 0; i++)
     {
         QString leafErr =
             leafBoxes[i].ApplyDrawToCanvas(painter, view, perspective, width, height);
@@ -186,5 +243,13 @@ QString TestKDTree::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, 
             return treeErr;
     }
     return rootBox.ApplyDrawToCanvas(painter, view, perspective, width, height);
+}
+
+void TestKDTree::ReBuild(unsigned int newDepth)
+{
+    maxDepth = newDepth;
+    // start slicing
+    treeBoxes = {};
+    Slice (&rootBox, 0, 0);
 }
 

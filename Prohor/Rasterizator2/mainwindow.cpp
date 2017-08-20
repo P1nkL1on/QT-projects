@@ -30,24 +30,21 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+QVector<QString> names = { "kdTreeExample.txt"//"kdTreeExample.txt"
+
+                          /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
+                          "icosaedr.txt","cubesquare.txt" */};
+QVector<QColor> colors = {QColor(Qt::lightGray), QColor(Qt::yellow), QColor(Qt::blue), QColor(Qt::green), QColor(Qt::gray)};
 QVector<Model> sc = {};
 Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
 TestKDTree tree;
-
+unsigned short treeDep = 2;
 
 void traceMatrix (QMatrix4x4 qm){
     for (int i = 0; i < 4; i++)
         std::cout << qm.column(i)[0] << " " << qm.column(i)[1] << " " << qm.column(i)[2] << " " << qm.column(i)[3] << std::endl;
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    if (event->key() == Qt::Key_Right){
-        // tree.currentLeafInd ++;
-        this->repaint();
-        event->accept();
-    }
 }
 
 bool mouseStillPressed = false;
@@ -86,17 +83,12 @@ QString LoadModel (QString path, Model& model){
         if (model.vertexes_texture.length() > 0)
             model.polygon_texture_vertex_indexes = triangulateMesh(model.polygon_texture_vertex_indexes, model.polygon_start);
     // build kd
-    tree = TestKDTree(model.vertexes, model.polygon_vertex_indexes);
+    tree = TestKDTree(model.vertexes, model.polygon_vertex_indexes,treeDep );
 
     return QString();
 }
 
 
-QVector<QString> names = { "kdTreeExample.txt"//"kdTreeExample.txt"
-
-                          /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
-                          "icosaedr.txt","cubesquare.txt" */};
-QVector<QColor> colors = {QColor(Qt::lightGray), QColor(Qt::yellow), QColor(Qt::blue), QColor(Qt::green), QColor(Qt::gray)};
 void MainWindow::paintEvent(QPaintEvent *e)
 {
     if (sc.length() == 0){
@@ -124,4 +116,12 @@ void MainWindow::paintEvent(QPaintEvent *e)
                                std::min(width(), height()),std::min(width(), height()) );
     if (!treeErr.isEmpty())
         qDebug() << treeErr;
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Right){
+        tree.ReBuild(++treeDep);
+        this->repaint();
+    }
 }
