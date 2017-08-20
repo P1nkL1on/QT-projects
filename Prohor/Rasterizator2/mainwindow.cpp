@@ -31,7 +31,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QVector<QString> names = { "kdTreeExample.txt"//"kdTreeExample.txt"
+QVector<QString> names = { "teapot.txt"//"kdTreeExample.txt"
 
                           /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
@@ -40,7 +40,7 @@ QVector<Model> sc = {};
 Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
 TestKDTree tree;
-unsigned short treeDep = 2;
+unsigned short treeDep = 1;
 
 void traceMatrix (QMatrix4x4 qm){
     for (int i = 0; i < 4; i++)
@@ -83,6 +83,10 @@ QString LoadModel (QString path, Model& model){
         if (model.vertexes_texture.length() > 0)
             model.polygon_texture_vertex_indexes = triangulateMesh(model.polygon_texture_vertex_indexes, model.polygon_start);
     // build kd
+     model.polygon_start = {};
+    for (int i = 0; i < model.polygon_vertex_indexes.length() / 3 + 1; i++)
+        model.polygon_start << i * 3;
+    //
     tree = TestKDTree(model.vertexes, model.polygon_vertex_indexes,treeDep );
 
     return QString();

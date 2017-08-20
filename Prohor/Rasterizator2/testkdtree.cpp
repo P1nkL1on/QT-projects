@@ -105,28 +105,31 @@ int countLeftRightBoxes (const unsigned short coord, const int splitCount,
                           const BoundingBox* bigBox, const QVector<BoundingBox> leafBoxes,
                           QVector<int>& leftSide, QVector<int>& rightSide){
     int polygonCount = 0;
+    bool found = false;
     float totalLength = bigBox->minMax[coord + 3] - bigBox->minMax[coord],
           partLengh = totalLength / splitCount;
     leftSide = QVector<int>(splitCount), rightSide = QVector<int>(splitCount);
     for (int i =0; i < splitCount; i++)
         for (int j = 0; j < leafBoxes.length(); j++)
         {
+            found = false;
             if (leafBoxes[j].minMax[coord] >= bigBox->minMax[coord] + partLengh * i - .00001
-                && leafBoxes[j].minMax[coord] < bigBox->minMax[coord] + partLengh * (i + 1))
-                    {leftSide[i]++; polygonCount ++;}
-            if (leafBoxes[j].minMax[coord + 3] > bigBox->minMax[coord] + partLengh * i
+                && leafBoxes[j].minMax[coord] < bigBox->minMax[coord] + partLengh * (i + 1) + .00001)
+                   { leftSide[i]++; found = true;}
+            if (leafBoxes[j].minMax[coord + 3] > bigBox->minMax[coord] + partLengh * i - .00001
                 && leafBoxes[j].minMax[coord + 3] <= bigBox->minMax[coord] + partLengh * (i + 1) + .00001)
-                    {rightSide[i]++; polygonCount ++;}
-         }
-    // qDebug() << leftSide;
-    // qDebug() << rightSide;
+                   { rightSide[i]++; found = true;}
+            polygonCount += 1 * found;
+        }
 
     for (int i = leftSide.length() - 2; i >= 0; i--)
         leftSide[i] += leftSide[i+1];
     for (int i = 1; i < rightSide.length(); i++)
         rightSide[i] += rightSide[i-1];
+
     return polygonCount;
 }
+
 int SAH (const unsigned short coord, const BoundingBox* pater,
                   const QVector<int> leftSide, const QVector<int> rightSide){
     QVector<float> sahValues;
@@ -147,7 +150,7 @@ int SAH (const unsigned short coord, const BoundingBox* pater,
             bestInd = i;
         }
     }
-    qDebug() << sahValues;
+    //qDebug() << sahValues;
     return bestInd;
 }
 
@@ -157,7 +160,7 @@ TestKDTree::TestKDTree(QVector<QVector3D> vertexes, QVector<unsigned int> vertex
     maxDepth = maxDep;
     qDebug() << "Income " << vertexes.length() << " verts.";
     //currentLeafInd = 0;
-    float soMuchValue = 2000;
+    float soMuchValue = 200;
     //triangleBoxes = {};
     QVector<float> resCoords =
     { soMuchValue, soMuchValue, soMuchValue, -soMuchValue, -soMuchValue, -soMuchValue };
@@ -192,22 +195,22 @@ TestKDTree::TestKDTree(QVector<QVector3D> vertexes, QVector<unsigned int> vertex
 
     // start slicing
     treeBoxes = {};
-    Slice (&rootBox, 0, 0);
+    Slice (&rootBox, rootBox.MaxSide(), 0);
 }
+
 void TestKDTree::Slice(BoundingBox* curBox, unsigned short coord, unsigned int depth)
 {
     if (depth > maxDepth)
-        {qDebug() << "Exit by depth;"; return;} // return y deep barrier
+        {/*qDebug() << "Exit by depth;";*/ return;} // return y deep barrier
 
     QVector<int> ll, rr;
-    int countPols = countLeftRightBoxes(coord, 10, curBox, leafBoxes, ll, rr);
-    if (countPols == 0)
-        {qDebug() << "Exit by no poligons"; return; }// return is there is no polygons in this bb
+    int countPols = countLeftRightBoxes(coord, 9, curBox, leafBoxes, ll, rr);
+    if (countPols <= 2)
+        {qDebug() << ">Exited"; return;} // return is there is no polygons in this bb
 
-    int separatorIndex = SAH (coord, curBox, ll,rr);
+    int separatorIndex = SAH (coord, curBox, ll, rr);
     // creating a new bb
-
-    float separationCoordinate = curBox->minMax[coord] + (curBox->minMax[coord + 3] - curBox->minMax[coord]) * separatorIndex / ll.length();
+    float separationCoordinate = curBox->minMax[coord] + (curBox->minMax[coord + 3] - curBox->minMax[coord]) * (separatorIndex / (float)ll.length());
     QVector<float> coords = curBox->minMax;
     coords[coord + 3] = separationCoordinate;
         BoundingBox bLess = BoundingBox(coords);
@@ -216,8 +219,7 @@ void TestKDTree::Slice(BoundingBox* curBox, unsigned short coord, unsigned int d
         BoundingBox bMore = BoundingBox(coords);
 
     treeBoxes << bLess << bMore;
-    if (countPols == 1)
-        {qDebug() << "Exit by only 1 polygon"; return; }
+
     // after adding go deeper
     Slice (&bMore, bMore.MaxSide(), depth+1);
     Slice (&bLess, bLess.MaxSide(), depth+1);
@@ -250,6 +252,7 @@ void TestKDTree::ReBuild(unsigned int newDepth)
     maxDepth = newDepth;
     // start slicing
     treeBoxes = {};
-    Slice (&rootBox, 0, 0);
+    Slice (&rootBox, rootBox.MaxSide(), 0);
+    qDebug () << "Tree have" << treeBoxes.length() << " nodes";
 }
 
