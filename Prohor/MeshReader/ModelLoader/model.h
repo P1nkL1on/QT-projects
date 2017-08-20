@@ -24,7 +24,6 @@ namespace ModelStructs {
 
         QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                                const int width, const int hei) override;
-
     };
 }
 

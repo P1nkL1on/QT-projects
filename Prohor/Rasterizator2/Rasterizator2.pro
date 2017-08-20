@@ -31,13 +31,15 @@ SOURCES += \
         mainwindow.cpp \
     camera.cpp \
     testviewer.cpp \
-    transforms.cpp
+    transforms.cpp \
+    testkdtree.cpp
 
 HEADERS += \
         mainwindow.h \
     camera.h \
     testviewer.h \
-    transforms.h
+    transforms.h \
+    testkdtree.h
 
 FORMS += \
         mainwindow.ui

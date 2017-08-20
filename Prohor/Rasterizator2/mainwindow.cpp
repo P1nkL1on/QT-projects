@@ -8,9 +8,11 @@
 #include "QVector3D"
 #include "QVector"
 #include "stereometry.h"
+#include "testkdtree.h"
 
 #include "QtCore"
 
+using namespace KDTree;
 using namespace SceneTools;
 using namespace ModelLoader;
 
@@ -31,6 +33,8 @@ MainWindow::~MainWindow()
 QVector<Model> sc = {};
 Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
+TestKDTree tree;
+
 
 void traceMatrix (QMatrix4x4 qm){
     for (int i = 0; i < 4; i++)
@@ -39,7 +43,11 @@ void traceMatrix (QMatrix4x4 qm){
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-
+    if (event->key() == Qt::Key_Right){
+        // tree.currentLeafInd ++;
+        this->repaint();
+        event->accept();
+    }
 }
 
 bool mouseStillPressed = false;
@@ -67,25 +75,26 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *m)
     mouseStillPressed = false;
 }
 
+
 QString LoadModel (QString path, Model& model){
     QString err = loadModelByAdress(path, model);
     if (!err.isEmpty())  
         return err;
-
     model.vertex_normals = calculateNormals(model.vertexes, model.polygon_vertex_indexes, model.polygon_start );
-   // model.vertex_normals = model.from3D(
-    if (false){
+    // triangulate
         model.polygon_vertex_indexes = triangulateMesh(model.polygon_vertex_indexes, model.polygon_start);
         if (model.vertexes_texture.length() > 0)
             model.polygon_texture_vertex_indexes = triangulateMesh(model.polygon_texture_vertex_indexes, model.polygon_start);
-    }
+    // build kd
+    tree = TestKDTree(model.vertexes, model.polygon_vertex_indexes);
+
     return QString();
 }
 
 
-QVector<QString> names = {"cubesquare.txt", "rabbit.txt", "cow.txt", "teapot.txt"
+QVector<QString> names = { "kdTreeExample.txt"//"kdTreeExample.txt"
 
-                          /*, "sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
+                          /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
 QVector<QColor> colors = {QColor(Qt::lightGray), QColor(Qt::yellow), QColor(Qt::blue), QColor(Qt::green), QColor(Qt::gray)};
 void MainWindow::paintEvent(QPaintEvent *e)
@@ -108,7 +117,11 @@ void MainWindow::paintEvent(QPaintEvent *e)
             tv.addGraphicsObject(&(sc[i]));
     }
 
-
     QPainter qp(this);
     tv.drawOn(&qp, cam, std::min(width(), height()),std::min(width(), height()));
+    QString treeErr =
+        tree.ApplyDrawToCanvas(&qp, cam.getViewingMatrix(), cam.getPerspectiveMatrix(),
+                               std::min(width(), height()),std::min(width(), height()) );
+    if (!treeErr.isEmpty())
+        qDebug() << treeErr;
 }

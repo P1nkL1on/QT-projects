@@ -82,7 +82,8 @@ void Camera::rotate(const float angle, const QVector3D os)
 
 void Camera::scale(const double scale)
 {
-    cameraProps = Transforms::scaleVertexes(cameraProps, scale);
+    //cameraProps = Transforms::scaleVertexes(cameraProps, scale);
+    cameraProps = Transforms::scaleVertexesByCenter(cameraProps, scale, cameraProps[1]);
     calculateMatrixes(true, true);
 }
 
@@ -120,8 +121,9 @@ void Camera::transformByMouseMoving(const QVector2D currentMousePlace,
                 float zoom = 1 - distance * ((currentMousePlace.y() > prevMousePlace.y() )? 1 : -1);
                 scale(zoom);
         }
+        // moving
         if (actionType == 0){
-                float sensetive = 20.0;
+                float sensetive = 100.0;
                 QVector3D add = (Stereometry::Summ(Stereometry::Mult(Stereometry::Resid(cameraProps[2], cameraProps[0]),
                                                         (currentMousePlace.y() - prevMousePlace.y())
                                                         * 1.0 / (sensetive * Stereometry::Dist(cameraProps[2], cameraProps[0]))),

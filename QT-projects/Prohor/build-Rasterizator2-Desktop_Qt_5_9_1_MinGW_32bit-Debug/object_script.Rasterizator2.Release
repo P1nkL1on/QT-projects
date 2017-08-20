@@ -9,5 +9,6 @@ INPUT(
 ./release\camera.o
 ./release\testviewer.o
 ./release\transforms.o
+./release\testkdtree.o
 ./release\moc_mainwindow.o
 );

@@ -9,5 +9,6 @@ INPUT(
 ./debug\camera.o
 ./debug\testviewer.o
 ./debug\transforms.o
+./debug\testkdtree.o
 ./debug\moc_mainwindow.o
 );

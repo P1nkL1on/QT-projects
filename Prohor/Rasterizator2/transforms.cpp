@@ -1,4 +1,5 @@
 #include "transforms.h"
+#include "stereometry.h"
 
 QVector3D Transforms::apllyVertexMatrix(const QVector3D original, const QMatrix4x4 originalMatrix)
 {
@@ -35,5 +36,22 @@ QVector<QVector3D> Transforms::scaleVertexes(const QVector<QVector3D> original, 
     mov.scale((float)scale);
     for (int currentPoint = 0; currentPoint < original.length(); currentPoint++)
         res << Transforms::apllyVertexMatrix(original[currentPoint], mov);
+    return res;
+}
+
+QVector<QVector3D> Transforms::scaleVertexesByCenter(const QVector<QVector3D> original, const double scale, const QVector3D center)
+{
+    QVector<QVector3D> previousCords = original;
+
+    for (int currentPoint = 0; currentPoint < original.length(); currentPoint++)
+        previousCords[currentPoint] = Stereometry::Resid(previousCords[currentPoint] , center);
+
+    QMatrix4x4 mov;
+    mov.scale((float)scale);
+
+    QVector<QVector3D> res = {};
+    for (int currentPoint = 0; currentPoint < original.length(); currentPoint++)
+        res << Stereometry::Summ ( center, Transforms::apllyVertexMatrix(previousCords[currentPoint], mov));
+
     return res;
 }

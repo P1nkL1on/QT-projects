@@ -12,7 +12,7 @@ namespace Transforms{
     QVector<QVector3D> moveVertexes ( const QVector<QVector3D> original, const QVector3D addCoordinates );
     QVector<QVector3D> rotateVertexes ( const QVector<QVector3D> original, const float angle, const QVector3D os );
     QVector<QVector3D> scaleVertexes ( const QVector<QVector3D> original, const double scale );
-
+    QVector<QVector3D> scaleVertexesByCenter ( const QVector<QVector3D> original, const double scale, const QVector3D center );
 }
 
 #endif // TRANSFORMS_H

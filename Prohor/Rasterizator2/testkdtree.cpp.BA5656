@@ -1,0 +1,116 @@
+#include "testkdtree.h"
+#include "qvector.h"
+#include "qvector3d.h"
+#include "qvector2d.h"
+#include "graphicsobject.h"
+
+using namespace KDTree;
+
+
+
+BoundingBox::BoundingBox()
+{
+    minMax = {};
+    coordinates = {};
+}
+
+BoundingBox::BoundingBox(QVector<float> cords)
+{
+    minMax = cords;
+    coordinates =
+    {QVector3D (cords[0], cords[1], cords[2]), QVector3D (cords[0], cords[4], cords[2]),
+     QVector3D (cords[3], cords[4], cords[2]), QVector3D (cords[3], cords[1], cords[2]),
+     QVector3D (cords[0], cords[1], cords[5]), QVector3D (cords[0], cords[4], cords[5]),
+     QVector3D (cords[3], cords[4], cords[5]), QVector3D (cords[3], cords[1], cords[5])};
+}
+
+
+QString DrawItSelf(QVector<QVector2D> &resultPoints, const QVector<QVector3D> vertGiven,
+                          const QMatrix4x4 view, const QMatrix4x4 perspective){
+
+    for (int i = 0; i < vertGiven.length(); i++){
+        QVector4D vertexCoords = QVector4D(vertGiven[i].x(), vertGiven[i].y(), vertGiven[i].z(), 1.0 ) ;
+
+        vertexCoords = vertexCoords * view;// * cam.perspectiveMatrix;
+        resultPoints << QVector2D (vertexCoords[0] / vertexCoords[3], vertexCoords[1] / vertexCoords[3]);
+    }
+    return QString();
+}
+
+QVector2D toScrCoords (const QVector2D point, const int screenWidth, const int screenHeight){
+    double size = 1.0;
+    return QVector2D (screenWidth/2 + (screenWidth/2 * (point[0])) * size, screenHeight * 3 /4 - (screenHeight/2 * (point[1])) * size);
+}
+
+QString BoundingBox::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view,
+                                       const QMatrix4x4 perspective, const int width, const int height)
+{
+    if (coordinates.length() <= 0)
+        return "No coordinations in bouding box";
+
+    QVector<QVector2D> resPoints = {};
+    QString err = DrawItSelf(resPoints, coordinates, view, perspective);
+
+    if (!err.isEmpty())    // force quit
+        return err;
+
+    QPen pen;
+    pen.setColor(Qt::green);
+    pen.setWidth(1);
+    painter->setPen(pen);
+
+    QVector<unsigned short> connectWhat = {0,1,2,3,4,5,6,7,0,1,2,3};
+    QVector<unsigned short> connectWith = {1,2,3,0,5,6,7,4,4,5,6,7};
+
+    for (int i = 0; i < resPoints.length(); i++)
+        resPoints[i] = toScrCoords(resPoints[i], width, height);
+    for (int i = 0; i < connectWhat.length(); i++)
+        painter->drawLine((int)resPoints[connectWhat[i]].x(), (int)resPoints[connectWhat[i]].y(),
+                          (int)resPoints[connectWith[i]].x(), (int)resPoints[connectWith[i]].y());
+
+    return QString();
+}
+
+
+TestKDTree::TestKDTree()
+{
+    rootBox = BoundingBox();
+}
+
+TestKDTree::TestKDTree(QVector<QVector3D> vertexes)
+{
+    float soMuchValue = 100000;
+    QVector<float> resCoords =
+    { soMuchValue, soMuchValue, soMuchValue, -soMuchValue, -soMuchValue, -soMuchValue };
+
+    QVector<QVector<float>> leafCoords;
+    for (int i =0; i < vertexes.length() / 3; i++){
+        QVector<float> leafC =
+            { soMuchValue, soMuchValue, soMuchValue, -soMuchValue, -soMuchValue, -soMuchValue };
+        leafCoords << leafC;
+    }
+
+
+    // min X, min Y, min Z, max X, max Y, max Z
+    for (int i = 0; i < vertexes.length(); i++)
+        for (int j = 0; j < 3; j++){
+            resCoords[j] = std::min (resCoords[j], vertexes[i][j]);
+            resCoords[3 + j] = std::max (resCoords[3 + j], vertexes[i][j]);
+        }
+
+    rootBox = BoundingBox (resCoords);
+    // first slice
+
+}
+
+QString TestKDTree::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int height)
+{
+    QString rootErr = rootBox.ApplyDrawToCanvas(painter, view, perspective, width, height);
+    QString leafErr = QString();
+
+    for (int i = 0; i < leafBoxes.length(); i++)
+        leafErr = leafBoxes[i].ApplyDrawToCanvas(painter, view, perspective, width, height);
+
+    return leafErr;
+
+}

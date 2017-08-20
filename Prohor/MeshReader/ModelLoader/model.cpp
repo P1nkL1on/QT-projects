@@ -40,8 +40,8 @@ QString Model::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const
         return err;
 
     QPen pen;
-    pen.setColor(modelColor);
-    pen.setWidth(1);
+    pen.setWidth(2);
+    pen.setColor(modelColor);//((currentPolygon == polygonSelectedIndex)? Qt::red : modelColor);
     painter->setPen(pen);
 
     for (int currentPolygon = 0; currentPolygon < polygon_start.length() - 1; currentPolygon++){
