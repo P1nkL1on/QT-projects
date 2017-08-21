@@ -284,6 +284,7 @@ TreeSpace::KDTree::KDTree()
 {
     rootNode = NULL;
     leafBoxes = {};
+    nodesCount = 0;
 }
 
 void TreeSpace::KDTree::BuildTree(QVector<QVector3D> vertexes, QVector<unsigned int> vertexIndexes)
@@ -301,6 +302,14 @@ void TreeSpace::KDTree::BuildTree(QVector<QVector3D> vertexes, QVector<unsigned 
     BoundingBox completeBoundBox = BoundingBox(vertexes);
 
     rootNode = recursiveCheck(completeBoundBox, startIndexes, 0);
+    qDebug () << "Tree builded. Node count: " << nodesCount;
+}
+
+void KDTree::DeleteTree()
+{
+    qDebug () << "Tree delete request recieved. Current node count: " << nodesCount;
+    recursiveDeleteTree(rootNode);
+    qDebug () << "Tree deleted. Current node count: " << nodesCount;
 }
 
 BaseNode* TreeSpace::KDTree::recursiveCheck(BoundingBox bBox, const QVector<unsigned int> polStart,
@@ -317,7 +326,7 @@ BaseNode* TreeSpace::KDTree::recursiveCheck(BoundingBox bBox, const QVector<unsi
             }
         bBox = BoundingBox(currentBorders);
     }
-
+    nodesCount ++;
     if (polStart.length() <= acceptablePolygonCountInLeaf || currentDepth > maxDepthIteration){
         // qDebug() << "Exited";
         return new Leaf(bBox, polStart);
@@ -336,7 +345,7 @@ BaseNode* TreeSpace::KDTree::recursiveCheck(BoundingBox bBox, const QVector<unsi
             else
                 rightIndexes << polStart[i];
             }
-        qDebug () << "Separate\t" << polStart.length() << " ->\t" << leftIndexes.length() << " / " << rightIndexes.length();
+        //qDebug () << "Separate\t" << polStart.length() << " ->\t" << leftIndexes.length() << " / " << rightIndexes.length();
 
         // now we have 2 arrays and 2 bbs
         Node* node = new Node(bBox);
@@ -364,18 +373,26 @@ QString KDTree::DrawToCanvas(BaseNode* currentNode, QPainter *painter, const QMa
     QVector<BaseNode*> children = currentNode->GetChildren();
     for (unsigned short  currentChild = 0; currentChild < children.length(); currentChild++)
         err = DrawToCanvas(children[currentChild], painter, view, perspective, width , height);
-//    if (currentNode->left != NULL)
-//        err = DrawToCanvas(currentNode->left, painter, view, perspective, width , height);
-//    if (currentNode->right != NULL)
-//        err = DrawToCanvas(currentNode->right, painter, view, perspective, width , height);
     return err;
+}
+
+void KDTree::recursiveDeleteTree(BaseNode *node)
+{
+    QVector<BaseNode*> children = node->GetChildren();
+    qDebug() << children;
+    for (unsigned short  currentChild = 0; currentChild < children.length(); currentChild++)
+        recursiveDeleteTree (children[currentChild]);
+
+    if (--nodesCount <= 0)
+        return;
+    //qDebug() << " > deleted" << nodesCount;
+    delete node;
 }
 
 BaseNode::BaseNode()
 {
     bBox = BoundingBox();
 }
-
 
 Node::Node() :
     left(NULL), right(NULL),

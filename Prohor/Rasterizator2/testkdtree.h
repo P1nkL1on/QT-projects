@@ -83,15 +83,18 @@ namespace  TreeSpace {
         BaseNode* rootNode;
         QVector<BoundingBox> leafBoxes;
         unsigned short acceptablePolygonCountInLeaf = 1;
-        unsigned int maxDepthIteration = 8;
+        unsigned int maxDepthIteration = 10;
+        unsigned int nodesCount;
 
         QString DrawToCanvas (BaseNode* currentNode, QPainter* painter, const QMatrix4x4 view,
                               const QMatrix4x4 perspective, const int width, const int height);
         BaseNode* recursiveCheck (const BoundingBox bb, const QVector<unsigned int> polygonStartIndexes,
                                   const unsigned int currentDepth);
+        void recursiveDeleteTree (BaseNode* node);
     public:
        KDTree ();
        void BuildTree (QVector<QVector3D> vertexes, QVector<unsigned int> vertexIndexes);
+       void DeleteTree ();
        QString ApplyDrawToCanvas(QPainter* painter, const QMatrix4x4 view, const QMatrix4x4 perspective,
                               const int width, const int height) override;
     };

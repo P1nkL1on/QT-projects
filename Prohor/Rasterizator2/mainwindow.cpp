@@ -31,7 +31,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QVector<QString> names = { "cow.txt"//"kdTreeExample.txt"
+QVector<QString> names = { "rabbit.txt"//"kdTreeExample.txt"
 
                           /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
@@ -88,6 +88,10 @@ QString LoadModel (QString path, Model& model){
         model.polygon_start << i * 3;
     //
     treeNormal = KDTree();
+//    for (int i = 0; i < 100; i++){
+//        treeNormal.BuildTree(model.vertexes, model.polygon_vertex_indexes);
+//        treeNormal.DeleteTree();
+//    }
     treeNormal.BuildTree(model.vertexes, model.polygon_vertex_indexes);
 
     return QString();
