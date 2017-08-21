@@ -26,8 +26,27 @@ BoundingBox::BoundingBox(QVector<float> cords)
      QVector3D (cords[3], cords[4], cords[5]), QVector3D (cords[3], cords[1], cords[5])};
 }
 
+BoundingBox::BoundingBox(QVector<QVector3D> vertexes)
+{
+    float soMuchValue = 20000;
+    //triangleBoxes = {};
+    QVector<float> cords =
+    { soMuchValue, soMuchValue, soMuchValue, -soMuchValue, -soMuchValue, -soMuchValue };
 
+    for (int i = 0; i < vertexes.length(); i++)
+        for (int j = 0; j < 3; j++){
 
+                cords[j] = std::min (cords[j], vertexes[i][j]);
+                cords[3 + j] = std::max (cords[3 + j], vertexes[i][j]);
+
+        }
+    minMax = cords;
+    coordinates =
+    {QVector3D (cords[0], cords[1], cords[2]), QVector3D (cords[0], cords[4], cords[2]),
+     QVector3D (cords[3], cords[4], cords[2]), QVector3D (cords[3], cords[1], cords[2]),
+     QVector3D (cords[0], cords[1], cords[5]), QVector3D (cords[0], cords[4], cords[5]),
+     QVector3D (cords[3], cords[4], cords[5]), QVector3D (cords[3], cords[1], cords[5])};
+}
 
 QString DrawItSelf(QVector<QVector2D> &resultPoints, const QVector<QVector3D> vertGiven,
                           const QMatrix4x4 view, const QMatrix4x4 perspective){
@@ -93,7 +112,7 @@ unsigned short BoundingBox::MaxSide()
 }
 
 
-
+/*
 
 TestKDTree::TestKDTree()
 {
@@ -203,7 +222,7 @@ TestKDTree::TestKDTree(QVector<QVector3D> vertexes, QVector<unsigned int> vertex
 void TestKDTree::Slice(BoundingBox* curBox, unsigned short coord, unsigned int depth)
 {
     if (depth > maxDepth)
-        {/*qDebug() << "Exit by depth;";*/ return;} // return y deep barrier
+        { return;} // return y deep barrier
 
     QVector<int> ll, rr;
     int countPols = countLeftRightBoxes(coord, 9, curBox, leafBoxes, ll, rr);
@@ -257,34 +276,13 @@ void TestKDTree::ReBuild(unsigned int newDepth)
     Slice (&rootBox, rootBox.MaxSide(), 0);
     qDebug () << "Tree have" << treeBoxes.length() << " nodes";
 }
+*/
 
-
-BoundingBox::BoundingBox(QVector<QVector3D> vertexes)
-{
-    float soMuchValue = 20000;
-    //triangleBoxes = {};
-    QVector<float> cords =
-    { soMuchValue, soMuchValue, soMuchValue, -soMuchValue, -soMuchValue, -soMuchValue };
-
-    for (int i = 0; i < vertexes.length(); i++)
-        for (int j = 0; j < 3; j++){
-
-                cords[j] = std::min (cords[j], vertexes[i][j]);
-                cords[3 + j] = std::max (cords[3 + j], vertexes[i][j]);
-
-        }
-    minMax = cords;
-    coordinates =
-    {QVector3D (cords[0], cords[1], cords[2]), QVector3D (cords[0], cords[4], cords[2]),
-     QVector3D (cords[3], cords[4], cords[2]), QVector3D (cords[3], cords[1], cords[2]),
-     QVector3D (cords[0], cords[1], cords[5]), QVector3D (cords[0], cords[4], cords[5]),
-     QVector3D (cords[3], cords[4], cords[5]), QVector3D (cords[3], cords[1], cords[5])};
-}
 
 
 TreeSpace::KDTree::KDTree()
 {
-    rootNode = BaseNode();
+    rootNode = NULL;
     leafBoxes = {};
 }
 
@@ -296,31 +294,32 @@ void TreeSpace::KDTree::BuildTree(QVector<QVector3D> vertexes, QVector<unsigned 
     for (int i = 0; i < vertexIndexes.length() / 3; i++){
         QVector<QVector3D> verts = {vertexes[vertexIndexes[i * 3] - 1],
             vertexes[vertexIndexes[i * 3+1] - 1], vertexes[vertexIndexes[i * 3+2] - 1]};
-        qDebug () << i * 3+2 << vertexIndexes[i * 3 + 2] << vertexIndexes.length() << vertexes.length();
+        //qDebug () << i * 3+2 << vertexIndexes[i * 3 + 2] << vertexIndexes.length() << vertexes.length();
         leafBoxes << BoundingBox (verts);
         startIndexes << i;
     }
-    BoundingBox bb = BoundingBox(vertexes);
+    BoundingBox completeBoundBox = BoundingBox(vertexes);
 
-    BaseNode* rootPointer = recursiveCheck(bb, startIndexes, 0);
-    rootNode = *rootPointer;
-    int n = 0;
+    rootNode = recursiveCheck(completeBoundBox, startIndexes, 0);
 }
 
 BaseNode* TreeSpace::KDTree::recursiveCheck(BoundingBox bBox, const QVector<unsigned int> polStart,
                                          const unsigned int currentDepth){
 
-    /// ДОДЕЛАТЬ ПЕРЕОПРЕДЕЛЕНИЕ ББ ПРИ ВЫЗОВЕ ФУНКЦИ
-//    QVector<QVector3D> poitnsRequired = {};
-//    for (int i = 0; i < polStart.length(); i++)
-//        points
-    bBox = new BoundingBox ();
+    if (polStart.length() > acceptablePolygonCountInLeaf){
+        // recalculating Bounding box using leaf boxes
+        QVector<float> currentBorders = {2000,2000,2000, -2000, -2000, -2000};
+        for (int i = 0; i < polStart.length(); i++)
+            for (int crd = 0; crd < 3; crd++)
+            {
+                 currentBorders[crd] = std::min(leafBoxes[polStart[i]].minMax[crd], currentBorders[crd]);
+                 currentBorders[crd + 3] = std::max(leafBoxes[polStart[i]].minMax[crd + 3], currentBorders[crd + 3]);
+            }
+        bBox = BoundingBox(currentBorders);
+    }
 
-    if (polStart.length() <= 0 || currentDepth > 16){
-        if (currentDepth > 16)
-            qDebug () << "Get leaf > Exited by depths";
-        else
-            qDebug () << "Get leaf > Only 2 or less polygons";
+    if (polStart.length() <= acceptablePolygonCountInLeaf || currentDepth > maxDepthIteration){
+        // qDebug() << "Exited";
         return new Leaf(bBox, polStart);
     }
     else
@@ -328,9 +327,6 @@ BaseNode* TreeSpace::KDTree::recursiveCheck(BoundingBox bBox, const QVector<unsi
         unsigned short coord = bBox.MaxSide();
         float demenCord = bBox.minMax[coord] + .5 * (bBox.minMax[coord+3] - bBox.minMax[coord]);
 
-        QVector<float> leftCoords = bBox.minMax, rightCoords = bBox.minMax;
-        leftCoords [coord] = demenCord;
-        rightCoords [coord + 3] = demenCord;
         QVector<unsigned int> leftIndexes = {}, rightIndexes = {};
         for (int i = 0; i < polStart.length(); i++){
             float pol = leafBoxes[polStart[i]].minMax[coord]
@@ -340,17 +336,14 @@ BaseNode* TreeSpace::KDTree::recursiveCheck(BoundingBox bBox, const QVector<unsi
             else
                 rightIndexes << polStart[i];
             }
-        qDebug () << "L : " << leftIndexes;
-        qDebug () << "R : " << rightIndexes;
+        qDebug () << "Separate\t" << polStart.length() << " ->\t" << leftIndexes.length() << " / " << rightIndexes.length();
 
         // now we have 2 arrays and 2 bbs
         Node* node = new Node(bBox);
-        qDebug () << "Get node > start recursive";
 
-        node->left = recursiveCheck(BoundingBox(leftCoords), leftIndexes, currentDepth + 1);
-        node->right = recursiveCheck(BoundingBox(rightCoords), rightIndexes, currentDepth + 1);
+        node->left = recursiveCheck(/*BoundingBox(leftCoords)*/bBox, leftIndexes, currentDepth + 1);
+        node->right = recursiveCheck(/*BoundingBox(rightCoords)*/bBox, rightIndexes, currentDepth + 1);
 
-        qDebug () << "Get node > normal";
         return node;
 
     }
@@ -359,49 +352,53 @@ BaseNode* TreeSpace::KDTree::recursiveCheck(BoundingBox bBox, const QVector<unsi
 
 QString TreeSpace::KDTree::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int height)
 {
-    QString a = rootNode.ApplyDrawToCanvas(painter, view, perspective, width , height);
-
-    return QString();
-    //return rootBox.ApplyDrawToCanvas(painter, view, perspective, width, height);
+    if (rootNode == NULL)
+        return "KD Tree does not exist";
+    QString totalErr = DrawToCanvas(rootNode, painter, view, perspective, width , height);
+    return totalErr;
 }
 
-BaseNode::BaseNode() :
-    left(NULL), right(NULL)
+QString KDTree::DrawToCanvas(BaseNode* currentNode, QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int height)
 {
-//    left = NULL;
-//    right = NULL;
+    QString err = currentNode->bBox.ApplyDrawToCanvas(painter, view, perspective, width , height);
+    QVector<BaseNode*> children = currentNode->GetChildren();
+    for (unsigned short  currentChild = 0; currentChild < children.length(); currentChild++)
+        err = DrawToCanvas(children[currentChild], painter, view, perspective, width , height);
+//    if (currentNode->left != NULL)
+//        err = DrawToCanvas(currentNode->left, painter, view, perspective, width , height);
+//    if (currentNode->right != NULL)
+//        err = DrawToCanvas(currentNode->right, painter, view, perspective, width , height);
+    return err;
+}
+
+BaseNode::BaseNode()
+{
     bBox = BoundingBox();
 }
 
-QString BaseNode::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int height)
+
+Node::Node() :
+    left(NULL), right(NULL),
+    BaseNode()
 {
-    QString r = bBox.ApplyDrawToCanvas(painter, view, perspective, width, height);
-    if (left != NULL)
-        r = left->ApplyDrawToCanvas(painter, view, perspective, width, height);
-    if (right != NULL)
-        r = right->ApplyDrawToCanvas(painter, view, perspective, width, height);
-    return r;
+
 }
 
-Node::Node() : BaseNode()
+Node::Node(BoundingBox bb) :
+    left(NULL), right(NULL)
 {
-//    left = NULL;
-//    right = NULL;
-//    bBox = BoundingBox();
-}
-
-Node::Node(BoundingBox bb)
-{
-    left = NULL;
-    right = NULL;
     bBox = bb;
+}
+
+QVector<BaseNode *> Node::GetChildren()
+{
+    QVector<BaseNode *> res = {};
+    if (left != NULL) res << left; if (right != NULL) res << right;
+    return res;
 }
 
 Leaf::Leaf() : BaseNode()
 {
-//    left = NULL;
-//    right = NULL;
-//    bBox = BoundingBox();
     polygonIndexes = {};
 }
 
@@ -409,4 +406,9 @@ Leaf::Leaf(BoundingBox bb, QVector<unsigned int> indexes)
 {
     bBox = bb;
     polygonIndexes = indexes;
+}
+
+QVector<BaseNode *> Leaf::GetChildren()
+{
+    return {};
 }

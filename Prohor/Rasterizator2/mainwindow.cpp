@@ -31,7 +31,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QVector<QString> names = { "test.OBJ"//"kdTreeExample.txt"
+QVector<QString> names = { "cow.txt"//"kdTreeExample.txt"
 
                           /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
@@ -39,7 +39,6 @@ QVector<QColor> colors = {QColor(Qt::lightGray), QColor(Qt::yellow), QColor(Qt::
 QVector<Model> sc = {};
 Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
-TestKDTree tree;
 KDTree treeNormal;
 unsigned short treeDep = 1;
 
@@ -88,7 +87,6 @@ QString LoadModel (QString path, Model& model){
     for (int i = 0; i < model.polygon_vertex_indexes.length() / 3 + 1; i++)
         model.polygon_start << i * 3;
     //
-    //tree = TestKDTree(model.vertexes, model.polygon_vertex_indexes,treeDep );
     treeNormal = KDTree();
     treeNormal.BuildTree(model.vertexes, model.polygon_vertex_indexes);
 
@@ -102,7 +100,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
         for (int i = 0, model_found = 0 ; i<names.length() ; i++){
             Model newmodel;
-            QString err = LoadModel("D:/QT-projects/Prohor/Models/"+QString(names[i]), newmodel);
+            QString err = LoadModel("../Models/"+QString(names[i]), newmodel);
             if (!err.isEmpty())
                 qDebug() << err;
             else
@@ -118,19 +116,16 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
     QPainter qp(this);
     tv.drawOn(&qp, cam, std::min(width(), height()),std::min(width(), height()));
+
     QString treeNErr = treeNormal.ApplyDrawToCanvas(&qp, cam.getViewingMatrix(), cam.getPerspectiveMatrix(),
-                                                 std::min(width(), height()),std::min(width(), height())) ;
-//    QString treeErr =
-//        tree.ApplyDrawToCanvas(&qp, cam.getViewingMatrix(), cam.getPerspectiveMatrix(),
-//                               std::min(width(), height()),std::min(width(), height()) );
-//    if (!treeErr.isEmpty())
-//        qDebug() << treeErr;
+                                                     std::min(width(), height()),std::min(width(), height())) ;
+
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Right){
-        tree.ReBuild(++treeDep);
+
         this->repaint();
     }
 }

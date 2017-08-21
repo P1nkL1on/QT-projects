@@ -217,6 +217,7 @@ Makefile: ../Rasterizator2/Rasterizator2.pro ../../../../progs/QT_creator/5.9.1/
 		../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/win32/default_pre.prf \
 		../MeshReader/ModelLoader/ModelLoader.pri \
 		../MeshReader/SceneTools/SceneTools.pri \
+		../Rasterizator2/Stereometry/Stereometry.pri \
 		../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/resolve_config.prf \
 		../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/exclusive_builds_post.prf \
 		../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/default_post.prf \
@@ -397,6 +398,7 @@ Makefile: ../Rasterizator2/Rasterizator2.pro ../../../../progs/QT_creator/5.9.1/
 ../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/win32/default_pre.prf:
 ../MeshReader/ModelLoader/ModelLoader.pri:
 ../MeshReader/SceneTools/SceneTools.pri:
+../Rasterizator2/Stereometry/Stereometry.pri:
 ../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/resolve_config.prf:
 ../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/exclusive_builds_post.prf:
 ../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/default_post.prf:

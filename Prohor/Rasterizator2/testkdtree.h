@@ -12,21 +12,8 @@
 
 namespace  TreeSpace {
 
+/*
 
-    class BoundingBox : public GraphicsObjectStruct::GraphicsObject
-    {
-    private:
-        QVector<QVector3D> coordinates;
-    public:
-        BoundingBox ();
-        BoundingBox ( QVector<float> cords);
-        BoundingBox (QVector <QVector3D> vertexes);
-        QVector<float> minMax;
-        QString ApplyDrawToCanvas(QPainter* painter, const QMatrix4x4 view, const QMatrix4x4 perspective,
-                               const int width, const int height) override;
-        float V ();
-        unsigned short MaxSide ();
-    };
 
     class TestKDTree : public GraphicsObjectStruct::GraphicsObject
     {
@@ -43,26 +30,41 @@ namespace  TreeSpace {
                                const int width, const int height) override;
         void ReBuild (unsigned int newDepth);
     };
+*/
 
+    class BoundingBox : public GraphicsObjectStruct::GraphicsObject
+    {
+    private:
+        QVector<QVector3D> coordinates;
+    public:
+        BoundingBox ();
+        BoundingBox ( QVector<float> cords);
+        BoundingBox (QVector <QVector3D> vertexes);
+        QVector<float> minMax;
+        QString ApplyDrawToCanvas(QPainter* painter, const QMatrix4x4 view, const QMatrix4x4 perspective,
+                               const int width, const int height) override;
+        float V ();
+        unsigned short MaxSide ();
+    };
 
-    class BaseNode : public GraphicsObjectStruct::GraphicsObject
+    class BaseNode
     {
     private:
 
     public:
-        BaseNode* left;
-        BaseNode* right;
         BoundingBox bBox;
         BaseNode();
-        QString ApplyDrawToCanvas(QPainter* painter, const QMatrix4x4 view, const QMatrix4x4 perspective,
-                               const int width, const int height) override;
+        virtual QVector<BaseNode *> GetChildren () = 0;
     };
 
     class Node : public BaseNode
     {
     public:
+        BaseNode* left;
+        BaseNode* right;
         Node();
         Node (BoundingBox bb);
+        QVector<BaseNode *> GetChildren() override;
     };
 
     class Leaf : public BaseNode
@@ -72,18 +74,24 @@ namespace  TreeSpace {
     public:
         Leaf();
         Leaf(BoundingBox bb, QVector<unsigned int> indexes);
+        QVector<BaseNode *> GetChildren() override;
     };
 
     class KDTree : public GraphicsObjectStruct::GraphicsObject
     {
     private:
-        BaseNode rootNode;
+        BaseNode* rootNode;
         QVector<BoundingBox> leafBoxes;
+        unsigned short acceptablePolygonCountInLeaf = 1;
+        unsigned int maxDepthIteration = 8;
+
+        QString DrawToCanvas (BaseNode* currentNode, QPainter* painter, const QMatrix4x4 view,
+                              const QMatrix4x4 perspective, const int width, const int height);
+        BaseNode* recursiveCheck (const BoundingBox bb, const QVector<unsigned int> polygonStartIndexes,
+                                  const unsigned int currentDepth);
     public:
        KDTree ();
        void BuildTree (QVector<QVector3D> vertexes, QVector<unsigned int> vertexIndexes);
-       BaseNode* recursiveCheck (const BoundingBox bb, const QVector<unsigned int> polygonStartIndexes,
-                                 const unsigned int currentDepth);
        QString ApplyDrawToCanvas(QPainter* painter, const QMatrix4x4 view, const QMatrix4x4 perspective,
                               const int width, const int height) override;
     };

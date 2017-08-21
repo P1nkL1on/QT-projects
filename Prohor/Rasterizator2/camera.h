@@ -16,15 +16,16 @@ private:
 
     QMatrix4x4 perspectiveMatrix;
     QMatrix4x4 viewingMatrix;
+
     void calculateMatrixes(bool perspective, bool viewing);
+
     void move ( const QVector3D addCoordinates );
     void rotate (  const float angle, const QVector3D os );
     void scale(  const double scale );
+
 public:
     QVector2D prevMousePlace;
     Camera( double fAngle, double fDist, double focusDist );
-    QVector3D cameraCenter() const;
-    QVector3D cameraDirection() const;
 
     QMatrix4x4 getPerspectiveMatrix() const;
     QMatrix4x4 getViewingMatrix() const;
