@@ -12,7 +12,7 @@
 
 #include "QtCore"
 
-using namespace KDTree;
+using namespace TreeSpace;
 using namespace SceneTools;
 using namespace ModelLoader;
 
@@ -31,7 +31,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QVector<QString> names = { "teapot.txt"//"kdTreeExample.txt"
+QVector<QString> names = { "test.OBJ"//"kdTreeExample.txt"
 
                           /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
@@ -40,6 +40,7 @@ QVector<Model> sc = {};
 Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
 TestKDTree tree;
+KDTree treeNormal;
 unsigned short treeDep = 1;
 
 void traceMatrix (QMatrix4x4 qm){
@@ -87,7 +88,9 @@ QString LoadModel (QString path, Model& model){
     for (int i = 0; i < model.polygon_vertex_indexes.length() / 3 + 1; i++)
         model.polygon_start << i * 3;
     //
-    tree = TestKDTree(model.vertexes, model.polygon_vertex_indexes,treeDep );
+    //tree = TestKDTree(model.vertexes, model.polygon_vertex_indexes,treeDep );
+    treeNormal = KDTree();
+    treeNormal.BuildTree(model.vertexes, model.polygon_vertex_indexes);
 
     return QString();
 }
@@ -115,11 +118,13 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
     QPainter qp(this);
     tv.drawOn(&qp, cam, std::min(width(), height()),std::min(width(), height()));
-    QString treeErr =
-        tree.ApplyDrawToCanvas(&qp, cam.getViewingMatrix(), cam.getPerspectiveMatrix(),
-                               std::min(width(), height()),std::min(width(), height()) );
-    if (!treeErr.isEmpty())
-        qDebug() << treeErr;
+    QString treeNErr = treeNormal.ApplyDrawToCanvas(&qp, cam.getViewingMatrix(), cam.getPerspectiveMatrix(),
+                                                 std::min(width(), height()),std::min(width(), height())) ;
+//    QString treeErr =
+//        tree.ApplyDrawToCanvas(&qp, cam.getViewingMatrix(), cam.getPerspectiveMatrix(),
+//                               std::min(width(), height()),std::min(width(), height()) );
+//    if (!treeErr.isEmpty())
+//        qDebug() << treeErr;
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
