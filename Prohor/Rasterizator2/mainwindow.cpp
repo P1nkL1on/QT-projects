@@ -31,7 +31,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QVector<QString> names = { "test.OBJ"//"kdTreeExample.txt"
+QVector<QString> names = { "rabbit.txt"//"kdTreeExample.txt"
 
                           /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
@@ -132,7 +132,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Right){
-           renderImage = treeNormal.renderByCamera(&cam, 200);
+           renderImage = treeNormal.renderByCamera(&cam, 100);
            this->repaint();
 //           QVector<unsigned int> pols = {};
 

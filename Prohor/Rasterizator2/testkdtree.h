@@ -18,8 +18,9 @@ namespace  TreeSpace {
     class BoundingBox : public GraphicsObjectStruct::GraphicsObject
     {
     private:
-        QVector<QVector3D> coordinates;
+
     public:
+        QVector<QVector3D> coordinates;
         BoundingBox ();
         BoundingBox ( QVector<float> cords);
         BoundingBox (QVector <QVector3D> vertexes);

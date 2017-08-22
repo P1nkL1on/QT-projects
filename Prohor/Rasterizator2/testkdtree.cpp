@@ -37,11 +37,12 @@ BoundingBox::BoundingBox(QVector<QVector3D> vertexes)
 
     for (int i = 0; i < vertexes.length(); i++)
         for (int j = 0; j < 3; j++){
-
                 cords[j] = std::min (cords[j], vertexes[i][j]);
                 cords[3 + j] = std::max (cords[3 + j], vertexes[i][j]);
-
         }
+//    for (int j = 0; j < 3; j++)
+//        if (cords[3+j] == cords[j])
+//            cords[3+j] += .1;
     minMax = cords;
     coordinates =
     {QVector3D (cords[0], cords[1], cords[2]), QVector3D (cords[0], cords[4], cords[2]),
@@ -526,48 +527,54 @@ QImage *KDTree::renderByCamera(const Camera *cam, int pixelCount)
 //____________________________________
 // RAY CAST
 
+
+double GetValue (const QVector3D* point, const QVector<double> parametric){
+    Q_ASSERT(parametric.length() == 4);
+    return parametric[0] * point->x() + parametric[1] * point->y() + parametric[2] * point->z() + parametric[3];
+}
+
 bool intersectRayWithBoundingBox(const BoundingBox *bBox, const QVector3D *rayStart, const QVector3D *rayFinish)
 {
-    //qDebug() << bBox->minMax;
-    double dist = Dist(*rayStart, *rayFinish), eps = .0001; int steps = 2000;
-    //qDebug() << rayStart << rayFinish;
-    for (int i = 0; i < steps; i++){
-        QVector3D currentCheck = Summ (*rayStart, Mult(Resid(*rayFinish, *rayStart), (double)( i / (double)steps )));
-        if (    currentCheck.x() >= bBox->minMax[0] - eps && currentCheck.x() <= bBox->minMax[3] + eps&&
-                currentCheck.y() >= bBox->minMax[1] - eps && currentCheck.y() <= bBox->minMax[4] + eps &&
-                currentCheck.z() >= bBox->minMax[2] - eps && currentCheck.z() <= bBox->minMax[5] + eps)
-            return true;
+    //return true;
+    double distance = Dist(*rayStart, *rayFinish);
+    QVector3D cosPoint = Mult (Resid (*rayFinish, *rayStart), 1.0/distance);
+    QVector<unsigned int> pols =
+        //{1,3,4,1,2,3,4,8,5,5,1,4,1,5,6,6,2,1,8,7,5,5,6,7,3,7,6,6,2,3,4,8,7,7,4,3};
+        {1,5,6,6,2,1, 5,8,4,4,1,5, 1,4,3,3,2,1, 8,7,3,3,4,8, 2,3,7,7,6,2, 5,6,7,7,8,5};
+    for (unsigned short coord=  0; coord < 6; coord++){
+        QVector<double> parametricBox = {0, 0, 0, 0};
+        parametricBox[coord % 3] = -1;
+        parametricBox[3] = bBox->minMax[coord];
+
+        //____________________
+        QVector3D* intersection = NULL;
+        double
+            fromValue = GetValue(rayStart, parametricBox),
+            cosValue = GetValue(&cosPoint, parametricBox) - parametricBox[3];
+        if (cosValue > .001 || cosValue < -.001)
+        {
+            QVector3D fin = Mult(cosPoint, -(fromValue / (double)cosValue));
+            intersection = new QVector3D();
+            *intersection = Summ(*rayStart, fin);
+        }
+        if (intersection != NULL){
+            for (int tri = 0; tri < 2; tri++){
+                short nt = coord * 2 + tri;
+                QVector<QVector3D> trianglePoints =
+                                {   bBox->coordinates[ -1 + pols[ nt*3 ]], bBox->coordinates[ -1 + pols[ nt*3 +1]],bBox->coordinates[ -1 + pols[nt*3 +2]], };
+
+                Q_ASSERT(trianglePoints[0][coord % 3] == parametricBox[3] &&
+                         trianglePoints[1][coord % 3] == parametricBox[3] &&
+                         trianglePoints[2][coord % 3] == parametricBox[3]);
+                QVector3D ballic = BallecenterCoordGeron(*intersection, trianglePoints);
+                float diff =  1.0 - (ballic[0] + ballic[1] + ballic[2]);
+                if (diff > -.001 && diff < .001)
+                    return true;
+            }
+        }
+        //_______________
     }
     return false;
-//    double distance = Dist(*rayStart, *rayFinish);
-//    QVector3D cosPoint = Mult (Resid (*rayFinish, *rayStart), 1.0/distance);
-
-//    for (unsigned short coord=  0; coord < 3; coord++){
-//        QVector<float> parametricBox = {0, 0, 0, 0};
-//        parametricBox[coord] = 1;
-//        parametricBox[3] = bBox->minMax[coord];
-
-//        //____________________
-//        QVector3D* intersection = NULL;
-//        double
-//            fromValue = GetValue(rayStart, parametricBox),
-//            cosValue = GetValue(&cosPoint, parametricBox) - parametricBox[3];
-//        if (cosValue > .00001 || cosValue < -.00001)
-//        {
-//            QVector3D fin = Mult(cosPoint, -(fromValue / (double)cosValue));
-//            intersection = new QVector3D();
-//            *intersection = Summ(*rayStart, fin);
-//        }
-//        if (intersection != NULL){
-//            QVector3D ballic = BallecenterCoordGeron(*intersection, trianglePoints);
-//            float diff =  1.0 - (ballic[0] + ballic[1] + ballic[2]);
-//            if (diff > -.0001 && diff < .0001)
-//                return true;
-//        }
-//        //_______________
-//    }
-
-//    return false;
 }
 
 QVector3D* Node::intersectWith(const QVector3D *rayStart, const QVector3D *rayFinish, unsigned int &polygonIndex, const KDTree* sourse){
@@ -648,10 +655,6 @@ QVector3D* KDTree::intersectWith(const QVector3D *rayStart, const QVector3D *ray
 
 // ________________ PARAMETRIC
 
-double GetValue (const QVector3D* point, const QVector<double> parametric){
-    Q_ASSERT(parametric.length() == 4);
-    return parametric[0] * point->x() + parametric[1] * point->y() + parametric[2] * point->z() + parametric[3];
-}
 // если пересечение есть, то возвращает его,
 // а если нет, то дает начало луча
 //QVector3D* InterSect(const QVector3D* rayStart, const QVector3D* rayFinish, QVector<QVector3D> polygonVertexes)
@@ -711,15 +714,19 @@ QVector3D* KDTree::polygonIntersect(const QVector3D *rayStart, const QVector3D *
     if (intersection == NULL)
         return NULL;
 
-//    double angleDoff = M_PI - (
-//                       Angle(trianglePoints[0], *intersection, trianglePoints[1])
-//                     + Angle(trianglePoints[1], *intersection, trianglePoints[2])
-//                     + Angle(trianglePoints[2], *intersection, trianglePoints[0]));
-//    if (angleDoff > -.001 && angleDoff < .001)
-//        return intersection;
-    QVector3D ballic = BallecenterCoordGeron(*intersection, trianglePoints);
-    float diff =  1.0 - (ballic[0] + ballic[1] + ballic[2]);
-    if (diff > -.0001 && diff < .0001)
-        return intersection;
+    // TRUE == ANGLES, FALSE = BALLICENTER
+    if (true){
+        double angleDoff = M_PI - (
+                           Angle(trianglePoints[0], *intersection, trianglePoints[1])
+                         + Angle(trianglePoints[1], *intersection, trianglePoints[2])
+                         + Angle(trianglePoints[2], *intersection, trianglePoints[0]));
+        if (angleDoff > -.001 && angleDoff < .001)
+            return intersection;
+    }else{
+        QVector3D ballic = BallecenterCoordGeron(*intersection, trianglePoints);
+        float diff =  1.0 - (ballic[0] + ballic[1] + ballic[2]);
+        if (diff > -.000001 && diff < .000001)
+            return intersection;
+    }
     return NULL;
 }
