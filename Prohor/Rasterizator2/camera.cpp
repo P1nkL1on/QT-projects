@@ -41,8 +41,9 @@ void Camera::calculateMatrixes(bool perspective, bool viewing)
     if (!perspective) return;
 
     perspectiveMatrix = QMatrix4x4();
+    //perspectiveMatrix.perspective(5, 1, .5, 1);
     //perspectiveMatrix.frustum(-10, 10, -10, 10, 20, 200);
-    perspectiveMatrix.frustum(-10, 10, -10, 10, 2 * focusDistance / cos (fieldAngle), 2 * fieldDistance / cos (fieldAngle));
+    //perspectiveMatrix.frustum(-10, 10, -10, 10, 2 * focusDistance / cos (fieldAngle), 2 * fieldDistance / cos (fieldAngle));
 
 
 }
@@ -99,7 +100,7 @@ void Camera::transformByMouseMoving(const QVector2D currentMousePlace,
                       angleHorizont = (std::atan(std::abs(prevMousePlace.x() - currentMousePlace.x()) / sensetive)),
                       angleVertical = (std::atan(std::abs(prevMousePlace.y() - currentMousePlace.y()) / sensetive));
                 rotate (angleHorizont * (currentMousePlace.x() - prevMousePlace.x()),
-                        /*QVector3D(0, 1, 0)*/Stereometry::Resid(cameraProps[2], cameraProps[0]));
+                        QVector3D(0, 1, 0)/*Stereometry::Resid(cameraProps[2], cameraProps[0])*/);
                 rotate (angleVertical * (currentMousePlace.y() - prevMousePlace.y()),
                         /*QVector3D(0, 0, 1)*/Stereometry::Resid(cameraProps[3], cameraProps[0]));
         }
@@ -131,4 +132,9 @@ void Camera::transformByMouseMoving(const QVector2D currentMousePlace,
         prevMousePlace = currentMousePlace;
     }
     return;
+}
+
+QVector<QVector3D> Camera::GetCamInfo() const
+{
+    return cameraProps;
 }

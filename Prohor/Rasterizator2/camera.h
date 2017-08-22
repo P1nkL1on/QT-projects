@@ -32,6 +32,7 @@ public:
 
     void transformByMouseMoving (const QVector2D currentMousePlace,
                                  const unsigned short actionType );
+    QVector<QVector3D> GetCamInfo () const;
 };
 
 #endif // CAMERA_H

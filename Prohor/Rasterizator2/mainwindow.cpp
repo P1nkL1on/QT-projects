@@ -31,7 +31,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QVector<QString> names = { "rabbit.txt"//"kdTreeExample.txt"
+QVector<QString> names = { "test.OBJ"//"kdTreeExample.txt"
 
                           /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
@@ -41,6 +41,7 @@ Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
 KDTree treeNormal;
 unsigned short treeDep = 1;
+QImage* renderImage = NULL;
 
 void traceMatrix (QMatrix4x4 qm){
     for (int i = 0; i < 4; i++)
@@ -119,17 +120,48 @@ void MainWindow::paintEvent(QPaintEvent *e)
     }
 
     QPainter qp(this);
-    tv.drawOn(&qp, cam, std::min(width(), height()),std::min(width(), height()));
 
     QString treeNErr = treeNormal.ApplyDrawToCanvas(&qp, cam.getViewingMatrix(), cam.getPerspectiveMatrix(),
-                                                     std::min(width(), height()),std::min(width(), height())) ;
+                                                     std::min(width(), height()),std::min(width(), height()));
 
+    tv.drawOn(&qp, cam, std::min(width(), height()),std::min(width(), height()));
+    if (renderImage!=NULL)
+        qp.drawImage(QPoint(0, height() / 2 - renderImage->height() / 2), *renderImage);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Right){
+           renderImage = treeNormal.renderByCamera(&cam, 200);
+           this->repaint();
+//           QVector<unsigned int> pols = {};
 
-        this->repaint();
-    }
+//           QVector<QVector3D> intersections = {};
+//           QVector<unsigned int> inds = {}, starts = {};
+//           unsigned int nowOn = 0;
+
+//           for (int i = 0; i< 100; i++, qDebug() << i)
+//               for (int j = 0; j< 100; j++){
+//                   QVector3D* rs = new QVector3D();//( -4 + i/12.0, -4 + j/12.0, 5);
+//                   QVector3D* rf = new QVector3D();//( -4 + i/12.0, -4 + j/12.0, -5);
+//                   unsigned int polygonNumber = 0;
+
+//                   QVector3D* interesction = treeNormal.intersectWith(rs,rf,polygonNumber);
+
+//                   if (polygonNumber != -1)
+//                       { pols << polygonNumber; intersections << *interesction; starts << nowOn * 3; nowOn++; inds << nowOn << nowOn << nowOn; }
+
+//                   delete rs;
+//                   delete rf;
+//                   delete interesction;
+//               }
+//           Model* md = new Model();
+//           md->vertexes = intersections;
+//           md->polygon_vertex_indexes = inds;
+//           md->polygon_start = starts;
+//           md->modelColor = Qt::red;
+
+//           tv.addGraphicsObject(md);
+//           this->repaint();
+       }
 }

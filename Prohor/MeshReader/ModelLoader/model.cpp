@@ -15,7 +15,7 @@ QString Model::DrawItSelf(QVector<QVector2D> &resultPoints, const QVector<QVecto
     for (int i = 0; i < vertGiven.length(); i++){
         QVector4D vertexCoords = QVector4D(vertGiven[i].x(), vertGiven[i].y(), vertGiven[i].z(), 1.0 ) ;
 
-        vertexCoords = vertexCoords * view;// * cam.perspectiveMatrix;
+        vertexCoords = vertexCoords * view * perspective;
         resultPoints << QVector2D (vertexCoords[0] / vertexCoords[3], vertexCoords[1] / vertexCoords[3]);
     }
     return QString();

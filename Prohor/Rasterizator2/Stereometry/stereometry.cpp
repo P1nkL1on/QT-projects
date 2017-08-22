@@ -60,6 +60,8 @@ using namespace std;
                         * sin (Angle( points[j], pointInPolygon, points[k] ));
             totalSquare += squares[i];
         }
+        if (totalSquare < .0001)
+            return {0, 0, 0};
         for (int i = 0; i < 3; i++)
             squares[i] /= totalSquare;
         return squares;

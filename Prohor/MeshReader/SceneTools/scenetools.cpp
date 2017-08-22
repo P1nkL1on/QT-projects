@@ -49,9 +49,11 @@ QVector<QVector3D> SceneTools::calculateNormals(      const QVector<QVector3D> v
             indRight = polygonVertexIndexes[(currentVertIndex+1 >= polygonStartIndexes[currentPolygonIndex + 1] || currentVertIndex ==polygonVertexIndexes.length()-1)?
                                             polygonStartIndexes[currentPolygonIndex] : currentVertIndex + 1];
 
-        normalEnds[polygonVertexIndexes[currentVertIndex]-1] = Summ(normalEnds[polygonVertexIndexes[currentVertIndex]-1],
-                             Cross(Resid(verts[indLeft-1], verts[polygonVertexIndexes[currentVertIndex]-1]),
-                                   Resid(verts[polygonVertexIndexes[currentVertIndex]-1], verts[indRight-1])));
+        QVector3D addVector =
+                Cross(Resid(verts[indLeft-1], verts[polygonVertexIndexes[currentVertIndex]-1]),
+                      Resid(verts[polygonVertexIndexes[currentVertIndex]-1], verts[indRight-1]));
+        normalEnds[polygonVertexIndexes[currentVertIndex]-1] =
+                Summ(normalEnds[polygonVertexIndexes[currentVertIndex]-1], Mult(addVector, 1 / Length(addVector)));
     }
     for (int currentNormal = 0; currentNormal < normalEnds.length(); currentNormal++)
         Normalize(verts[currentNormal], normalEnds[currentNormal]);
