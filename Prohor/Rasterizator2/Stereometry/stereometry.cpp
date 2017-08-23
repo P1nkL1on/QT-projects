@@ -85,7 +85,7 @@ using namespace std;
               s20 = Geron (d2,d0,d20),
               s01 = Geron (d0,d1,d01),
               s012 = Geron (d01,d12,d20);
-        if (abs (1000.0 * (s12 + s20 + s01 - s012)) > 2) return {0.0, 0.0, 0.0};
+        if (abs (1000.0 * (s12 + s20 + s01 - s012)) > 2) return {-1,-1,-1};
 
         return QVector3D (s12 / s012, s20 / s012, (s012 - s12 - s20) / s012);
     }

@@ -88,12 +88,6 @@ namespace  TreeSpace {
         // текущее количество узлов в дереве (листья также считаются)
         unsigned int nodesCount;        
 
-        // данные о хранимой модели (необходимы для собсна нахождения пересечения с лучами)
-        QVector<unsigned int> polygonVertIndexes;
-        QVector<QVector3D> allVertexes;
-        // параметрические наборы (чтобы считать их ток 1 раз)
-        QVector<QVector<double>> parametric;
-
         // запрос на отрисовку на паинтере рекурсивная через узел
         QString DrawToCanvas (BaseNode* currentNode, QPainter* painter, const QMatrix4x4 view,
                               const QMatrix4x4 perspective, const int width, const int height);
@@ -123,7 +117,7 @@ namespace  TreeSpace {
        //QImage* renderByCamera (const Camera* cam, int pixelCount);
        // функция, которой пользуются узлы. она расположена тут, чтобы рекурсивно не передавать реальные координаты точек в узлы деревьев
        // а хранить их в дереве
-       QVector3D* RayIntersection (const QVector3D *rayStart, const QVector3D *rayFinish, const unsigned int polygonIndex) const override;
+//       QVector3D* RayIntersection (const QVector3D *rayStart, const QVector3D *rayFinish, const unsigned int polygonIndex) const override;
 
        // тотальный вызов для поиска столкновнеия луча со ВСЕМИ полигонами дерева
        QVector3D* intersectWith (const QVector3D* rayStart, const QVector3D* rayFinish,

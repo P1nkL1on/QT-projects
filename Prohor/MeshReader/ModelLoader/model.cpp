@@ -108,17 +108,33 @@ QVector3D* Model::RayIntersection(const QVector3D *rayStart,
                            Angle(trianglePoints[0], *intersection, trianglePoints[1])
                          + Angle(trianglePoints[1], *intersection, trianglePoints[2])
                          + Angle(trianglePoints[2], *intersection, trianglePoints[0]));
-        if (angleDoff > -.001 && angleDoff < .001)
-            return intersection;
+        if (angleDoff > -.00001 && angleDoff < .00001){
+            QVector3D* ballicenter = new QVector3D();
+            *ballicenter =
+                BallecenterCoordGeron(*intersection, trianglePoints);
+            return ballicenter;
+        }
+            //return intersection;
 
-    }else{
-        QVector3D ballic = BallecenterCoordGeron(*intersection, trianglePoints);
-        float diff =  1.0 - (ballic[0] + ballic[1] + ballic[2]);
-        if (diff > -.000001 && diff < .000001)
-            return intersection;
     }
     return NULL;
 
 }
+
+    QVector<QVector3D> Model::GetVertexes(unsigned int polygonIndex) const
+    {
+        QVector<QVector3D> verts = { vertexes[polygon_vertex_indexes[polygonIndex * 3 + 0] - 1],
+                                     vertexes[polygon_vertex_indexes[polygonIndex * 3 + 1] - 1],
+                                     vertexes[polygon_vertex_indexes[polygonIndex * 3 + 2] - 1]};
+        return verts;
+    }
+
+    QVector<QVector3D> Model::GetVertexNormals(unsigned int polygonIndex) const
+    {
+        QVector<QVector3D> verts = { vertex_normals[polygon_vertex_indexes[polygonIndex * 3 + 0] - 1],
+                                     vertex_normals[polygon_vertex_indexes[polygonIndex * 3 + 1] - 1],
+                                     vertex_normals[polygon_vertex_indexes[polygonIndex * 3 + 2] - 1]};
+        return verts;
+    }
 }
 

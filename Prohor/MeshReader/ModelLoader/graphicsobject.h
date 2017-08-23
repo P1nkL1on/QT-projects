@@ -12,7 +12,9 @@ public:
     virtual QString ApplyDrawToCanvas (QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                                     const int width, const int hei) = 0;
     virtual QVector3D* RayIntersection (const QVector3D *rayStart, const QVector3D *rayFinish,
-                                         const unsigned int polygonIndex) const =  0;
+                                         const unsigned int polygonIndex) const;
+    virtual QVector<QVector3D> GetVertexes (unsigned int polygonIndex) const;
+    virtual QVector<QVector3D> GetVertexNormals (unsigned int polygonIndex) const;
 };
 }
 #endif // GRAPHICSOBJECT_H

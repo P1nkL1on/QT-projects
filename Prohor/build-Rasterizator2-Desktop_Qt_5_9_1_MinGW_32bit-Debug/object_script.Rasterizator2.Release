@@ -10,5 +10,7 @@ INPUT(
 ./release\testviewer.o
 ./release\transforms.o
 ./release\testkdtree.o
+./release\raycast.o
+./release\lightsourse.o
 ./release\moc_mainwindow.o
 );

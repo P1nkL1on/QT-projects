@@ -33,16 +33,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QVector<QString> names = { "cow.txt"//"kdTreeExample.txt"
-
+QVector<QString> names = { "teapot.txt"//"kdTreeExample.txt"
                           /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
 QVector<QColor> colors = {QColor(Qt::lightGray), QColor(Qt::yellow), QColor(Qt::blue), QColor(Qt::green), QColor(Qt::gray)};
 QVector<Model> sc = {};
 Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
-LightSourse* lt1 = new LightSourse(QVector3D(0,5,0), 150, 10);
-LightSourse* lt2 = new LightSourse(QVector3D(0,6,6), 150, 10);
+LightSourse* lt1 = new LightSourse(QVector3D(0,5,0), 250, 10);
+LightSourse* lt2 = new LightSourse(QVector3D(0,5,6), 400, 20);
 
 KDTree treeNormal;
 unsigned short treeDep = 1;
@@ -109,7 +108,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
         for (int i = 0, model_found = 0 ; i<names.length() ; i++){
             Model newmodel;
-            QString err = LoadModel("D:/QT-projects/Prohor/Models/"+QString(names[i]), newmodel);
+            QString err = LoadModel("../Models/"+QString(names[i]), newmodel);
             if (!err.isEmpty())
                 qDebug() << err;
             else
@@ -131,14 +130,16 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
     tv.drawOn(&qp, cam, std::min(width(), height()),std::min(width(), height()));
     if (renderImage!=NULL)
-        qp.drawImage(QPoint(0, height() / 2 - renderImage->height() / 2), *renderImage);
+        qp.drawImage(QPoint(width() - renderImage->width(), /*height() / 2 - renderImage->height() / 2)*/20), *renderImage);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Right){
-           renderImage = RayCast::RenderScene(&cam, &tv, &treeNormal, 120);
+    if (event->key() == Qt::Key_Space){
+           Model* mod = new Model();
+           renderImage = RayCast::RenderScene(&cam, &tv, &treeNormal, 150, mod);
            //renderImage = treeNormal.renderByCamera(&cam, 100);
+           tv.addGraphicsObject(mod);
            this->repaint();
        }
 }

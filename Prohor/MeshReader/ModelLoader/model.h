@@ -29,6 +29,10 @@ namespace ModelStructs {
 
         QVector3D* RayIntersection (const QVector3D *rayStart,
                                      const QVector3D *rayFinish, const unsigned int polygonIndex) const override;
+
+        virtual QVector<QVector3D> GetVertexes (unsigned int polygonIndex) const override;
+
+        virtual QVector<QVector3D> GetVertexNormals (unsigned int polygonIndex) const override;
     };
 }
 

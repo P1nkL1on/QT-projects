@@ -99,10 +99,10 @@ void Camera::transformByMouseMoving(const QVector2D currentMousePlace,
                 float sensetive = 50.0,
                       angleHorizont = (std::atan(std::abs(prevMousePlace.x() - currentMousePlace.x()) / sensetive)),
                       angleVertical = (std::atan(std::abs(prevMousePlace.y() - currentMousePlace.y()) / sensetive));
-                rotate (angleHorizont * (currentMousePlace.x() - prevMousePlace.x()),
+                rotate (-angleHorizont * (currentMousePlace.x() - prevMousePlace.x()),
                         QVector3D(0, 1, 0)/*Stereometry::Resid(cameraProps[2], cameraProps[0])*/);
                 rotate (angleVertical * (currentMousePlace.y() - prevMousePlace.y()),
-                        /*QVector3D(0, 0, 1)*/Stereometry::Resid(cameraProps[3], cameraProps[0]));
+                        /*QVector3D(0, 0, 1)*/Stereometry::Resid(cameraProps[0], cameraProps[3]));
         }
         // scaling
         if (actionType == 2){
