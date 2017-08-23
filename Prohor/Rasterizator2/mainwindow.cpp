@@ -9,6 +9,8 @@
 #include "QVector"
 #include "stereometry.h"
 #include "testkdtree.h"
+#include "raycast.h"
+#include "lightsourse.h"
 
 #include "QtCore"
 
@@ -31,7 +33,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QVector<QString> names = { "rabbit.txt"//"kdTreeExample.txt"
+QVector<QString> names = { "cow.txt"//"kdTreeExample.txt"
 
                           /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
@@ -39,6 +41,9 @@ QVector<QColor> colors = {QColor(Qt::lightGray), QColor(Qt::yellow), QColor(Qt::
 QVector<Model> sc = {};
 Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
+LightSourse* lt1 = new LightSourse(QVector3D(0,5,0), 150, 10);
+LightSourse* lt2 = new LightSourse(QVector3D(0,6,6), 150, 10);
+
 KDTree treeNormal;
 unsigned short treeDep = 1;
 QImage* renderImage = NULL;
@@ -83,16 +88,15 @@ QString LoadModel (QString path, Model& model){
         model.polygon_vertex_indexes = triangulateMesh(model.polygon_vertex_indexes, model.polygon_start);
         if (model.vertexes_texture.length() > 0)
             model.polygon_texture_vertex_indexes = triangulateMesh(model.polygon_texture_vertex_indexes, model.polygon_start);
-    // build kd
-     model.polygon_start = {};
+    model.polygon_start = {};
     for (int i = 0; i < model.polygon_vertex_indexes.length() / 3 + 1; i++)
         model.polygon_start << i * 3;
+    // calculate parametric (ONLY FOR TRIANGULATING MODEL)
+    model.parametric = calculateParametricForAllPolygons(model.vertexes, model.polygon_vertex_indexes);
+
     //
     treeNormal = KDTree();
-//    for (int i = 0; i < 100; i++){
-//        treeNormal.BuildTree(model.vertexes, model.polygon_vertex_indexes);
-//        treeNormal.DeleteTree();
-//    }
+    // build kd
     treeNormal.BuildTree(model.vertexes, model.polygon_vertex_indexes);
 
     return QString();
@@ -105,7 +109,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
         for (int i = 0, model_found = 0 ; i<names.length() ; i++){
             Model newmodel;
-            QString err = LoadModel("../Models/"+QString(names[i]), newmodel);
+            QString err = LoadModel("D:/QT-projects/Prohor/Models/"+QString(names[i]), newmodel);
             if (!err.isEmpty())
                 qDebug() << err;
             else
@@ -115,6 +119,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
                 sc << newmodel;
             }
         }
+        tv.addLight(lt1); tv.addLight(lt2);
         for (int i = 0; i < sc.length(); i++)
             tv.addGraphicsObject(&(sc[i]));
     }
@@ -132,36 +137,8 @@ void MainWindow::paintEvent(QPaintEvent *e)
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Right){
-           renderImage = treeNormal.renderByCamera(&cam, 100);
+           renderImage = RayCast::RenderScene(&cam, &tv, &treeNormal, 120);
+           //renderImage = treeNormal.renderByCamera(&cam, 100);
            this->repaint();
-//           QVector<unsigned int> pols = {};
-
-//           QVector<QVector3D> intersections = {};
-//           QVector<unsigned int> inds = {}, starts = {};
-//           unsigned int nowOn = 0;
-
-//           for (int i = 0; i< 100; i++, qDebug() << i)
-//               for (int j = 0; j< 100; j++){
-//                   QVector3D* rs = new QVector3D();//( -4 + i/12.0, -4 + j/12.0, 5);
-//                   QVector3D* rf = new QVector3D();//( -4 + i/12.0, -4 + j/12.0, -5);
-//                   unsigned int polygonNumber = 0;
-
-//                   QVector3D* interesction = treeNormal.intersectWith(rs,rf,polygonNumber);
-
-//                   if (polygonNumber != -1)
-//                       { pols << polygonNumber; intersections << *interesction; starts << nowOn * 3; nowOn++; inds << nowOn << nowOn << nowOn; }
-
-//                   delete rs;
-//                   delete rf;
-//                   delete interesction;
-//               }
-//           Model* md = new Model();
-//           md->vertexes = intersections;
-//           md->polygon_vertex_indexes = inds;
-//           md->polygon_start = starts;
-//           md->modelColor = Qt::red;
-
-//           tv.addGraphicsObject(md);
-//           this->repaint();
        }
 }

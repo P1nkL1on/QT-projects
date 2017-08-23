@@ -13,6 +13,7 @@
 
 
 namespace  TreeSpace {
+    const static bool traceProcess = false;
     class KDTree;
 
     class BoundingBox : public GraphicsObjectStruct::GraphicsObject
@@ -27,6 +28,8 @@ namespace  TreeSpace {
         QVector<float> minMax;
         QString ApplyDrawToCanvas(QPainter* painter, const QMatrix4x4 view, const QMatrix4x4 perspective,
                                const int width, const int height) override;
+        QVector3D* RayIntersection(const QVector3D *rayStart, const QVector3D *rayFinish,
+                                   const unsigned int polygonIndex) const override;
         float V ();
         unsigned short MaxSide ();
     };
@@ -39,7 +42,9 @@ namespace  TreeSpace {
         BoundingBox bBox;
         BaseNode();
         virtual QVector<BaseNode *> GetChildren () = 0;
-        virtual QVector3D* intersectWith (const QVector3D* rayStart, const QVector3D* rayFinish, unsigned int& polygonIndex, const KDTree* sourse) = 0;
+        virtual QVector3D* intersectWith (const QVector3D* rayStart, const QVector3D* rayFinish,
+                                          unsigned int& polygonIndex,
+                                          const GraphicsObjectStruct::GraphicsObject* model) = 0;
     };
 
     class Node : public BaseNode
@@ -52,7 +57,8 @@ namespace  TreeSpace {
         Node (BoundingBox bb);
         void SetLeftRight (BaseNode* left, BaseNode* right);
         QVector<BaseNode *> GetChildren() override;
-        QVector3D* intersectWith (const QVector3D* rayStart, const QVector3D* rayFinish, unsigned int& polygonIndex, const KDTree* sourse) override;
+        QVector3D* intersectWith (const QVector3D* rayStart, const QVector3D* rayFinish,
+                                  unsigned int& polygonIndex, const GraphicsObjectStruct::GraphicsObject* model) override;
     };
 
     class Leaf : public BaseNode
@@ -63,7 +69,8 @@ namespace  TreeSpace {
         Leaf();
         Leaf(BoundingBox bb, QVector<unsigned int> indexes);
         QVector<BaseNode *> GetChildren() override;
-        QVector3D* intersectWith (const QVector3D* rayStart, const QVector3D* rayFinish, unsigned int& polygonIndex, const KDTree* sourse) override;
+        QVector3D* intersectWith (const QVector3D* rayStart, const QVector3D* rayFinish,
+                                  unsigned int& polygonIndex, const GraphicsObjectStruct::GraphicsObject* model) override;
     };
 
     class KDTree : public GraphicsObjectStruct::GraphicsObject
@@ -95,11 +102,10 @@ namespace  TreeSpace {
                                   const unsigned int currentDepth);
         // рекурсивное удаление дерева
         void recursiveDeleteTree (BaseNode* node);
-        // тотальный вызов для поиска столкновнеия луча со ВСЕМИ полигонами дерева
-        QVector3D* intersectWith (const QVector3D* rayStart, const QVector3D* rayFinish, unsigned int& polygonIndex);
+
     public:
        // выводить ли данные о рекурсивном поиске точки столкновения внутри дерева
-       bool traceProcess;
+
        // конструктор
        KDTree ();
        // построение дерева по данному набору точек и полигонов
@@ -109,11 +115,19 @@ namespace  TreeSpace {
        // отрсовка дерева (вызывает рекурсивные функции)
        QString ApplyDrawToCanvas(QPainter* painter, const QMatrix4x4 view, const QMatrix4x4 perspective,
                               const int width, const int height) override;
+       // унаследованная параша
+//       QVector3D* polygonIntersect(const QVector3D *rayStart, const QVector3D *rayFinish, const unsigned int polygonIndex) const override{
+//           return NULL;
+//       }
        // рендер по виду из камеры
-       QImage* renderByCamera (const Camera* cam, int pixelCount);
+       //QImage* renderByCamera (const Camera* cam, int pixelCount);
        // функция, которой пользуются узлы. она расположена тут, чтобы рекурсивно не передавать реальные координаты точек в узлы деревьев
        // а хранить их в дереве
-       QVector3D* polygonIntersect (const QVector3D *rayStart, const QVector3D *rayFinish, const unsigned int polygonIndex) const;
+       QVector3D* RayIntersection (const QVector3D *rayStart, const QVector3D *rayFinish, const unsigned int polygonIndex) const override;
+
+       // тотальный вызов для поиска столкновнеия луча со ВСЕМИ полигонами дерева
+       QVector3D* intersectWith (const QVector3D* rayStart, const QVector3D* rayFinish,
+                                 unsigned int& polygonIndex, const GraphicsObject* model) const;
     };
 }
 

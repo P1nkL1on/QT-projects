@@ -32,14 +32,18 @@ SOURCES += \
     camera.cpp \
     testviewer.cpp \
     transforms.cpp \
-    testkdtree.cpp
+    testkdtree.cpp \
+    raycast.cpp \
+    lightsourse.cpp
 
 HEADERS += \
         mainwindow.h \
     camera.h \
     testviewer.h \
     transforms.h \
-    testkdtree.h
+    testkdtree.h \
+    raycast.h \
+    lightsourse.h
 
 FORMS += \
         mainwindow.ui

@@ -12,6 +12,7 @@ namespace ModelStructs {
 
         QString DrawItSelf(QVector<QVector2D> &points,const QVector<QVector3D> vertGiven,
                            const QMatrix4x4 view, const QMatrix4x4 perspective);
+
     public:
         QColor modelColor;
         Model();
@@ -21,9 +22,13 @@ namespace ModelStructs {
         QVector<unsigned int> polygon_texture_vertex_indexes;
         QVector<unsigned int> polygon_start;
         QVector<QVector3D> vertex_normals;
+        QVector<QVector<double>> parametric;
 
         QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                                const int width, const int hei) override;
+
+        QVector3D* RayIntersection (const QVector3D *rayStart,
+                                     const QVector3D *rayFinish, const unsigned int polygonIndex) const override;
     };
 }
 

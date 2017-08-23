@@ -88,3 +88,30 @@ QVector<QVector3D> SceneTools::calculateNormals(      const QVector<QVector3D> v
     std::cout << "Finish to calculating normals" << std::endl;
     return normalEnds;
 }*/
+
+QVector<QVector<double> > SceneTools::calculateParametricForAllPolygons(const QVector<QVector3D> verts, const QVector<unsigned int> polygonVertexIndexes)
+{
+    QVector<QVector<double>> parametric = {};
+    // count a parametric
+    double x1,x2,x3,y1,y2,y3,z1,z2,z3;
+
+    for (int polygonIndex = 0; polygonIndex < polygonVertexIndexes.length() / 3; polygonIndex++){
+        unsigned int I = -1 + polygonVertexIndexes[polygonIndex * 3],
+                     J = -1 + polygonVertexIndexes[polygonIndex * 3 + 1],
+                     K = -1 + polygonVertexIndexes[polygonIndex * 3 + 2];
+        QVector<double> pars = {};
+
+        x1 = verts[I].x(); x2 = verts[J].x(); x3 = verts[K].x();
+        y1 = verts[I].y(); y2 = verts[J].y(); y3 = verts[K].y();
+        z1 = verts[I].z(); z2 = verts[J].z(); z3 = verts[K].z();
+
+        pars << y1 * (z2 - z3) + y2 * (z3 - z1) + y3 * (z1 - z2);//y1 * (z2 - z3) + y2 * (z3 - z1) + y3 * (z1 - z2);
+        pars << z1 * (x2 - x3) + z2 * (x3 - x1) + z3 * (x1 - x2);//z1 * (x2 - x3) + z2 * (x3 - x1) + z3 * (x1 - x2);
+        pars << x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2);// x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2);
+        pars << -(x1 * (y2 * z3 - y3 * z2) + x2 * (y3 * z1 - y1 * z3) + x3 * (y1 * z2 - y2 * z1));//-(x1 * (y2 * z3 - y3 * z2) + x2 * (y3 * z1 - y1 * z3) + x3 * (y1 * z2 - y2 * z1));
+
+        parametric << pars;
+    }
+    qDebug() << "Calculated paramatrics for "<<parametric.length() << " polygons";
+    return parametric;
+}

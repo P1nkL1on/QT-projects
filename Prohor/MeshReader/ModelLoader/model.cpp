@@ -1,6 +1,10 @@
 #include "model.h"
 #include <QVector2D>
+#include "QVector3D"
 #include "iostream"
+#include "stereometry.h"
+
+using namespace Stereometry;
 
 namespace ModelStructs{
 Model::Model()
@@ -66,6 +70,55 @@ QString Model::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const
     return QString();
 }
 
+double GetValue (const QVector3D* point, const QVector<double> parametric){
+    Q_ASSERT(parametric.length() == 4);
+    return parametric[0] * point->x() + parametric[1] * point->y() + parametric[2] * point->z() + parametric[3];
+}
 
+QVector3D* Model::RayIntersection(const QVector3D *rayStart,
+                                   const QVector3D *rayFinish, const unsigned int polygonIndex) const{
+    QVector<QVector3D> trianglePoints = {vertexes[-1 + polygon_vertex_indexes[polygonIndex * 3]],
+                                        vertexes[-1 + polygon_vertex_indexes[polygonIndex * 3 + 1]],
+                                        vertexes[-1 + polygon_vertex_indexes[polygonIndex * 3 + 2]]};
+    QVector3D* intersection = NULL;
+    //__________
+    //qDebug() << polygonIndex << parametric.length();
+    double distance = Dist(*rayStart, *rayFinish);
+    QVector3D cosPoint = Mult (Resid (*rayFinish, *rayStart), 1.0/distance);
+
+    double
+        fromValue = GetValue(rayStart, parametric[polygonIndex]),
+        cosValue = GetValue(&cosPoint, parametric[polygonIndex]) - parametric[polygonIndex][3];
+    if (cosValue > .00001 || cosValue < -.00001)
+    {
+        QVector3D fin = Mult(cosPoint, -(fromValue / (double)cosValue));
+        intersection = new QVector3D();
+        *intersection = Summ(*rayStart, fin);
+    }
+    //__________
+    if (intersection == NULL)
+        return NULL;
+
+    // TRUE == ANGLES, FALSE = BALLICENTER
+    if (true){
+
+        if (!(Dist(*intersection, *rayStart ) > .0001 && Dist(*rayFinish, *intersection ) < distance + .0001))
+            return NULL;
+        double angleDoff = M_PI - (
+                           Angle(trianglePoints[0], *intersection, trianglePoints[1])
+                         + Angle(trianglePoints[1], *intersection, trianglePoints[2])
+                         + Angle(trianglePoints[2], *intersection, trianglePoints[0]));
+        if (angleDoff > -.001 && angleDoff < .001)
+            return intersection;
+
+    }else{
+        QVector3D ballic = BallecenterCoordGeron(*intersection, trianglePoints);
+        float diff =  1.0 - (ballic[0] + ballic[1] + ballic[2]);
+        if (diff > -.000001 && diff < .000001)
+            return intersection;
+    }
+    return NULL;
+
+}
 }
 
