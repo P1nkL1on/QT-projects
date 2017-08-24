@@ -6,7 +6,7 @@ using namespace RayCast;
 using namespace Stereometry;
 
 
-QImage* RayCast::RenderScene(const Camera *cam, const TestViewer *scene, const TreeSpace::KDTree *tree, const int pixelCount, Model *&model)
+QImage* RayCast::RenderScene(const Camera *cam, const TestViewer *scene, const TreeSpace::KDTree *tree, const int pixelCount, Model *&mod)
 {
     int scale = 3;
     QVector<QVector3D> directions = cam->GetCamInfo();
@@ -19,7 +19,7 @@ QImage* RayCast::RenderScene(const Camera *cam, const TestViewer *scene, const T
     image->fill(Qt::blue);
     GraphicsObject* renderModel = scene->getModel();
 
-    Model* mod = new Model(); int gett = 0;
+    mod = new Model(); int gett = 0;
 
     for (int verticalPixel = -pixelCount/2; verticalPixel < pixelCount/2; verticalPixel ++, qDebug() << verticalPixel << "/" << pixelCount / 2)
         for (int horizontalPixel = -pixelCount/2; horizontalPixel < pixelCount/2; horizontalPixel ++){
@@ -29,7 +29,7 @@ QImage* RayCast::RenderScene(const Camera *cam, const TestViewer *scene, const T
             *currentRayStart = Summ (directions[0], Summ(
                     Mult ( Resid(directions[2], directions[0]),(verticalPixel / ((float)pixelCount / 2) * camWid * camWid)),
                     Mult ( Resid(directions[3], directions[0]),(-horizontalPixel / ((float)pixelCount / 2) * camHei * camHei))));
-            *currentRayFinish = Summ (*currentRayStart, Mult(Resid( directions[1], directions[0] ), 5.0));
+            *currentRayFinish = Summ (*currentRayStart, Mult(Resid( directions[1], directions[0] ), 5.0 * camHei));
 
             QVector3D inter;
             QColor pixelColor = RayCast::RenderPixel(currentRayStart, currentRayFinish, scene, renderModel, tree, inter);

@@ -33,15 +33,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QVector<QString> names = { "teapot.txt"//"kdTreeExample.txt"
+QVector<QString> names = { "test1.OBJ"//"kdTreeExample.txt"
                           /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
 QVector<QColor> colors = {QColor(Qt::lightGray), QColor(Qt::yellow), QColor(Qt::blue), QColor(Qt::green), QColor(Qt::gray)};
 QVector<Model> sc = {};
 Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
-LightSourse* lt1 = new LightSourse(QVector3D(0,5,0), 250, 10);
-LightSourse* lt2 = new LightSourse(QVector3D(0,5,6), 400, 20);
+LightSourse* lt1 = new LightSourse(QVector3D(0,100,0), 500, 150);
+LightSourse* lt2 = new LightSourse(QVector3D(0,5,6), 400, 1);
 
 KDTree treeNormal;
 unsigned short treeDep = 1;
