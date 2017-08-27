@@ -11,5 +11,6 @@ INPUT(
 ./debug\transforms.o
 ./debug\testkdtree.o
 ./debug\raycast.o
+./debug\lightsourse.o
 ./debug\moc_mainwindow.o
 );

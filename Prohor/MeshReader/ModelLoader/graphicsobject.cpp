@@ -20,6 +20,11 @@ QVector<QVector3D> GraphicsObjectStruct::GraphicsObject::GetVertexNormals(unsign
     return {};
 }
 
+float GraphicsObjectStruct::GraphicsObject::IsMirror(unsigned int polygonIndex) const
+{
+    return 0.0;
+}
+
 //QString GraphicsObjectStruct::GraphicsObject::DrawItSelf(QVector<QVector2D> &points, QMatrix4x4 view, QMatrix4x4 perspective)
 //{
 //    // do nothing with points

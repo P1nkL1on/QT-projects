@@ -261,7 +261,7 @@ Vertex Reflect (const Vertex* current_ray_begin, const Vertex* current_intersect
 
     Vertex res = Summ (current_intersect, Mult( Summ (Diff(current_intersect, current_ray_begin)
                        , Mult(Diff(normal_end, normal_start), 2.0 * scalar)), 2.0));
-     scalar = 1 / 60.0 * Dist( &res, current_intersect );
+    scalar = 1 / 60.0 * Dist( &res, current_intersect );
     return Summ (current_intersect, Mult(Diff(&res, current_intersect), 1.0 / scalar));
     /* counting a scalar
     =TPoint res = TPoint{

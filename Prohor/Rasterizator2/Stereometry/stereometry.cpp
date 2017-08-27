@@ -91,3 +91,21 @@ using namespace std;
     }
 
 
+
+    QVector3D Stereometry::Reflect(const QVector3D *rayStartXYZ, const QVector3D *intersectionPointXYZ, const QVector3D *normalEndXYZ)
+    {
+        double dd = Dist(*normalEndXYZ, *intersectionPointXYZ),
+               scalar = Dist(*rayStartXYZ, *intersectionPointXYZ) * dd *
+                        std::cos(M_PI - Angle(*rayStartXYZ, *intersectionPointXYZ, *normalEndXYZ));
+        QVector3D res = Summ(*intersectionPointXYZ, Mult(Summ(Resid(*intersectionPointXYZ, *rayStartXYZ),
+                                                   Mult(Resid(*normalEndXYZ, *intersectionPointXYZ), 2.0 * scalar)), 2.0));
+        Normalize(*intersectionPointXYZ, res, 1 / 60.0);
+        return res;
+    }
+
+    void Stereometry::Normalize(const QVector3D constBegin, QVector3D &movingEnd, float lengthMultyplier)
+    {
+            movingEnd = Summ (constBegin, Mult (Resid(movingEnd, constBegin),
+                                                1.0 / (Dist(constBegin, movingEnd) * lengthMultyplier)));
+            // mE = cB + (mE - cB) / long
+    }

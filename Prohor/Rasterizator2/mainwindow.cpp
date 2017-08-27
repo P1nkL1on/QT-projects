@@ -33,14 +33,14 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QVector<QString> names = { "test1.OBJ"//"kdTreeExample.txt"
+QVector<QString> names = { "rabbit.txt"//"kdTreeExample.txt"
                           /*, "cubesquare.txt", "cow.txt", "teapot.txt","sloted.txt", "roi.txt", "human.OBJ","test_triangle.txt", "rabbit.txt", "cow.txt", "cube.txt", "diamond.txt",
                           "icosaedr.txt","cubesquare.txt" */};
 QVector<QColor> colors = {QColor(Qt::lightGray), QColor(Qt::yellow), QColor(Qt::blue), QColor(Qt::green), QColor(Qt::gray)};
 QVector<Model> sc = {};
 Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
-LightSourse* lt1 = new LightSourse(QVector3D(0,100,0), 500, 150);
+LightSourse* lt1 = new LightSourse(QVector3D(0,0,50), 500, 150);
 LightSourse* lt2 = new LightSourse(QVector3D(0,5,6), 400, 1);
 
 KDTree treeNormal;
@@ -92,7 +92,7 @@ QString LoadModel (QString path, Model& model){
         model.polygon_start << i * 3;
     // calculate parametric (ONLY FOR TRIANGULATING MODEL)
     model.parametric = calculateParametricForAllPolygons(model.vertexes, model.polygon_vertex_indexes);
-
+    model.mirror = .6;
     //
     treeNormal = KDTree();
     // build kd
@@ -108,7 +108,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
         for (int i = 0, model_found = 0 ; i<names.length() ; i++){
             Model newmodel;
-            QString err = LoadModel("../Models/"+QString(names[i]), newmodel);
+            QString err = LoadModel("D:/QT-projects/Prohor/Models/"+QString(names[i]), newmodel);
             if (!err.isEmpty())
                 qDebug() << err;
             else
@@ -132,14 +132,18 @@ void MainWindow::paintEvent(QPaintEvent *e)
     if (renderImage!=NULL)
         qp.drawImage(QPoint(width() - renderImage->width(), /*height() / 2 - renderImage->height() / 2)*/20), *renderImage);
 }
-
+int pixelsize = 20;
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Space){
            Model* mod = new Model();
-           renderImage = RayCast::RenderScene(&cam, &tv, &treeNormal, 150, mod);
+           renderImage = RayCast::RenderScene(&cam, &tv, &treeNormal, pixelsize, mod);
            //renderImage = treeNormal.renderByCamera(&cam, 100);
            tv.addGraphicsObject(mod);
            this->repaint();
        }
+    if (event->key() == Qt::Key_B){
+        qDebug() << "Scaled";
+        pixelsize = 400;
+    }
 }

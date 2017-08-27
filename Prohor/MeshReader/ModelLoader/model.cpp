@@ -11,6 +11,7 @@ Model::Model()
 {
     modelColor = QColor(Qt::black);
     polygon_start = {0};
+    mirror = 0;
 }
 
 QString Model::DrawItSelf(QVector<QVector2D> &resultPoints, const QVector<QVector3D> vertGiven,
@@ -135,6 +136,11 @@ QVector3D* Model::RayIntersection(const QVector3D *rayStart,
                                      vertex_normals[polygon_vertex_indexes[polygonIndex * 3 + 1] - 1],
                                      vertex_normals[polygon_vertex_indexes[polygonIndex * 3 + 2] - 1]};
         return verts;
+    }
+
+    float Model::IsMirror(unsigned int polygonIndex) const
+    {
+        return (polygonIndex >= polygon_start.length() - 3  )? mirror : 0;
     }
 }
 

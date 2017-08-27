@@ -15,6 +15,7 @@ public:
                                          const unsigned int polygonIndex) const;
     virtual QVector<QVector3D> GetVertexes (unsigned int polygonIndex) const;
     virtual QVector<QVector3D> GetVertexNormals (unsigned int polygonIndex) const;
+    virtual float IsMirror (unsigned int polygonIndex) const;
 };
 }
 #endif // GRAPHICSOBJECT_H

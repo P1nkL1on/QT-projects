@@ -84,7 +84,7 @@ namespace  TreeSpace {
         // максимально допустимое количество полигонов в элементе дерева
         unsigned short acceptablePolygonCountInLeaf = 5;
         // максимальная глубина прохода
-        unsigned int maxDepthIteration = 10;
+        unsigned int maxDepthIteration = 40;
         // текущее количество узлов в дереве (листья также считаются)
         unsigned int nodesCount;        
 

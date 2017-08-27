@@ -6,7 +6,7 @@ using namespace RayCast;
 using namespace Stereometry;
 
 
-QImage* RayCast::RenderScene(const Camera *cam, const TestViewer *scene, const TreeSpace::KDTree *tree, const int pixelCount, Model *&mod)
+QImage* RayCast::RenderScene(const Camera *cam, const TestViewer *scene, const TreeSpace::KDTree *tree, const int pixelCount, Model *&mod2)
 {
     int scale = 3;
     QVector<QVector3D> directions = cam->GetCamInfo();
@@ -19,7 +19,7 @@ QImage* RayCast::RenderScene(const Camera *cam, const TestViewer *scene, const T
     image->fill(Qt::blue);
     GraphicsObject* renderModel = scene->getModel();
 
-    mod = new Model(); int gett = 0;
+    Model* mod = new Model(); int gett = 0;
 
     for (int verticalPixel = -pixelCount/2; verticalPixel < pixelCount/2; verticalPixel ++, qDebug() << verticalPixel << "/" << pixelCount / 2)
         for (int horizontalPixel = -pixelCount/2; horizontalPixel < pixelCount/2; horizontalPixel ++){
@@ -62,26 +62,36 @@ QVector3D* RayCast::Ballicentrate (const QVector<QVector3D> verts, const QVector
 }
 
 QColor RayCast::RenderPixel(const QVector3D *rayStart, const QVector3D *rayFinish, const TestViewer *scene,
-                            const GraphicsObject *model, const TreeSpace::KDTree *tree, QVector3D &intersectionPP)
+                            const GraphicsObject *model, const TreeSpace::KDTree *tree, QVector3D &intersectionReturnXYZ)
 {
     unsigned int intersectedPolygonNumber = -1;
 
     QVector3D* interesction =
         tree->intersectWith(rayStart, rayFinish, intersectedPolygonNumber, model);
-    intersectionPP = *rayFinish;
+    intersectionReturnXYZ = *rayFinish;
 
     if (intersectedPolygonNumber!= -1){
-        //qDebug() << intersectedPolygonNumber;
-
-        QVector3D* intersectionPoint = Ballicentrate(model->GetVertexes(intersectedPolygonNumber), *interesction);
-        QVector3D* interNormalPoint = Ballicentrate(model->GetVertexNormals(intersectedPolygonNumber), *interesction);
-
-        intersectionPP = *intersectionPoint;
-
+        // нашли пересечение с полигоном
+        QVector3D* intersectionPointXYZ = Ballicentrate(model->GetVertexes(intersectedPolygonNumber), *interesction);
+        QVector3D* interNormalPointXYZ = Ballicentrate(model->GetVertexNormals(intersectedPolygonNumber), *interesction);
+        // нашли точку в координатах хуз и нормаль
+        intersectionReturnXYZ = *intersectionPointXYZ;
+        // освещенность этой точки
         float lightK =
-                RayCast::LightIntense(intersectionPoint, interNormalPoint, model, scene->getLights(), tree);
-        //qDebug() << lightK;
-        return QColor((int)(lightK),(int)(lightK),(int)(lightK));
+                RayCast::LightIntense(intersectionPointXYZ, interNormalPointXYZ, model, scene->getLights(), tree);
+
+        QColor pixelColor = QColor((int)(lightK),(int)(lightK),(int)(lightK));
+        if ( model->IsMirror(intersectedPolygonNumber) > 0 ){
+            // рекурсивно выпускаем отраженный луч
+            QVector3D* reflectedXYZ = new QVector3D();
+            *reflectedXYZ = Reflect(rayStart, intersectionPointXYZ, interNormalPointXYZ);
+            //qDebug () << "Reflect to " << *reflectedXYZ;
+            QColor reflectColor = RayCast::RenderPixel(intersectionPointXYZ, reflectedXYZ, scene, model, tree, intersectionReturnXYZ);
+
+            return RayCast::ColorSumm(pixelColor, reflectColor, (float)(1 - model->IsMirror(intersectedPolygonNumber)));
+        }
+        // в противном случае возвращаем просто цвет пикселя
+        return pixelColor;
     }
     return Qt::blue;
 }
@@ -102,3 +112,12 @@ float RayCast::LightIntense(const QVector3D *point, const QVector3D *pointNormal
     if (res > 255) res = 255;
     return res;
 }
+
+
+QColor RayCast::ColorSumm(QColor A, QColor B, float koeff)
+{
+    return QColor((int)(A.red() * koeff + B.red() * (1 - koeff)),
+                  (int)(A.green() * koeff + B.green() * (1 - koeff)),
+                  (int)(A.blue() * koeff + B.blue() * (1 - koeff)));
+}
+
