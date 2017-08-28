@@ -28,5 +28,5 @@ void TestModel::drawItself(QPainter *qp, int wid, int hei, QColor clr) const
     pen.setColor(clr);
     qp->setPen(pen);
     for (int i = 0; i < vertexes.length(); i++)
-        qp->drawPoint(vertexes[i].x() * 4 + wid / 2, -vertexes[i].y() * 4 + hei / 2);
+        qp->drawPoint((int)(vertexes[i].x() * 4 + wid / 2), (int)(-(vertexes[i].y()) * 4 + hei / 2));
 }

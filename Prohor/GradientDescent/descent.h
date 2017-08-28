@@ -24,6 +24,8 @@ private:
     float QuadDist(QVector2D a, QVector2D b) const;
     float DistValue (TestModel currentModel) const;
 
+    QVector3D RealProizv () const;
+    float stepMult = .001;
 public:
     Descent();
     Descent(TestModel* a, TestModel* b);

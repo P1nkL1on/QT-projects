@@ -8,8 +8,8 @@
 QVector<QVector2D> originalPoints = {QVector2D(10, 0),QVector2D(-10, 0),QVector2D(0, 10),QVector2D(0, -10) };
 TestModel tm0 = TestModel(originalPoints);
 QVector<QVector2D> wantedPoints =
-             {QVector2D(50, -10),QVector2D(50, 10),QVector2D(60, 0),QVector2D(40, 0) };
-            //{ QVector2D(-10, -30), QVector2D(-30, -30), QVector2D(-20, -20), QVector2D(-20, -40)};
+             {QVector2D(50, 10),QVector2D(50, 30),QVector2D(60, 20),QVector2D(40, 20) };
+            //{ QVector2D(0, 10) ,QVector2D(0, -10),QVector2D(-10, 0),QVector2D(10, 0)};
             //{QVector2D(60, 0),QVector2D(40, 0),QVector2D(50, 10),QVector2D(50, -10)};
 TestModel tmFinal = TestModel (wantedPoints);
 Descent desc(&tm0, &tmFinal );
