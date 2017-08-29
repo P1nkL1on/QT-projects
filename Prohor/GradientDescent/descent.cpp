@@ -4,11 +4,13 @@
 #include "qvector3d.h"
 #include "QMatrix3x3"
 
+
 Descent::Descent()
 {
     modelFinal = NULL;
     modelOriginal = NULL;
     stop = false;
+
 }
 
 Descent::Descent(TestModel *a, TestModel *b)
@@ -16,6 +18,7 @@ Descent::Descent(TestModel *a, TestModel *b)
     modelFinal = b;
     modelOriginal = a;
     stop = false;
+    lastApproximate = *modelOriginal;
 }
 
 float Descent::Dist(QVector2D a, QVector2D b) const
@@ -41,11 +44,12 @@ float Descent::DistErrorFunc(TestModel *currentModel) const
 
 void Descent::DrawItSelf(QPainter *qp, int wid, int hei) const
 {
+    modelFinal->drawFromItTo(qp, wid, hei, &lastApproximate);
     modelOriginal->drawItself(qp, wid, hei, Qt::green);
     modelFinal->drawItself(qp, wid, hei, Qt::black);
     if (lastApproximate.vertexCount() > 0)
         lastApproximate.drawItself(qp, wid, hei, Qt::red);
-    lg0.DrawItSelf(qp, 0, 0);
+    lg0.DrawItSelf(qp, 10, hei - 110);
 }
 
 
@@ -57,21 +61,50 @@ float Descent::DistValue (TestModel currentModel) const{
     return errSumm;
 }
 
+QVector<Derivable> Descent::AutoDiffThisShit (TestModel* originalModel, TestModel* finalModel, QVector3D transform) const {
+
+    QVector<Derivable> res = {Derivable(), Derivable(), Derivable()};
+
+    for (int coord = 0 ; coord < 3; coord++){
+        QVector<Derivable> derTransform = {Derivable(transform.x()), Derivable(transform.y()), Derivable(transform.z())};
+        derTransform[coord].setPrValue(1);  // make a variable x y l
+
+        for (int i = 0; i < originalModel->vertexCount(); i++){
+            Derivable xO = Derivable(originalModel->GetVertex(i).x()),
+                      yO = Derivable(originalModel->GetVertex(i).y()),
+                      xF = Derivable(finalModel->GetVertex(i).x()),
+                      yF = Derivable(finalModel->GetVertex(i).y());
+            res[coord] = res[coord]
+                     +Derivable::Dpow (xO * Derivable::Dcos(derTransform[2]) - yO * Derivable::Dsin(derTransform[2]) + derTransform[0] - xF,2)
+                     +Derivable::Dpow (xO * Derivable::Dsin(derTransform[2]) + yO * Derivable::Dcos(derTransform[2]) + derTransform[1] - yF,2);
+        }
+    }
+    return res;
+}
+
 QVector3D Descent::RealProizv() const
 {
     QVector3D result(0,0,0);
-    float l = currentStep.z(), x = currentStep.x(), y = currentStep.y();
 
     for (int i = 0; i < modelFinal->vertexCount(); i++){
-        float ls = cos(l) * x - sin(l)*y - modelFinal->GetVertex(i).x(),
-              rs = sin(l) * x + cos(l)*y - modelFinal->GetVertex(i).y();
+        float l = currentStep.z(),
+              x = modelOriginal->GetVertex(i).x(),
+              y = modelOriginal->GetVertex(i).y();
+        float ls = cos(l) * x - sin(l)*y + currentStep.x() - modelFinal->GetVertex(i).x(),
+              rs = sin(l) * x + cos(l)*y + currentStep.y() - modelFinal->GetVertex(i).y();
         QVector3D add = QVector3D(
-                    2 * (ls * cos(l) + rs * sin(l) ),
-                    2 * (-ls * sin(l) + rs * cos(l) ),
-                    .002 * (ls * (-x * sin(l) - y * cos(l)) + rs * (cos(l) * x - sin(l) * y) )
+                    2 * (ls * 1 + rs * 0 ),
+                    2 * (-ls * 0 + rs * 1 ),
+                    2 * (ls * (-x * sin(l) - y * cos(l)) + rs * (cos(l) * x - sin(l) * y) )
                     );
         result = QVector3D(result.x() + add.x(), result.y() + add.y(), result.z() + add.z());
     }
+
+
+    QVector<Derivable> dd = AutoDiffThisShit(modelOriginal, modelFinal, currentStep);
+
+    result = QVector3D(dd[0].getProiz(), dd[1].getProiz(), dd[2].getProiz());
+    qDebug() << result;
 
     return result;
 }
@@ -103,8 +136,8 @@ float Descent::Module(QVector3D qv) const
 void Descent::Step()
 {
     stepTraRot = QVector3D(.5, .5, .5);
-    //QVector3D proizv = RealProizv();
-    QVector3D proizv = CurrentGradientDistValue();;
+    QVector3D proizv = RealProizv();
+    //QVector3D proizv = CurrentGradientDistValue();;
 
     TestModel newApproxumate = TranslateAndRotate(modelOriginal, currentStep);
     currentStep = QVector3D(currentStep.x() - proizv.x() * stepMult,currentStep.y() - proizv.y() * stepMult, currentStep.z() - proizv.z() * stepMult);

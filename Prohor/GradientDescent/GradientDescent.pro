@@ -28,13 +28,15 @@ SOURCES += \
         mainwindow.cpp \
     testmodel.cpp \
     descent.cpp \
-    linegraphics.cpp
+    linegraphics.cpp \
+    derivable.cpp
 
 HEADERS += \
         mainwindow.h \
     testmodel.h \
     descent.h \
-    linegraphics.h
+    linegraphics.h \
+    derivable.h
 
 FORMS += \
         mainwindow.ui

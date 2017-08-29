@@ -5,6 +5,7 @@
 #include "qpainter.h"
 #include "qvector3d.h"
 #include "linegraphics.h"
+#include "derivable.h"
 
 class Descent
 {
@@ -23,6 +24,8 @@ private:
     float DistErrorFunc (TestModel* currentModel) const;
     float QuadDist(QVector2D a, QVector2D b) const;
     float DistValue (TestModel currentModel) const;
+
+    QVector<Derivable>  AutoDiffThisShit (TestModel* originalModel, TestModel* finalModel, QVector3D transform) const;
 
     QVector3D RealProizv () const;
     float stepMult = .001;

@@ -14,7 +14,8 @@ public:
     TestModel (QVector<QVector2D> verts);
     unsigned int vertexCount() const;
     QVector2D GetVertex (unsigned int index) const;
-    void drawItself (QPainter* qp, int wid, int hei, QColor clr) const;
+    void drawItself (QPainter* qp, const int wid, const int hei, const QColor clr) const;
+    void drawFromItTo (QPainter* qp, const int wid, const int hei, const TestModel* another) const;
 };
 
 #endif // TESTMODEL_H
