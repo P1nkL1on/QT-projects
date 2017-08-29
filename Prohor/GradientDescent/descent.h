@@ -16,28 +16,34 @@ private:
     LineGraphics lg0;
 
     QVector3D currentStep;
-    QVector3D stepTraRot;
-    QVector3D CurrentGradientDistValue() const;
-    float Module (QVector3D qv)const ;
+//
+//    QVector<T> CalculateQuadSumm ();
+    QVector<Derivable> AutoDiff(TestModel *modelOriginal, TestModel *modelFinal, QVector3D transform);
+    float CurrentDist(TestModel *originalModel, TestModel *finalModel, QVector3D derTransform);
 
-    float Dist(QVector2D a, QVector2D b) const;
-    float DistErrorFunc (TestModel* currentModel) const;
-    float QuadDist(QVector2D a, QVector2D b) const;
-    float DistValue (TestModel currentModel) const;
+    template<typename T>
+    T CurDist ( QVector<QPair<T,T>> originalPoints,  QVector<QPair<T,T>> finalPoints, QVector<T> transformVector){
+        Q_ASSERT (transformVector.length() == 3);
+        T res;
+        for (int i = 0; i < originalPoints.length(); i++){
+            T xO = originalPoints[i].first,
+              yO = originalPoints[i].second,
+              xF = finalPoints[i].first,
+              yF = finalPoints[i].second;
+            res = res
+                     +Derivable::Dpow(xO * Derivable::Dcos(transformVector[2]) - yO * Derivable::Dsin(transformVector[2]) + transformVector[0] - xF,2)
+                     +Derivable::Dpow(xO * Derivable::Dsin(transformVector[2]) + yO * Derivable::Dcos(transformVector[2]) + transformVector[1] - yF,2);
+        }
+        return res;
+    }
 
-    QVector<Derivable>  AutoDiffThisShit (TestModel* originalModel, TestModel* finalModel, QVector3D transform) const;
-
-    QVector3D RealProizv () const;
-    float stepMult = .001;
 public:
     Descent();
     Descent(TestModel* a, TestModel* b);
-
     void DrawItSelf (QPainter* qp, int wid, int hei) const;
     void Step();
-
-    TestModel TranslateAndRotate(TestModel* originalModel, QVector3D translat) const;
-    bool stop;
+    bool stop = false;
+    static TestModel TranslateAndRotate(TestModel *originalModel, QVector3D transl);
 };
 
 #endif // DESCENT_H

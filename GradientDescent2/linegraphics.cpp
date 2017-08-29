@@ -8,11 +8,11 @@ LineGraphics::LineGraphics()
 void LineGraphics::PushValue(float value)
 {
     values << value;
-//    if (values.length() > wid)
-//        values.removeFirst();
+    if (values.length() > 400)
+        values.removeFirst();
 }
 
-void LineGraphics::DrawItSelf(QPainter *qp, int x0, int y0, int wid) const
+void LineGraphics::DrawItSelf(QPainter *qp, int x0, int y0) const
 {
     QPen pe;
     pe.setColor(Qt::black);
@@ -23,6 +23,6 @@ void LineGraphics::DrawItSelf(QPainter *qp, int x0, int y0, int wid) const
 
     pe.setColor(Qt::red);
     qp->setPen(pe);
-    for (int i = 0; i < ((wid < values.length())? wid : values.length()) - 1; i++)
-        qp->drawLine(x0 + 1 + i, y0 + 99 - (int)(values[i]), x0 + 2 + i, y0 + 99 - (int)(values[i + 1]));
+    for (int i = 0; i < values.length(); i++)
+        qp->drawPoint(x0 + 1 + i, y0 + 100 - (int)(values[i]));
 }

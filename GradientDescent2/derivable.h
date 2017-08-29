@@ -1,9 +1,6 @@
 #ifndef DERIVABLE_H
 #define DERIVABLE_H
 #include "qmath.h"
-#include "QVector3D"
-#include "qvector.h"
-
 
 class Derivable
 {
@@ -41,22 +38,11 @@ public:
     static Derivable Dsin(Derivable f) {
         return Derivable(sin(f.value), cos(f.value)*f.pr_value);
     }
+
     static Derivable Dpow (Derivable f, unsigned int power){
         if (power == 1) return f;
         else return Derivable( pow(f.value,power), power * f.pr_value * pow(f.value, power - 1) );
     }
-    static float Dcos(float f) {
-        return cos(f);
-    }
-    static float Dsin(float f) {
-        return sin(f);
-    }
-    static float Dpow (float f, unsigned int power){
-        return pow(f,power);
-    }
 };
-
-
-
 
 #endif // DERIVABLE_H

@@ -4,15 +4,11 @@
 #include "testmodel.h"
 #include "qdebug.h"
 #include "descent.h"
+#include "random"
 
-QVector<QVector2D> originalPoints = {QVector2D(10, 0),QVector2D(-10, 0),QVector2D(0, 10),QVector2D(0, -10) };
-TestModel tm0 = TestModel(originalPoints);
-QVector<QVector2D> wantedPoints =
-             {QVector2D(50, 10),QVector2D(50, 30),QVector2D(60, 20),QVector2D(40, 20) };
-            //{ QVector2D(0, 10) ,QVector2D(0, -10),QVector2D(-10, 0),QVector2D(10, 0)};
-            //{QVector2D(40, 0),QVector2D(60, 0),QVector2D(50, -10),QVector2D(50, 10)};
-TestModel tmFinal = TestModel (wantedPoints);
-Descent desc(&tm0, &tmFinal );
+QVector<QVector2D> originalPoints, wantedPoints;
+TestModel tm0, tmFinal;
+Descent desc;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,8 +25,16 @@ MainWindow::~MainWindow()
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     if (e->key() == Qt::Key_Space){
-        while (!desc.stop){
 
+        qsrand(QTime::currentTime().msec());
+        QVector3D Transform ( (rand() % 2000) / 10.0 - 100.0, (rand() % 2000) / 10.0 - 100.0, (rand() % 2000)/100 );
+
+        originalPoints = {QVector2D(10, 0),QVector2D(-10, 0),QVector2D(0, 10),QVector2D(0, -10) };
+        tm0 = TestModel(originalPoints);
+        tmFinal = Descent::TranslateAndRotate(&tm0, Transform);
+
+        desc = Descent(&tm0, &tmFinal );
+        while (!desc.stop){
             desc.Step();
             repaint();
         }

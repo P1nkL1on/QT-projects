@@ -10,9 +10,8 @@ private:
     QVector<float> values;
 public:
     LineGraphics();
-    void PushValue ( float value);
-    void DrawItSelf (QPainter* qp, int x0, int y0, int wid) const;
-
+    void PushValue ( float value );
+    void DrawItSelf (QPainter* qp, int x0, int y0) const;
 };
 
 #endif // LINEGRAPHICS_H
