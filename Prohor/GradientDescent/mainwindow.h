@@ -5,6 +5,7 @@
 #include <QtGui>
 #include <QtCore>
 #include "QKeyEvent"
+#include "QMouseEvent"
 
 namespace Ui {
 class MainWindow;
@@ -21,6 +22,7 @@ public:
 private:
     Ui::MainWindow *ui;
     void keyPressEvent(QKeyEvent *e);
+    void mousePressEvent(QMouseEvent *e);
 
 protected:
     void paintEvent(QPaintEvent *e);
