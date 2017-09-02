@@ -14,7 +14,7 @@ public:
     TestModel (QVector<QVector2D> verts);
     virtual void drawItself (QPainter* qp, const int wid, const int hei, const QColor clr) const;
     virtual void drawFromItTo (QPainter* qp, const int wid, const int hei, const TestModel* another) const;
-    virtual QVector<QPair<float,float>> toFloatVector () const;
+    virtual QVector<QPair<double,double>> todoubleVector () const;
     virtual QVector<QPair<Derivable,Derivable>> toDerivableVector () const;
 };
 

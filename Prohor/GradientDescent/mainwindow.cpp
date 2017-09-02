@@ -11,7 +11,7 @@
 //TestModel tm0, tmFinal;
 //Descent desc;
 
-QVector<float> dds = {20, 20, 20, 20, 20, 20, 20, 20, 20};
+QVector<double> dds = {20, 20, 20, 20, 20, 20, 20, 20, 20};
 Manipulator mp = Manipulator(QVector2D(0,0), dds);
 HandSolver hnds = HandSolver(&mp, QVector2D(0,0));
 

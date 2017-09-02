@@ -33,11 +33,11 @@ void TestModel::drawFromItTo(QPainter *qp, const int wid, const int hei,  const 
                      (int)(another->vertexes[i].x() * 4 + wid / 2), (int)(-(another->vertexes[i].y()) * 4 + hei / 2));
 }
 
-QVector<QPair<float, float> > TestModel::toFloatVector() const
+QVector<QPair<double, double> > TestModel::todoubleVector() const
 {
-    QVector<QPair<float, float> > res;
+    QVector<QPair<double, double> > res;
     for (int i = 0; i < vertexes.length(); i++){
-        res << QPair<float, float>(vertexes[i].x(), vertexes[i].y());
+        res << QPair<double, double>(vertexes[i].x(), vertexes[i].y());
     }
     return res;
 }

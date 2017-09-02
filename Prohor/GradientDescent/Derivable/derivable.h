@@ -6,18 +6,18 @@
 
 class Derivable
 {
-    float value, pr_value;
+    double value, pr_value;
 public:
     Derivable():value(0), pr_value(0){}
-    Derivable(float val) : value(val), pr_value(0){}
-    Derivable(float val, float pr_val) : value(val), pr_value(pr_val){}
+    Derivable(double val) : value(val), pr_value(0){}
+    Derivable(double val, double pr_val) : value(val), pr_value(pr_val){}
 
-    static Derivable Variable(float X){return Derivable(X, 1);}
+    static Derivable Variable(double X){return Derivable(X, 1);}
 
-    float getValue () const {return value; }
-    float getProiz () const {return pr_value; }
+    double getValue () const {return value; }
+    double getProiz () const {return pr_value; }
 
-    void setPrValue (float val){
+    void setPrValue (double val){
         pr_value = val;
     }
 
@@ -44,13 +44,13 @@ public:
         if (power == 1) return f;
         else return Derivable( pow(f.value,power), power * f.pr_value * pow(f.value, power - 1) );
     }
-    static float Dcos(float f) {
+    static double Dcos(double f) {
         return cos(f);
     }
-    static float Dsin(float f) {
+    static double Dsin(double f) {
         return sin(f);
     }
-    static float Dpow (float f, unsigned int power){
+    static double Dpow (double f, unsigned int power){
         return pow(f,power);
     }
     static QVector<Derivable> AutoDiff(QVector<QPair<Derivable, Derivable> > modelOriginal,

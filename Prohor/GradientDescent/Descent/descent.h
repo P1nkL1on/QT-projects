@@ -18,7 +18,7 @@ private:
     QVector3D currentStep;
 //
 //    QVector<T> CalculateQuadSumm ();
-    float CurrentDist(TestModel *originalModel, TestModel *finalModel, QVector3D derTransform);
+    double CurrentDist(TestModel *originalModel, TestModel *finalModel, QVector3D derTransform);
 public:
     Descent();
     Descent(TestModel* a, TestModel* b);

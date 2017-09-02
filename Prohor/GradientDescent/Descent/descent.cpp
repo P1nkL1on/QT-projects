@@ -44,12 +44,12 @@ void Descent::Step()
     QVector<Derivable> getedDeriv = Derivable::AutoDiff(orig, final, currentStep);
     QVector3D currentAdd = QVector3D(getedDeriv[0].getProiz(), getedDeriv[1].getProiz(), getedDeriv[2].getProiz());
     qDebug() << currentAdd;
-    float stepMult = .001;
+    double stepMult = .001;
     currentStep = QVector3D(currentStep.x() - currentAdd.x() * stepMult,currentStep.y() - currentAdd.y() * stepMult, currentStep.z() - currentAdd.z() * stepMult * .1);
 
     lastApproximate = TranslateAndRotate(modelOriginal, currentStep);
 
-    float nowDist = CurrentDist(modelOriginal, modelFinal, currentStep);
+    double nowDist = CurrentDist(modelOriginal, modelFinal, currentStep);
     lg0.PushValue(nowDist / 20.0);
     stop = (nowDist < .001);
 }
@@ -57,7 +57,7 @@ void Descent::Step()
 TestModel Descent::TranslateAndRotate(TestModel *originalModel, QVector3D transl)
 {
     QVector<QVector2D> result;
-    float x, y;
+    double x, y;
     for (int i = 0; i < originalModel->vertexes.length(); i++){
         x = originalModel->vertexes[i].x(), y = originalModel->vertexes[i].y();
         result << QVector2D( cos(transl.z()) * x - sin(transl.z()) * y + transl.x(), sin(transl.z()) * x + cos(transl.z()) * y + transl.y());
@@ -66,29 +66,29 @@ TestModel Descent::TranslateAndRotate(TestModel *originalModel, QVector3D transl
 }
 
 
-float Descent::CurrentDist(TestModel *originalModel, TestModel *finalModel, QVector3D derTransform)
+double Descent::CurrentDist(TestModel *originalModel, TestModel *finalModel, QVector3D derTransform)
 {
-    QVector<float> derVector = {derTransform.x(), derTransform.y(), derTransform.z()};
-    return Derivable::CurDist(originalModel->toFloatVector(), finalModel->toFloatVector(), derVector);
+    QVector<double> derVector = {derTransform.x(), derTransform.y(), derTransform.z()};
+    return Derivable::CurDist(originalModel->todoubleVector(), finalModel->todoubleVector(), derVector);
 }
 
 
 
-//float Descent::Dist(QVector2D a, QVector2D b) const
+//double Descent::Dist(QVector2D a, QVector2D b) const
 //{
-//    return (float)sqrt(pow((double)a.x() - (double)b.x(),2) + pow((double)a.y() - (double)b.y(),2));
+//    return (double)sqrt(pow((double)a.x() - (double)b.x(),2) + pow((double)a.y() - (double)b.y(),2));
 //}
-//float Descent::QuadDist(QVector2D a, QVector2D b) const
+//double Descent::QuadDist(QVector2D a, QVector2D b) const
 //{
-//    float distX = a.x() - b.x(),
+//    double distX = a.x() - b.x(),
 //          distY = a.y() - b.y(),
 //          res = distX * distX + distY * distY;
 //    return res;
 //}
 
-//float Descent::DistErrorFunc(TestModel *currentModel) const
+//double Descent::DistErrorFunc(TestModel *currentModel) const
 //{
-//    float errSumm = 0;
+//    double errSumm = 0;
 //    for (int i = 0; i < currentModel->vertexCount(); i++)
 //        errSumm += Dist( modelFinal->GetVertex(i), currentModel->GetVertex(i) );
 //    qDebug() << "Current dist :: " << errSumm;
@@ -98,8 +98,8 @@ float Descent::CurrentDist(TestModel *originalModel, TestModel *finalModel, QVec
 
 
 
-//float Descent::DistValue (TestModel currentModel) const{
-//    float errSumm = 0;
+//double Descent::DistValue (TestModel currentModel) const{
+//    double errSumm = 0;
 //    for (int i = 0; i < currentModel.vertexCount(); i++)
 //        errSumm += QuadDist( modelFinal->GetVertex(i), currentModel.GetVertex(i) );
 //   // qDebug() << "Current quaddist :: " << errSumm;
@@ -132,10 +132,10 @@ float Descent::CurrentDist(TestModel *originalModel, TestModel *finalModel, QVec
 //    QVector3D result(0,0,0);
 
 //    for (int i = 0; i < modelFinal->vertexCount(); i++){
-//        float l = currentStep.z(),
+//        double l = currentStep.z(),
 //              x = modelOriginal->GetVertex(i).x(),
 //              y = modelOriginal->GetVertex(i).y();
-//        float ls = cos(l) * x - sin(l)*y + currentStep.x() - modelFinal->GetVertex(i).x(),
+//        double ls = cos(l) * x - sin(l)*y + currentStep.x() - modelFinal->GetVertex(i).x(),
 //              rs = sin(l) * x + cos(l)*y + currentStep.y() - modelFinal->GetVertex(i).y();
 //        QVector3D add = QVector3D(
 //                    2 * (ls * 1 + rs * 0 ),
@@ -155,10 +155,10 @@ float Descent::CurrentDist(TestModel *originalModel, TestModel *finalModel, QVec
 //}
 
 //QVector3D Descent::CurrentGradientDistValue() const{
-//    float epsilon = .00001;
+//    double epsilon = .00001;
 //    QVector3D result;
 //    for (int i = 0; i < 3; i++){
-//        float d0 = DistValue(TranslateAndRotate(modelOriginal,
+//        double d0 = DistValue(TranslateAndRotate(modelOriginal,
 //                                                QVector3D(currentStep.x(),
 //                                                          currentStep.y(),
 //                                                          currentStep.z()))),
@@ -173,7 +173,7 @@ float Descent::CurrentDist(TestModel *originalModel, TestModel *finalModel, QVec
 //    return result;
 //}
 
-//float Descent::Module(QVector3D qv) const
+//double Descent::Module(QVector3D qv) const
 //{
 //    return sqrt(qv.x() * qv.x() + qv.y() * qv.y() + qv.z() * qv.z());
 //}

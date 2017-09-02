@@ -7,7 +7,7 @@ Manipulator::Manipulator()
 
 }
 
-Manipulator::Manipulator(QVector2D stPt, QVector<float> ds)
+Manipulator::Manipulator(QVector2D stPt, QVector<double> ds)
 {
     startPoint = stPt;
     dists = ds; angles;
@@ -15,7 +15,7 @@ Manipulator::Manipulator(QVector2D stPt, QVector<float> ds)
         angles << 0;
 }
 
-Manipulator::Manipulator(QVector2D stPt, QVector<float> ds, QVector<float> angs)
+Manipulator::Manipulator(QVector2D stPt, QVector<double> ds, QVector<double> angs)
 {
     startPoint = stPt;
     dists = ds; angles;
@@ -25,7 +25,7 @@ Manipulator::Manipulator(QVector2D stPt, QVector<float> ds, QVector<float> angs)
 void Manipulator::drawItself(QPainter *qp, const int wid, const int hei, const QColor clr) const
 {
     QVector2D wasPlace = startPoint;
-    float currentAngle = 0;
+    double currentAngle = 0;
     for (int i = 0; i < dists.length(); i++){
         currentAngle += angles[i];
         QVector2D newPlace = QVector2D( wasPlace.x() + cos(currentAngle) * dists[i],
@@ -49,12 +49,12 @@ void Manipulator::drawFromItTo(QPainter *qp, const int wid, const int hei, const
     return;
 }
 
-QVector<QPair<float, float> > Manipulator::toFloatVector() const
+QVector<QPair<double, double> > Manipulator::todoubleVector() const
 {
-    QVector<QPair<float, float> > res;
-    res << QPair<float,float>(startPoint.x(), startPoint.y());
+    QVector<QPair<double, double> > res;
+    res << QPair<double,double>(startPoint.x(), startPoint.y());
     for (int i = 0; i < dists.length(); i++){
-        res << QPair<float, float>(dists[i], angles[i]);
+        res << QPair<double, double>(dists[i], angles[i]);
     }
     return res;
 }

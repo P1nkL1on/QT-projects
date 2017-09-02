@@ -11,7 +11,8 @@ private:
     Manipulator* maniOriginal;
     Manipulator maniCurrent;
     LineGraphics lg0;
-    QVector<float> currentStep;
+    LineGraphics lg1;
+    QVector<double> currentStep;
     QVector2D pointFinal;
 public:
 
@@ -21,8 +22,8 @@ public:
     void DrawItSelf (QPainter* qp, int wid, int hei) const;
     void step();
 
-    Manipulator rotateOriginal (QVector<float> step);
-    float stepMult = .0001;
+    Manipulator rotateOriginal (QVector<double> step);
+    double stepMult = .0001;
     bool stop = false;
 
     template<typename T>

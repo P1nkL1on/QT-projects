@@ -5,18 +5,18 @@
 class Manipulator : public TestModel
 {
 public:
-    QVector<float> angles;
-    QVector<float> dists;
+    QVector<double> angles;
+    QVector<double> dists;
     QVector2D startPoint;
 
     Manipulator();
-    Manipulator(QVector2D stPt, QVector<float> ds);
-    Manipulator(QVector2D stPt, QVector<float> ds, QVector<float> angs);
+    Manipulator(QVector2D stPt, QVector<double> ds);
+    Manipulator(QVector2D stPt, QVector<double> ds, QVector<double> angs);
 
     void drawItself (QPainter* qp, const int wid, const int hei, const QColor clr) const override;
     void drawFromItTo (QPainter* qp, const int wid, const int hei, const TestModel* another) const override;
 
-    QVector<QPair<float,float>> toFloatVector () const override;
+    QVector<QPair<double,double>> todoubleVector () const override;
     QVector<QPair<Derivable,Derivable>> toDerivableVector () const override;
 };
 
