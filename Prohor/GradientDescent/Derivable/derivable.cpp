@@ -1,5 +1,6 @@
 #include "derivable.h"
 
+using namespace DerOperations;
 
 QVector<Derivable> Derivable::AutoDiff(QVector<QPair<Derivable, Derivable>> orig,
                                               QVector<QPair<Derivable, Derivable>> final, QVector3D transform)

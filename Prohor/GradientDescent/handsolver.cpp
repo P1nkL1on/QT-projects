@@ -60,12 +60,13 @@ void HandSolver::step()
 
     if (currentDist > wasDist) stepMult *= 1.0007; else stepMult /= 1.01;
     //stepMult /= 1.000001;
-    //qDebug () << currentDist - wasDist;
+
 
     lg0.PushValue(stepMult*10000000); lg1.PushValue(currentDist);
 
     maniCurrent = rotateOriginal(currentStep);
 
+    qDebug() << results[0].getValue();
     stop = ( results[0].getValue() < .001);
 }
 

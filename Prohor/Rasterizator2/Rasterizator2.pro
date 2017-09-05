@@ -22,28 +22,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-include(../MeshReader/ModelLoader/ModelLoader.pri)
+include(ModelLoader/ModelLoader.pri)
 include(../MeshReader/SceneTools/SceneTools.pri)
 include(Stereometry/Stereometry.pri)
+include(TestViewer/Testviewer.pri)
 
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    camera.cpp \
-    testviewer.cpp \
-    transforms.cpp \
     testkdtree.cpp \
-    raycast.cpp \
-    lightsourse.cpp
+    raycast.cpp
 
 HEADERS += \
         mainwindow.h \
-    camera.h \
-    testviewer.h \
-    transforms.h \
     testkdtree.h \
-    raycast.h \
-    lightsourse.h
+    raycast.h
 
 FORMS += \
         mainwindow.ui

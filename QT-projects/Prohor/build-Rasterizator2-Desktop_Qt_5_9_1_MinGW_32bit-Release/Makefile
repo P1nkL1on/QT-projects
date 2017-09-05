@@ -215,9 +215,10 @@ Makefile: ../../../Prohor/Rasterizator2/Rasterizator2.pro C:/Qt/5.9.1/mingw53_32
 		C:/Qt/5.9.1/mingw53_32/mkspecs/features/toolchain.prf \
 		C:/Qt/5.9.1/mingw53_32/mkspecs/features/default_pre.prf \
 		C:/Qt/5.9.1/mingw53_32/mkspecs/features/win32/default_pre.prf \
-		../../../Prohor/MeshReader/ModelLoader/ModelLoader.pri \
+		../../../Prohor/Rasterizator2/ModelLoader/ModelLoader.pri \
 		../../../Prohor/MeshReader/SceneTools/SceneTools.pri \
 		../../../Prohor/Rasterizator2/Stereometry/Stereometry.pri \
+		../../../Prohor/Rasterizator2/TestViewer/Testviewer.pri \
 		C:/Qt/5.9.1/mingw53_32/mkspecs/features/resolve_config.prf \
 		C:/Qt/5.9.1/mingw53_32/mkspecs/features/exclusive_builds_post.prf \
 		C:/Qt/5.9.1/mingw53_32/mkspecs/features/default_post.prf \
@@ -395,9 +396,10 @@ C:/Qt/5.9.1/mingw53_32/mkspecs/features/exclusive_builds.prf:
 C:/Qt/5.9.1/mingw53_32/mkspecs/features/toolchain.prf:
 C:/Qt/5.9.1/mingw53_32/mkspecs/features/default_pre.prf:
 C:/Qt/5.9.1/mingw53_32/mkspecs/features/win32/default_pre.prf:
-../../../Prohor/MeshReader/ModelLoader/ModelLoader.pri:
+../../../Prohor/Rasterizator2/ModelLoader/ModelLoader.pri:
 ../../../Prohor/MeshReader/SceneTools/SceneTools.pri:
 ../../../Prohor/Rasterizator2/Stereometry/Stereometry.pri:
+../../../Prohor/Rasterizator2/TestViewer/Testviewer.pri:
 C:/Qt/5.9.1/mingw53_32/mkspecs/features/resolve_config.prf:
 C:/Qt/5.9.1/mingw53_32/mkspecs/features/exclusive_builds_post.prf:
 C:/Qt/5.9.1/mingw53_32/mkspecs/features/default_post.prf:
