@@ -3,6 +3,7 @@
 
 #include "testviewer.h"
 #include "manipulator3d.h"
+#include "handsolver3d.h"
 
 using namespace GraphicsObjectStruct;
 
@@ -23,10 +24,10 @@ MainWindow::~MainWindow()
 // variables for viewing and loading
 
 Camera cam = Camera (0,0,0);
-QVector<float> dists = {2,3,4,5,6,7,8,9,10,1,1,1,1,1,1,1,1,1};
+QVector<float> dists = {10,10,10,10,10,10,10,10,10,10,10,10,10,10};
 QVector3D stPoint(0,0,0);
 Manipulator3D* man = new Manipulator3D(stPoint, dists);
-
+HandSolver3D* hs3d = new HandSolver3D(man, QVector3D(0,20,70));
 TestViewer tv = TestViewer();
 //___________________________________________
 
@@ -58,13 +59,15 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *m)
 
 void MainWindow::paintEvent(QPaintEvent *e){
     if (tv.ModelCount() == 0)
-        tv.addGraphicsObject(man);
+        tv.addGraphicsObject(hs3d);
 
     QPainter qp(this);
     tv.drawOn(&qp, cam, width(), height());
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e){
-
-
+    if (e->key() == Qt::Key_Space){
+        hs3d->Step();
+        this->repaint();
+    }
 }

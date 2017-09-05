@@ -17,7 +17,7 @@ Manipulator3D::Manipulator3D(QVector3D startPnt, QVector<float> lengthes)
     startPoint = startPnt;
     armAngles = QVector<QVector3D>();
     for (int i = 0; i < armLengths.length(); i++)
-        armAngles << QVector3D(0.3,0,0);
+        armAngles << QVector3D(0.0,0,0);
 }
 
 Manipulator3D::Manipulator3D(QVector3D startPnt, QVector<float> lengthes, QVector<QVector3D> angles)
@@ -25,6 +25,21 @@ Manipulator3D::Manipulator3D(QVector3D startPnt, QVector<float> lengthes, QVecto
     armAngles = angles;
     armLengths = lengthes;
     startPoint = startPnt;
+}
+
+QVector3D Manipulator3D::GetStartPoint() const
+{
+    return startPoint;
+}
+
+int Manipulator3D::segmentCount() const
+{
+    return armLengths.length();
+}
+
+Manipulator3D* Manipulator3D::Copy(QVector<QVector3D> newAngles) const
+{
+    return new Manipulator3D(startPoint, armLengths, newAngles);
 }
 
 QVector2D ToScreenCoordinates (const QVector3D point, const QMatrix4x4 view,
@@ -78,7 +93,7 @@ QString Manipulator3D::DrawLineToCanvas(const QVector3D p1, const QVector3D p2,
     // drawing current segment
     QPen p;
     p.setColor(Qt::red);
-    p.setWidth(1);
+    p.setWidth(10);
     painter->setPen(p);
     painter->drawLine((int)p12D.x(), (int)p12D.y(), (int)p22D.x(), (int)p22D.y());
 
