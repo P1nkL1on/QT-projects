@@ -5,6 +5,10 @@
 #include "Linegraphics/linegraphics.h"
 #include "Derivable/derivable.h"
 
+#include "Eigen/Core"
+
+using namespace Eigen;
+
 class HandSolver
 {
 private:
@@ -38,10 +42,29 @@ public:
           finX = T(finalPoint.x()),
           finY = T(finalPoint.y());
 
+
         for (int i = 1; i < distsAndAngles.length(); i++){
             nowAngle = nowAngle + distsAndAngles[i].second + transformVector[i-1]; // summ angle
-            resX = resX + Derivable::Dcos ( nowAngle ) * distsAndAngles[i].first;
-            resY = resY + Derivable::Dsin ( nowAngle ) * distsAndAngles[i].first;
+
+            //___________
+            Matrix<T, 2, 2> rotat(2,2);
+            rotat(0,0) = Derivable::Dcos(nowAngle);
+            rotat(0,1) = Derivable::Dsin(nowAngle) * (T(-1));
+            rotat(1,0) = Derivable::Dsin(nowAngle);
+            rotat(1,1) = Derivable::Dcos(nowAngle);
+
+            Matrix<T,2,1> coordinates(2,1), increasement (2,1);
+            coordinates(0,0) = resX;
+            coordinates(1,0) = resY;
+            increasement(0,0) = distsAndAngles[i].first;
+            increasement(1,0) = T(0);
+
+            coordinates = rotat * increasement + coordinates;
+            //___________
+            resX = coordinates(0,0);
+            resY = coordinates(1,0);
+            //resX = resX + Derivable::Dcos ( nowAngle ) * distsAndAngles[i].first;
+            //resY = resY + Derivable::Dsin ( nowAngle ) * distsAndAngles[i].first;
         }
         return Derivable::Dpow(resX - finX,2) + Derivable::Dpow(resY - finY, 2);
     }

@@ -21,38 +21,39 @@ public:
         pr_value = val;
     }
 
-    Derivable operator+ (Derivable a){
+    Derivable operator+ (const Derivable a) const{
         return Derivable(value + a.value, pr_value + a.pr_value);
     }
-    Derivable operator- (Derivable a){
+    Derivable operator- (const Derivable a) const{
         return Derivable(value - a.value, pr_value - a.pr_value);
     }
-    Derivable operator* (Derivable a){
+    Derivable operator* (const Derivable a) const{
         return Derivable(value * a.value, a.value * pr_value + value * a.pr_value);
     }
-    Derivable operator/ (Derivable a){
+    Derivable operator/ (const Derivable a) const{
         return Derivable(value / a.value, (pr_value * a.value + a.pr_value * value)/ (a.value * a.value));
     }
 
-    static Derivable Dcos(Derivable f) {
+    static Derivable Dcos(const Derivable f) {
         return Derivable(cos(f.value), -sin(f.value)*f.pr_value);
     }
-    static Derivable Dsin(Derivable f) {
+    static Derivable Dsin(const Derivable f) {
         return Derivable(sin(f.value), cos(f.value)*f.pr_value);
     }
-    static Derivable Dpow (Derivable f, unsigned int power){
+    static Derivable Dpow (const Derivable f, const unsigned int power){
         if (power == 1) return f;
         else return Derivable( pow(f.value,power), power * f.pr_value * pow(f.value, power - 1) );
     }
-    static double Dcos(double f) {
+    static double Dcos(const double f) {
         return cos(f);
     }
-    static double Dsin(double f) {
+    static double Dsin(const double f) {
         return sin(f);
     }
-    static double Dpow (double f, unsigned int power){
+    static double Dpow (const double f,const unsigned int power){
         return pow(f,power);
     }
+
     static QVector<Derivable> AutoDiff(QVector<QPair<Derivable, Derivable> > modelOriginal,
                                        QVector<QPair<Derivable, Derivable> > modelFinal, QVector3D transform);
     template<typename T>
