@@ -9,20 +9,33 @@ HandSolver3D::HandSolver3D()
 HandSolver3D::HandSolver3D(Manipulator3D *m, QVector3D fp)
 {
      previousDistance = -1;
-     finalPoint = fp;
+     finalPoints = {QPair<int,QVector3D>(m->segmentCount() - 1, fp )};
      original = m;
      current = NULL;
      currentTransofrm = {};
      for (int i = 0; i < original->segmentCount(); i++)
-         currentTransofrm << QVector3D(0,0,0);
+          currentTransofrm << QVector3D(0,0,0);
      original->selfColor = Qt::black;
      //current->selfColor = Qt::green;
 }
 
+HandSolver3D::HandSolver3D(Manipulator3D* m, QVector<QPair<int, QVector3D>> fp)
+{
+    previousDistance = -1;
+    finalPoints = fp;
+    original = m;
+    current = NULL;
+    currentTransofrm = {};
+    for (int i = 0; i < original->segmentCount(); i++)
+        currentTransofrm << QVector3D(0,0,0);
+    original->selfColor = Qt::black;
+}
+
 QString HandSolver3D::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
 {
-    Manipulator3D::DrawLineToCanvas(finalPoint, finalPoint,
-                  painter, view, perspective, width, hei);
+    for (int i = 0; i < finalPoints.length(); i++)
+        Manipulator3D::DrawLineToCanvas(finalPoints[i].second, finalPoints[i].second,
+                      painter, view, perspective, width, hei);
 
       if (original == NULL)
             return "No original hand";
@@ -60,7 +73,7 @@ void HandSolver3D::Step()
                 default:
                     break;
             }
-            Derivable distance = CurrentDist(finalPoint, original->GetStartPoint(),
+            Derivable distance = CurrentDist(finalPoints, original->GetStartPoint(),
                                              dists, anglesx, anglesy, anglesz);
             //
             //

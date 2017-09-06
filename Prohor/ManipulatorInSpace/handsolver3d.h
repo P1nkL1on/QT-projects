@@ -13,20 +13,23 @@ class HandSolver3D : public GraphicsObjectStruct::GraphicsObject
 private:
     Manipulator3D* original;
     Manipulator3D* current;
-    QVector3D finalPoint;
+    QVector<QPair<int, QVector3D>> finalPoints;
+
     QVector<QVector3D> currentTransofrm;
     double previousDistance;
-    double step = .0001;
+    double step = .000008;
 public:
     HandSolver3D();
     HandSolver3D(Manipulator3D* m, QVector3D fp);
+    HandSolver3D(Manipulator3D* m, QVector<QPair<int, QVector3D>> fp);
     QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                            const int width, const int hei) override;
     void Step ();
     template <typename T>
-    static T CurrentDist ( const QVector3D targetPoint, const QVector3D startPoint,
+    static T CurrentDist ( const QVector<QPair<int, QVector3D>> targetPoint, const QVector3D startPoint,
                            const QVector<T> dists, const QVector<T> anglesx,
                            const QVector<T> anglesy, const QVector<T> anglesz ){
+        QVector<Matrix<T,3,1>> resPoints = {};
         //QVector<T> anglesx,  anglesy, anglesz, dists;
         //original->GetDistsAndAngles(dists,anglesx, anglesy, anglesz);
         // now we have derivable/float/dist
@@ -58,13 +61,25 @@ public:
             leng(0,0) = dists[i]; leng(1,0) = T(0.0); leng(2,0) = T(0.0);
 
             original = rotat * leng + original;
+            for (int j = 0; j < targetPoint.length(); j++)
+                if (targetPoint[j].first == i)
+                    resPoints << Matrix<T,3,1>(original(0,0), original(1,0), original(2,0));
         }
         //____
+        T currentDistanceCalculated = T(0.0);
 
-        T sx = original(0,0), sy = original(1,0), sz = original(2,0),
-          fx = T(targetPoint.x()), fy = T(targetPoint.y()), fz = T(targetPoint.z());
+        for (int i = 0; i < targetPoint.length(); i++){
+            T  sx = resPoints[i](0,0),
+               sy = resPoints[i](1,0),
+               sz = resPoints[i](2,0);
+            T  fx = T(targetPoint[i].second.x()),
+               fy = T(targetPoint[i].second.y()),
+               fz = T(targetPoint[i].second.z());
+            currentDistanceCalculated = currentDistanceCalculated +
+                    pow(fx - sx, 2) + pow(fy - sy, 2) + pow(fz - sz, 2);
+        }
         // total distance
-        return pow(fx - sx, 2) + pow(fy - sy, 2) + pow(fz - sz, 2);
+        return currentDistanceCalculated;
     }
 };
 
