@@ -5,7 +5,7 @@
 #include "QVector2D"
 #include "qdebug.h"
 #include "stereometry.h"
-
+#include "qmath.h"
 
 Camera::Camera(double fAngle, double fDist, double focusDist)
 {

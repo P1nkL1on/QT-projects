@@ -1,5 +1,6 @@
 #include "stereometry.h"
-#include "iostream"
+//#include "iostream"
+#include "qmath.h"
 
 using namespace std;
 

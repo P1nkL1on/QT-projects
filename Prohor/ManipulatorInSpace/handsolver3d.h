@@ -17,7 +17,7 @@ private:
 
     QVector<QVector3D> currentTransofrm;
     double previousDistance;
-    double step = .000008;
+    double step = .00005;
 public:
     HandSolver3D();
     HandSolver3D(Manipulator3D* m, QVector3D fp);

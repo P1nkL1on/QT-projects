@@ -27,8 +27,8 @@ Camera cam = Camera (0,0,0);
 QVector<float> dists = {10,10,10,10,10,10,10,10,10,10,10,10,10,10};
 QVector3D stPoint(0,0,0);
 Manipulator3D* man = new Manipulator3D(stPoint, dists);
-QVector<QPair<int, QVector3D>> vects = {QPair<int, QVector3D>(dists.length() / 2, QVector3D(0,10,30)),
-                            QPair<int, QVector3D>(dists.length() -1, QVector3D(0,30,30))};
+QVector<QPair<int, QVector3D>> vects = {QPair<int, QVector3D>(dists.length() / 2, QVector3D(20,0,50)),
+                                        QPair<int, QVector3D>(dists.length() -1, QVector3D(20,30,80))};
 HandSolver3D* hs3d = new HandSolver3D(man, vects);
 TestViewer tv = TestViewer();
 //___________________________________________

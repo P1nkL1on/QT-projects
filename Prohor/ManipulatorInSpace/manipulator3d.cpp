@@ -84,6 +84,47 @@ QString Manipulator3D::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 vie
     return QString();
 }
 
+QString Manipulator3D::ApplyToDrawAndShackle(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei, QVector<QPair<int, QVector3D> > finalPoints)
+{
+    QVector3D currentAngle(0,0,0);
+    QVector3D currentPoint(startPoint.x(), startPoint.y(), startPoint.z());
+    QVector2D current2DPoint = ToScreenCoordinates(startPoint, view, perspective, width, hei);
+
+    for (int i = 0, nowFinalPoint = 0; i < armLengths.length(); i++){
+        currentAngle = QVector3D(armAngles[i].x() + currentAngle.x(),
+                                 armAngles[i].y() + currentAngle.y(),
+                                 armAngles[i].z() + currentAngle.z());
+        // calculate a coordinate of pont number 0
+        QVector3D newPoint;//(currentPoint.x() + armLengths[i], currentPoint.y(), currentPoint.z());
+        newPoint = pointWithOffsetAngle(currentPoint, armLengths[i], currentAngle);
+
+        QVector2D new2DPoint = ToScreenCoordinates(newPoint, view, perspective, width, hei);
+        // drawing current segment
+        QPen p;
+        p.setColor(selfColor);
+        p.setWidth(3);
+        painter->setPen(p);
+        painter->drawPoint((int)current2DPoint.x(), (int)current2DPoint.y());
+        p.setWidth(1);
+        painter->setPen(p);
+        painter->drawLine((int)current2DPoint.x(), (int)current2DPoint.y(),
+                          (int)new2DPoint.x(), (int)new2DPoint.y());
+        // draw a shackle
+        if ( i ==  finalPoints[nowFinalPoint].first){
+            QVector2D newFin2DPoint = ToScreenCoordinates(finalPoints[nowFinalPoint].second, view, perspective, width, hei);
+            p.setWidth(1); p.setColor(Qt::blue);
+            painter->setPen(p);
+            painter->drawLine((int)newFin2DPoint.x(), (int)newFin2DPoint.y(),
+                              (int)new2DPoint.x(), (int)new2DPoint.y());
+            nowFinalPoint++;
+        }
+        // redeclaration
+        currentPoint = newPoint;
+        current2DPoint = new2DPoint;
+    }
+    return QString();
+}
+
 QString Manipulator3D::DrawLineToCanvas(const QVector3D p1, const QVector3D p2,
                                         QPainter *painter, const QMatrix4x4 view,
                                         const QMatrix4x4 perspective, const int width, const int hei)

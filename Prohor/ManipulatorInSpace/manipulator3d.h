@@ -21,6 +21,8 @@ public:
     Manipulator3D *Copy(QVector<QVector3D> newAngles) const;
     QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                            const int width, const int hei) override;
+    QString ApplyToDrawAndShackle (QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
+                                   const int width, const int hei, QVector<QPair<int, QVector3D>> finalPoints);
     static QString DrawLineToCanvas ( const QVector3D p1, const QVector3D p2,
                                       QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                                       const int width, const int hei);

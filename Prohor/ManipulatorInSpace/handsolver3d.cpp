@@ -43,7 +43,7 @@ QString HandSolver3D::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view
 
       if (current == NULL)
             return "No current hand";
-      current->ApplyDrawToCanvas(painter, view, perspective, width, hei);
+      current->ApplyToDrawAndShackle(painter, view, perspective, width, hei, finalPoints);
 
       return QString();
 }
