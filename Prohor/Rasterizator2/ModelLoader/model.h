@@ -2,7 +2,8 @@
 #define MODEL_H
 #include "QVector";
 #include "graphicsobject.h"
-
+#include "QImage"
+#include "qvector2d.h"
 
 namespace ModelStructs {
 
@@ -24,6 +25,8 @@ namespace ModelStructs {
         QVector<QVector3D> vertex_normals;
         QVector<QVector<double>> parametric;
         float mirror;
+        QImage textureMain;
+        QImage normalMap;
 
         QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                                const int width, const int hei) override;
@@ -34,6 +37,10 @@ namespace ModelStructs {
         virtual QVector<QVector3D> GetVertexes (unsigned int polygonIndex) const override;
 
         virtual QVector<QVector3D> GetVertexNormals (unsigned int polygonIndex) const override;
+
+        virtual QColor GetPixelFromTexture(unsigned int textureIndex, QVector2D *interPoint) const override;
+
+        virtual QVector<QVector2D> GetTextureVertexes (unsigned int polygonIndex) const override;
 
         virtual float IsMirror(unsigned int polygonIndex) const override;
     };

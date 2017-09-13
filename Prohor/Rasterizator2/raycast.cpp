@@ -1,6 +1,7 @@
 #include "raycast.h"
 #include "qvector.h"
 #include "stereometry.h"
+#include "qvector2d.h"
 
 using namespace RayCast;
 using namespace Stereometry;
@@ -49,15 +50,19 @@ QImage* RayCast::RenderScene(const Camera *cam, const TestViewer *scene, const T
 }
 
 QVector3D* RayCast::Ballicentrate (const QVector<QVector3D> verts, const QVector3D ballicenter){
-
-//    Q_ASSERT ((verts.length() == 3));
-//    Q_ASSERT (ballicenter.x() > -.001 && ballicenter.y() > -.001 && ballicenter.z() > -.001 &&
-//              ballicenter.x() < 1.001 && ballicenter.y() < 1.001 && ballicenter.z() < 1.001);
-
     QVector3D* normal = new QVector3D();
     *normal = QVector3D(verts[0].x() * ballicenter.x() + verts[1].x() * ballicenter.y() + verts[2].x() * ballicenter.z(),
                         verts[0].y() * ballicenter.x() + verts[1].y() * ballicenter.y() + verts[2].y() * ballicenter.z(),
                         verts[0].z() * ballicenter.x() + verts[1].z() * ballicenter.y() + verts[2].z() * ballicenter.z());
+    return normal;
+}
+
+
+QVector2D * RayCast::Ballicentrate2D(const QVector<QVector2D> verts, const QVector3D ballicenter)
+{
+    QVector2D* normal = new QVector2D();
+    *normal = QVector2D(verts[0].x() * ballicenter.x() + verts[1].x() * ballicenter.y() + verts[2].x() * ballicenter.z(),
+                        verts[0].y() * ballicenter.x() + verts[1].y() * ballicenter.y() + verts[2].y() * ballicenter.z());
     return normal;
 }
 
@@ -71,16 +76,25 @@ QColor RayCast::RenderPixel(const QVector3D *rayStart, const QVector3D *rayFinis
     intersectionReturnXYZ = *rayFinish;
 
     if (intersectedPolygonNumber!= -1){
-        // нашли пересечение с полигоном
+        // точка на текстуре
+        QVector2D* interPoint2D = Ballicentrate2D(model->GetTextureVertexes(intersectedPolygonNumber), *interesction);
+        //  нашли пересечение с полигоном
         QVector3D* intersectionPointXYZ = Ballicentrate(model->GetVertexes(intersectedPolygonNumber), *interesction);
         QVector3D* interNormalPointXYZ = Ballicentrate(model->GetVertexNormals(intersectedPolygonNumber), *interesction);
+        // special color for normal change
+        QColor normalMapColor = model->GetPixelFromTexture(1, interPoint2D);
+        QVector3D normalInterAdd = QVector3D( (float)normalMapColor.red(), (float)normalMapColor.green(), (float)normalMapColor.blue() );
+        *interNormalPointXYZ = Stereometry::Summ(*interNormalPointXYZ,
+                               Stereometry::Mult(normalInterAdd,
+                               1 / 255.0 * Stereometry::Dist(*interNormalPointXYZ, *intersectionPointXYZ)));
+
         // нашли точку в координатах хуз и нормаль
         intersectionReturnXYZ = *intersectionPointXYZ;
         // освещенность этой точки
         float lightK =
                 RayCast::LightIntense(intersectionPointXYZ, interNormalPointXYZ, model, scene->getLights(), tree);
-
-        QColor pixelColor = QColor((int)(lightK),(int)(lightK),(int)(lightK));
+        QColor pixelColor =
+                ColorMult(model->GetPixelFromTexture(0, interPoint2D), lightK/255.0);
         if ( model->IsMirror(intersectedPolygonNumber) > 0 ){
             // рекурсивно выпускаем отраженный луч
             QVector3D* reflectedXYZ = new QVector3D();
@@ -121,3 +135,10 @@ QColor RayCast::ColorSumm(QColor A, QColor B, float koeff)
                   (int)(A.blue() * koeff + B.blue() * (1 - koeff)));
 }
 
+
+QColor RayCast::ColorMult(QColor mainColor, float shadow)
+{
+    return QColor((int)(mainColor.red() * shadow ),
+                  (int)(mainColor.green() * shadow ),
+                  (int)(mainColor.blue() * shadow ));
+}

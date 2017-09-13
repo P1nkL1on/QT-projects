@@ -14,7 +14,31 @@ QString ModelLoader::loadModelByAdress (QString path, Model& model)
         return "Can not load a file";
 
     QTextStream in(&file);
-    return loadModel (in, model);
+    QString err = loadModel (in, model);
+
+    // texture load
+    path.truncate(path.lastIndexOf('.'));
+    path += QString::fromStdString("_D.bmp");
+    QImageReader reader(path);
+    reader.setAutoTransform(true);
+    QImage newImage = reader.read();
+    if (!newImage.isNull())
+    {
+        model.textureMain = newImage;
+        std::cout << "Texture loaded" << std::endl;
+    }
+    // normal map load
+    path.truncate(path.lastIndexOf('_'));
+    path += QString::fromStdString("_N.bmp");
+    QImageReader readerN(path);
+    readerN.setAutoTransform(true);
+    newImage = readerN.read();
+    if (!newImage.isNull())
+    {
+        model.normalMap = newImage;
+        std::cout << "Normal map loaded" << std::endl;
+    }
+    return err;
 }
 
 QString ModelLoader::loadModel(QTextStream& textStream, Model& loadedModel)
@@ -164,5 +188,7 @@ QString ModelLoader::loadModel(QTextStream& textStream, Model& loadedModel)
     std::cout << "\tVertex count :            "<<curVertNumber << std::endl;
     std::cout << "\tTexture vertex count :    "<<curTVertNumber << std::endl;
     std::cout << "\tPolygon count :           "<<curPolNumber << std::endl;
+    std::cout << "Mesh completely loaded!" << std::endl;
+
     return QString();
 }

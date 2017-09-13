@@ -20,6 +20,16 @@ QVector<QVector3D> GraphicsObjectStruct::GraphicsObject::GetVertexNormals(unsign
     return {};
 }
 
+QVector<QVector2D> GraphicsObjectStruct::GraphicsObject::GetTextureVertexes (unsigned int polygonIndex) const
+{
+    return {};
+}
+
+QColor GraphicsObjectStruct::GraphicsObject::GetPixelFromTexture(unsigned int textureIndex, QVector2D *interPoint) const
+{
+    return Qt::black;
+}
+
 float GraphicsObjectStruct::GraphicsObject::IsMirror(unsigned int polygonIndex) const
 {
     return 0.0;

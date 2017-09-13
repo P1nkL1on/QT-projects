@@ -5,8 +5,9 @@
 #include <QFile>
 #include <QTextStream>
 #include <QVector>
-
+#include "QImage"
 #include <model.h>
+#include "QImageReader"
 using namespace ModelStructs;
 
 namespace ModelLoader

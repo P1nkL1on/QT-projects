@@ -41,7 +41,8 @@ QVector<Model> sc = {};
 Camera cam = Camera (.0, 100.0, 10.0);
 TestViewer tv = TestViewer();
 LightSourse* lt1 = new LightSourse(QVector3D(0,0,50), 500, 150);
-LightSourse* lt2 = new LightSourse(QVector3D(0,5,6), 400, 1);
+LightSourse* lt2 = new LightSourse(QVector3D(0,5,6), 400, 100);
+LightSourse* lt3 = new LightSourse(QVector3D(0,40,0), 400, 100);
 
 KDTree treeNormal;
 unsigned short treeDep = 1;
@@ -108,7 +109,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
         for (int i = 0, model_found = 0 ; i<names.length() ; i++){
             Model newmodel;
-            QString err = LoadModel("D:/QT-projects/Prohor/Models/"+QString(names[i]), newmodel);
+            QString err = LoadModel("C:/D_BACKUP/QT-projects/Prohor/Models/Rabbit/Rabbit.OBJ", newmodel);//+QString(names[i]), newmodel);
             if (!err.isEmpty())
                 qDebug() << err;
             else
@@ -118,7 +119,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
                 sc << newmodel;
             }
         }
-        tv.addLight(lt1); tv.addLight(lt2);
+        tv.addLight(lt1); tv.addLight(lt2); tv.addLight(lt3);
         for (int i = 0; i < sc.length(); i++)
             tv.addGraphicsObject(&(sc[i]));
     }
@@ -144,6 +145,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
        }
     if (event->key() == Qt::Key_B){
         qDebug() << "Scaled";
-        pixelsize = 400;
+        pixelsize = 150;
     }
 }

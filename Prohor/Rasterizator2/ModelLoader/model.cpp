@@ -138,6 +138,32 @@ QVector3D* Model::RayIntersection(const QVector3D *rayStart,
         return verts;
     }
 
+
+
+    QColor Model::GetPixelFromTexture(unsigned int textureIndex, QVector2D *interPoint) const
+    {
+        QImage texture;
+        switch (textureIndex){
+            case 0:
+                texture = textureMain; break;
+            case 1:
+                texture = normalMap; break;
+            default:
+                return QColor(Qt::red);
+                break;
+        }
+        return (texture.pixel((int)(interPoint->x() * (texture.width() - 1)),
+                              (int)((1 - interPoint->y()) * (texture.height() -1))));
+    }
+
+    QVector<QVector2D> Model::GetTextureVertexes(unsigned int polygonIndex) const
+    {
+        QVector<QVector2D> verts = { vertexes_texture[polygon_texture_vertex_indexes[polygonIndex * 3 + 0] - 1],
+                                     vertexes_texture[polygon_texture_vertex_indexes[polygonIndex * 3 + 1] - 1],
+                                     vertexes_texture[polygon_texture_vertex_indexes[polygonIndex * 3 + 2] - 1]};
+        return verts;
+    }
+
     float Model::IsMirror(unsigned int polygonIndex) const
     {
         return (polygonIndex >= polygon_start.length() - 3  )? mirror : 0;
