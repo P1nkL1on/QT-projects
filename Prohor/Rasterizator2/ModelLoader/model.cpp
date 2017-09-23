@@ -11,7 +11,6 @@ Model::Model()
 {
     modelColor = QColor(Qt::black);
     polygon_start = {0};
-    mirror = 0;
 }
 
 QString Model::DrawItSelf(QVector<QVector2D> &resultPoints, const QVector<QVector3D> vertGiven,
@@ -68,6 +67,13 @@ QString Model::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const
                       pointN = toScrCoords(normalPoints[currentNormal], width, height);
             painter->drawLine((int)point[0],(int)point[1], (int)pointN[0], (int) pointN[1]);
         }
+    if (!textureMain.isNull())
+        painter->drawImage(QRectF(0.0,20.0, 100.0, 100.0), textureMain);
+    if (!normalMap.isNull())
+        painter->drawImage(QRectF(0.0,120.0, 100.0, 100.0), normalMap);
+    if (!mirrorMap.isNull())
+        painter->drawImage(QRectF(0.0,220.0, 100.0, 100.0), mirrorMap);
+
     return QString();
 }
 
@@ -102,14 +108,13 @@ QVector3D* Model::RayIntersection(const QVector3D *rayStart,
 
     // TRUE == ANGLES, FALSE = BALLICENTER
     if (true){
-
         if (!(Dist(*intersection, *rayStart ) > .0001 && Dist(*rayFinish, *intersection ) < distance + .0001))
             return NULL;
         double angleDoff = M_PI - (
                            Angle(trianglePoints[0], *intersection, trianglePoints[1])
                          + Angle(trianglePoints[1], *intersection, trianglePoints[2])
                          + Angle(trianglePoints[2], *intersection, trianglePoints[0]));
-        if (angleDoff > -.00001 && angleDoff < .00001){
+        if (angleDoff > -.001 && angleDoff < .001){
             QVector3D* ballicenter = new QVector3D();
             *ballicenter =
                 BallecenterCoordGeron(*intersection, trianglePoints);
@@ -145,9 +150,17 @@ QVector3D* Model::RayIntersection(const QVector3D *rayStart,
         QImage texture;
         switch (textureIndex){
             case 0:
+                if (textureMain.isNull())
+                    return Qt::red;
                 texture = textureMain; break;
             case 1:
+            if (normalMap.isNull())
+                return QColor(127, 127, 127);
                 texture = normalMap; break;
+            case 2:
+            if (mirrorMap.isNull())
+                return QColor(0,0,0);
+                texture = mirrorMap; break;
             default:
                 return QColor(Qt::red);
                 break;
@@ -164,9 +177,5 @@ QVector3D* Model::RayIntersection(const QVector3D *rayStart,
         return verts;
     }
 
-    float Model::IsMirror(unsigned int polygonIndex) const
-    {
-        return (polygonIndex >= polygon_start.length() - 3  )? mirror : 0;
-    }
 }
 

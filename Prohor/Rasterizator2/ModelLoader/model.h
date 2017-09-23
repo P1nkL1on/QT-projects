@@ -24,9 +24,9 @@ namespace ModelStructs {
         QVector<unsigned int> polygon_start;
         QVector<QVector3D> vertex_normals;
         QVector<QVector<double>> parametric;
-        float mirror;
         QImage textureMain;
         QImage normalMap;
+        QImage mirrorMap;
 
         QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                                const int width, const int hei) override;
@@ -41,8 +41,6 @@ namespace ModelStructs {
         virtual QColor GetPixelFromTexture(unsigned int textureIndex, QVector2D *interPoint) const override;
 
         virtual QVector<QVector2D> GetTextureVertexes (unsigned int polygonIndex) const override;
-
-        virtual float IsMirror(unsigned int polygonIndex) const override;
     };
 }
 

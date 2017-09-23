@@ -38,6 +38,17 @@ QString ModelLoader::loadModelByAdress (QString path, Model& model)
         model.normalMap = newImage;
         std::cout << "Normal map loaded" << std::endl;
     }
+    // mirror map
+    path.truncate(path.lastIndexOf('_'));
+    path += QString::fromStdString("_S.bmp");
+    QImageReader readerS(path);
+    readerS.setAutoTransform(true);
+    newImage = readerS.read();
+    if (!newImage.isNull())
+    {
+        model.mirrorMap = newImage;
+        std::cout << "Mirror map loaded" << std::endl;
+    }
     return err;
 }
 

@@ -93,7 +93,6 @@ QString LoadModel (QString path, Model& model){
         model.polygon_start << i * 3;
     // calculate parametric (ONLY FOR TRIANGULATING MODEL)
     model.parametric = calculateParametricForAllPolygons(model.vertexes, model.polygon_vertex_indexes);
-    model.mirror = .6;
     //
     treeNormal = KDTree();
     // build kd
@@ -109,7 +108,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
         for (int i = 0, model_found = 0 ; i<names.length() ; i++){
             Model newmodel;
-            QString err = LoadModel("C:/D_BACKUP/QT-projects/Prohor/Models/Rabbit/Rabbit.OBJ", newmodel);//+QString(names[i]), newmodel);
+            QString err = LoadModel("D:/QT-projects/Prohor/Models/anime.OBJ", newmodel);//+QString(names[i]), newmodel);
             if (!err.isEmpty())
                 qDebug() << err;
             else
@@ -145,6 +144,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
        }
     if (event->key() == Qt::Key_B){
         qDebug() << "Scaled";
-        pixelsize = 150;
+        pixelsize = 100;
     }
 }

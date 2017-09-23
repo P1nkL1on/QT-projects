@@ -30,10 +30,6 @@ QColor GraphicsObjectStruct::GraphicsObject::GetPixelFromTexture(unsigned int te
     return Qt::black;
 }
 
-float GraphicsObjectStruct::GraphicsObject::IsMirror(unsigned int polygonIndex) const
-{
-    return 0.0;
-}
 
 //QString GraphicsObjectStruct::GraphicsObject::DrawItSelf(QVector<QVector2D> &points, QMatrix4x4 view, QMatrix4x4 perspective)
 //{

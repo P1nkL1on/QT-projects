@@ -18,8 +18,6 @@ public:
     virtual QVector<QVector3D> GetVertexNormals (unsigned int polygonIndex) const;
     virtual QVector<QVector2D> GetTextureVertexes (unsigned int polygonIndex) const;
     virtual QColor GetPixelFromTexture (unsigned int textureIndex, QVector2D* interPoint) const;
-
-    virtual float IsMirror (unsigned int polygonIndex) const;
 };
 }
 #endif // GRAPHICSOBJECT_H

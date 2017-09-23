@@ -83,10 +83,10 @@ QColor RayCast::RenderPixel(const QVector3D *rayStart, const QVector3D *rayFinis
         QVector3D* interNormalPointXYZ = Ballicentrate(model->GetVertexNormals(intersectedPolygonNumber), *interesction);
         // special color for normal change
         QColor normalMapColor = model->GetPixelFromTexture(1, interPoint2D);
-        QVector3D normalInterAdd = QVector3D( (float)normalMapColor.red(), (float)normalMapColor.green(), (float)normalMapColor.blue() );
+        QVector3D normalInterAdd = QVector3D( (float)normalMapColor.red() - 127.0, (float)normalMapColor.green() - 127.0, (float)normalMapColor.blue() - 127.0 );
         *interNormalPointXYZ = Stereometry::Summ(*interNormalPointXYZ,
                                Stereometry::Mult(normalInterAdd,
-                               1 / 255.0 * Stereometry::Dist(*interNormalPointXYZ, *intersectionPointXYZ)));
+                               1 / 127.0 * Stereometry::Dist(*interNormalPointXYZ, *intersectionPointXYZ)));
 
         // нашли точку в координатах хуз и нормаль
         intersectionReturnXYZ = *intersectionPointXYZ;
@@ -95,14 +95,16 @@ QColor RayCast::RenderPixel(const QVector3D *rayStart, const QVector3D *rayFinis
                 RayCast::LightIntense(intersectionPointXYZ, interNormalPointXYZ, model, scene->getLights(), tree);
         QColor pixelColor =
                 ColorMult(model->GetPixelFromTexture(0, interPoint2D), lightK/255.0);
-        if ( model->IsMirror(intersectedPolygonNumber) > 0 ){
+        QColor mirrorKColor = model->GetPixelFromTexture(2, interPoint2D);
+        float mirrorMult = .5 * (mirrorKColor.red() + mirrorKColor.blue() + mirrorKColor.green()) / (255 * 3.0);
+        if ( mirrorMult > 0.05 ){
             // рекурсивно выпускаем отраженный луч
             QVector3D* reflectedXYZ = new QVector3D();
             *reflectedXYZ = Reflect(rayStart, intersectionPointXYZ, interNormalPointXYZ);
             //qDebug () << "Reflect to " << *reflectedXYZ;
             QColor reflectColor = RayCast::RenderPixel(intersectionPointXYZ, reflectedXYZ, scene, model, tree, intersectionReturnXYZ);
 
-            return RayCast::ColorSumm(pixelColor, reflectColor, (float)(1 - model->IsMirror(intersectedPolygonNumber)));
+            return RayCast::ColorSumm(pixelColor, reflectColor, (float)(1 - mirrorMult));
         }
         // в противном случае возвращаем просто цвет пикселя
         return pixelColor;
