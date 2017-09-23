@@ -48,6 +48,12 @@ QString Model::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const
     pen.setColor(modelColor);//((currentPolygon == polygonSelectedIndex)? Qt::red : modelColor);
     painter->setPen(pen);
 
+    for (int currentVert = 0; currentVert < vertexes.length() - 1; currentVert ++){
+        QVector2D res = toScrCoords(resPoints[currentVert], width, height);
+        painter->drawPoint((int)res[0],(int)res[1]);
+    }
+
+
     for (int currentPolygon = 0; currentPolygon < polygon_start.length() - 1; currentPolygon++){
         QVector2D lastPointInPolygon = toScrCoords(resPoints[polygon_vertex_indexes[polygon_start[currentPolygon + 1] - 1] - 1], width, height);
         for (int currentVertInd = polygon_start[currentPolygon]; currentVertInd < polygon_start[currentPolygon + 1]; currentVertInd++){

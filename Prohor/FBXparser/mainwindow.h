@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "QKeyEvent"
+#include "QMouseEvent"
 
 namespace Ui {
 class MainWindow;
@@ -18,8 +19,13 @@ public:
 
 private:
     Ui::MainWindow *ui;
-
     void keyPressEvent(QKeyEvent *e);
+    void mouseMoveEvent(QMouseEvent *m);
+    void mousePressEvent(QMouseEvent *m);
+    void mouseReleaseEvent(QMouseEvent *m);
+
+protected:
+    void paintEvent(QPaintEvent *e);
 };
 
 #endif // MAINWINDOW_H
