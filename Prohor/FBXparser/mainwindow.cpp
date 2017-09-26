@@ -62,22 +62,22 @@ void MainWindow::paintEvent(QPaintEvent *e){
         tv.drawOn(&qp, cam, (width() > height())? height() : width(), (width() > height())? height() : width());
 }
 
-bool loaded = false;
-ModelFBX a;
+bool isLoaded = false;
+ModelFBX modelFBX;
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Space){
-           if (!loaded){
-                QString err = loadModelByAdress
-                        ("D:/QT-projects/QT-projects/Prohor/Models/FBX/!guard yelling exported.FBX", a);
-                if (!err.isEmpty())
-                    qDebug() << err;
-                else
-                {
-                    loaded = true;
-                    tv.addGraphicsObject(&a);
-                    qDebug() << "loading complete";
-                }
-           }
-       }
+    if (event->key() != Qt::Key_Space)
+        return;
+    if (isLoaded)
+        return;
+    const QString err = loadModelByAdress(
+                "D:/QT-projects/Prohor/Models/FBX/!guard yelling exported.FBX", modelFBX);
+    if (!err.isEmpty()){
+        qDebug() << err;
+        return;
+    }
+
+    isLoaded = true;
+    tv.addGraphicsObject(&modelFBX);
+    qDebug() << "loading complete";
 }

@@ -2,6 +2,8 @@ INPUT(
 ./debug\main.o
 ./debug\mainwindow.o
 ./debug\fbxloader.o
+./debug\modelfbx.o
+./debug\structsFBX.o
 ./debug\modelloader.o
 ./debug\model.o
 ./debug\stereometry.o

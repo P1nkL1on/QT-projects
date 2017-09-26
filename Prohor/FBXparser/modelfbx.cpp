@@ -63,7 +63,29 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
         painter->drawPoint((int)res[0],(int)res[1]);
     }
 
+    // joint drawing
 
+
+
+    pen.setWidth(6);
+    pen.setColor(Qt::blue);
+    painter->setPen(pen);
+    for (int i = 0; i < limbs.length(); i++){
+        QVector<QVector2D> resJoint = {};
+        QVector3D finalTranform = {limbs[0].translation.x(), limbs[0].translation.y(), limbs[0].translation.z()};
+        LimbNode* ln = &limbs[i];
+        do {
+            finalTranform = {finalTranform.x() + ln->translation.x(),
+                             finalTranform.y() + ln->translation.y(),
+                             finalTranform.z() + ln->translation.z()};
+            ln = ln->pater;
+        }while(ln != NULL);
+
+        QString errJ = DrawItSelf(resJoint, {finalTranform}, view, perspective);
+
+        QVector2D res = toScrCoords(resJoint[0], width, hei);
+        painter->drawPoint((int)res[0],(int)res[1]);
+    }
 }
 
 QString ModelFBX::DrawItSelf(QVector<QVector2D> &resultPoints, const QVector<QVector3D> vertGiven,

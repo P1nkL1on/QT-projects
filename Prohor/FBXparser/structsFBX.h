@@ -31,6 +31,9 @@ public:
     QString ID;
     QVector3D translation;
     QVector3D rotation;
+    LimbNode* pater;
+    float lengthFromAttribute;
+    QVector<float> BindMatrix;
 };
 
 #endif // CLUSTER_H

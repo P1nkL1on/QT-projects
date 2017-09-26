@@ -18,4 +18,7 @@ LimbNode::LimbNode()
     ID = "";
     translation = {};
     rotation = {};
+    pater = NULL;
+    lengthFromAttribute = 0;
+    BindMatrix = {};
 }

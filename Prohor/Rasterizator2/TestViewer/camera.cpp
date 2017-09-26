@@ -112,7 +112,7 @@ void Camera::transformByMouseMoving(const QVector2D currentMousePlace,
         }
         // moving
         if (actionType == 0){
-                float sensetive = 100.0;
+                float sensetive = 10.0;
                 QVector3D add = (Stereometry::Summ(Stereometry::Mult(Stereometry::Resid(cameraProps[2], cameraProps[0]),
                                                         (currentMousePlace.y() - prevMousePlace.y())
                                                         * 1.0 / (sensetive * Stereometry::Dist(cameraProps[2], cameraProps[0]))),
