@@ -27,14 +27,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     fbxloader.cpp \
-    cluster.cpp \
-    modelfbx.cpp
+    modelfbx.cpp \
+    structsFBX.cpp
 
 HEADERS += \
         mainwindow.h \
     fbxloader.h \
-    cluster.h \
-    modelfbx.h
+    modelfbx.h \
+    structsFBX.h
 
 FORMS += \
         mainwindow.ui

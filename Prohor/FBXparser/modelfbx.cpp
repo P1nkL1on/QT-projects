@@ -7,6 +7,8 @@ ModelFBX::ModelFBX()
     polygon_start = {};
     polygon_vertex_indexes = {};
     clusters = {};
+    limbs = {};
+    limbAtts = {};
 }
 
 QVector2D toScrCoords (const QVector2D point, const int screenWidth, const int screenHeight){

@@ -17,4 +17,20 @@ public:
     //QMatrix4x4 LinkTransform;
 };
 
+struct LimbNodeAttribute
+{
+public:
+    LimbNodeAttribute();
+    QString ID;
+    float length;
+};
+
+struct LimbNode{
+public:
+    LimbNode();
+    QString ID;
+    QVector3D translation;
+    QVector3D rotation;
+};
+
 #endif // CLUSTER_H

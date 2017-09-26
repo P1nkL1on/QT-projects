@@ -69,7 +69,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_Space){
            if (!loaded){
                 QString err = loadModelByAdress
-                        ("D:/QT-projects/QT-projects/Prohor/Models/FBX/!Samba exported.FBX", a);
+                        ("D:/QT-projects/QT-projects/Prohor/Models/FBX/!guard yelling exported.FBX", a);
                 if (!err.isEmpty())
                     qDebug() << err;
                 else

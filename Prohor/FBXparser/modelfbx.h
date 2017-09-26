@@ -4,7 +4,7 @@
 #include "graphicsobject.h"
 #include "QImage"
 #include "qvector2d.h"
-#include "cluster.h"
+#include "structsFBX.h"
 
 class ModelFBX : public GraphicsObjectStruct::GraphicsObject
 {
@@ -20,6 +20,8 @@ public:
     QVector<unsigned int> polygon_vertex_indexes;
     QVector<unsigned int> polygon_start;
     QVector<Cluster> clusters;
+    QVector<LimbNode> limbs;
+    QVector<LimbNodeAttribute> limbAtts;
 
     QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                            const int width, const int hei) override;

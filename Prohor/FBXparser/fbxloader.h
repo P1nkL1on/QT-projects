@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QVector>
 #include <modelfbx.h>
+#include "structsFBX.h"
 
 namespace FBXLoader {
     QString loadModel(QTextStream& textStream, ModelFBX& loadedModel);
