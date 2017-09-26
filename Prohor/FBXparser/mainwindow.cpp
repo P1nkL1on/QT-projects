@@ -3,11 +3,13 @@
 
 #include "testviewer.h"
 #include "fbxloader.h"
-#include "model.h"
+#include "modelfbx.h"
 #include "qdebug.h"
 
+#include "qmath.h"
+
 using namespace FBXLoader;
-using namespace ModelStructs;
+//using namespace ModelStructs;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -57,17 +59,17 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *m)
 void MainWindow::paintEvent(QPaintEvent *e){
     QPainter qp(this);
     if (tv.ModelCount() != 0)
-        tv.drawOn(&qp, cam, width(), height());
+        tv.drawOn(&qp, cam, (width() > height())? height() : width(), (width() > height())? height() : width());
 }
 
 bool loaded = false;
-Model a;
+ModelFBX a;
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Space){
            if (!loaded){
                 QString err = loadModelByAdress
-                        ("D:/QT-projects/QT-projects/Prohor/Models/FBX/!box exported.FBX", a);
+                        ("D:/QT-projects/QT-projects/Prohor/Models/FBX/!Samba exported.FBX", a);
                 if (!err.isEmpty())
                     qDebug() << err;
                 else

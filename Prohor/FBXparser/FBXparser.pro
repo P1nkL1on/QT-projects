@@ -26,11 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    fbxloader.cpp
+    fbxloader.cpp \
+    cluster.cpp \
+    modelfbx.cpp
 
 HEADERS += \
         mainwindow.h \
-    fbxloader.h
+    fbxloader.h \
+    cluster.h \
+    modelfbx.h
 
 FORMS += \
         mainwindow.ui
