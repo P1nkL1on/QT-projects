@@ -71,7 +71,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     if (isLoaded)
         return;
     const QString err = loadModelByAdress(
-                "D:/QT-projects/QT-projects/Prohor/Models/FBX/!humanoid exported.FBX", modelFBX);
+                "D:/QT-projects/QT-projects/Prohor/Models/FBX/!bboy 2 exported.FBX", modelFBX);
     if (!err.isEmpty()){
         qDebug() << err;
         return;

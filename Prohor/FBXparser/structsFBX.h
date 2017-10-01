@@ -29,12 +29,17 @@ struct LimbNode{
 public:
     LimbNode();
     QString ID;
+    QString name;
     QVector3D translation;
     QVector3D rotation;
     LimbNode* pater;
+    //from limbs
     float lengthFromAttribute;
-    //QVector<float> BindMatrix;
+    //bind read
     QMatrix4x4 BindMatrix;
+    // cluster add
+    QVector<int> indexes;
+    QVector<float> weights;
 };
 
 #endif // CLUSTER_H

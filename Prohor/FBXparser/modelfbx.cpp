@@ -67,12 +67,14 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
 
 
 
-    pen.setWidth(6);
-    pen.setColor(Qt::blue);
-    painter->setPen(pen);
+
+
     for (int i = 0; i < limbs.length(); i++){
+        pen.setColor(Qt::blue);
+        pen.setWidth(10);
+        painter->setPen(pen);
         QVector<QVector2D> resJoint = {};
-        QVector3D finalTranform = {limbs[0].translation.x(), limbs[0].translation.y(), limbs[0].translation.z()};
+        QVector3D finalTranform = {0,0,0};//{limbs[0].translation.x(), limbs[0].translation.y(), limbs[0].translation.z()};
         LimbNode* ln = &limbs[i];
         do {
             finalTranform = {finalTranform.x() + ln->translation.x(),
@@ -85,6 +87,21 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
 
         QVector2D res = toScrCoords(resJoint[0], width, hei);
         painter->drawPoint((int)res[0],(int)res[1]);
+
+        painter->drawText((int)res[0],(int)res[1],300,20,0, (limbs[i].name));
+
+        // cluster guys
+        pen.setWidth(1);
+        pen.setColor(QColor(0,0,255,10));
+        painter->setPen(pen);
+
+        for (int j = 0; j < limbs[i].indexes.length(); j++){
+            QVector<QVector2D> controllablePoint = {};
+            QString errCC = DrawItSelf(controllablePoint,{vertexes[limbs[i].indexes[j]]}, view, perspective);
+            QVector2D controllable2D = toScrCoords(controllablePoint[0], width, hei);
+
+            painter->drawLine((int)res[0],(int)res[1], (int)controllable2D[0], (int)controllable2D[1]);
+        }
     }
 }
 

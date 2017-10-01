@@ -21,4 +21,9 @@ LimbNode::LimbNode()
     pater = NULL;
     lengthFromAttribute = 0;
     BindMatrix = {};
+
+    indexes = {};
+    weights = {};
+
+    name = "Unknown";
 }
