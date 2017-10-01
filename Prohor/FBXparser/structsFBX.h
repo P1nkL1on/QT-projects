@@ -33,7 +33,8 @@ public:
     QVector3D rotation;
     LimbNode* pater;
     float lengthFromAttribute;
-    QVector<float> BindMatrix;
+    //QVector<float> BindMatrix;
+    QMatrix4x4 BindMatrix;
 };
 
 #endif // CLUSTER_H

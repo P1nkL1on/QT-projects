@@ -1,5 +1,6 @@
 #include "fbxloader.h"
 #include "qdebug.h"
+#include "QVector4D"
 
 QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 {
@@ -15,6 +16,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     LimbNode newLimbNode;
     QString line = "", prevLine = "";
     QString readID = ""; QVector<float> temp;
+    QVector<QString> Links = {};
 
     while (!textStream.atEnd()){
         prevLine = line;
@@ -132,54 +134,8 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
         // find links
         if (nextLineIsLink){
-            if (prevLine.indexOf("NodeAttribute::") == 1 && prevLine.indexOf("Model::", 6) >= 0){
-                QStringList IDS = line.split(',');
-                int atributeNumber = -1, limbNumber = -1;
-                for (int ch = 0; ch < loadedModel.limbs.length(); ch++){
-                    if (loadedModel.limbAtts[ch].ID == IDS[IDS.length() - 2])
-                        atributeNumber = ch;
-                    if (loadedModel.limbs[ch].ID == IDS[IDS.length() - 1])
-                        limbNumber = ch;
-                    if (atributeNumber >= 0 && limbNumber >=0)
-                        break;  // found already both
-                }
-                if (atributeNumber>= 0 && limbNumber >=0){
-//                    qDebug () << "!!!" <<
-//                                 loadedModel.limbAtts[atributeNumber].length <<
-//                                 ((loadedModel.limbs[limbNumber].pater != NULL)?
-//                                 (loadedModel.limbs[limbNumber].translation -
-//                                  loadedModel.limbs[limbNumber].pater->translation).length()
-//                                  : -1);
-                    loadedModel.limbs[limbNumber].lengthFromAttribute =
-                            loadedModel.limbAtts[atributeNumber].length / 100.0 *
-                                ((loadedModel.limbs[limbNumber].pater != NULL)?
-                                (loadedModel.limbs[limbNumber].translation -
-                                 loadedModel.limbs[limbNumber].pater->translation).length()
-                                 : 0);
-                }
-            }
-            if (prevLine.indexOf("Model::") == 1 && prevLine.indexOf("Model::", 6) >= 0){
-                // we have lines eqaul to
-                //;Model::LeftHandThumb4, Model::LeftHandThumb3
-                //C: "OO",1702780768,1702776384
-                QStringList IDS = line.split(',');
-                int childNumber = -1, paterNumber = -1;
-                for (int ch = 0; ch < loadedModel.limbs.length(); ch++){
-                    if (loadedModel.limbs[ch].ID == IDS[IDS.length() - 2])
-                        childNumber = ch;
-                    if (loadedModel.limbs[ch].ID == IDS[IDS.length() - 1])
-                        paterNumber = ch;
-                    if (childNumber >= 0 && paterNumber >=0)
-                        break;  // found already both
-                }
-                if (childNumber < 0 || paterNumber < 0)
-                    qDebug() << "Can not find NODES for " << line;
-                else
-                {
-                    loadedModel.limbs[childNumber].pater = &(loadedModel.limbs[paterNumber]);
-                    qDebug () << "Connect" << childNumber << "to" << paterNumber;
-                }
-            }
+            Links << (prevLine);
+            Links << (line);
 
         }
         nextLineIsLink= (line.length() > 0 && line[0] == ';');
@@ -199,12 +155,79 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
             if (temp.length() > 0 && readID.length() > 0){
                 for (int id = 0; id < loadedModel.limbs.length(); id++)
                     if (loadedModel.limbs[id].ID == readID)
-                    {loadedModel.limbs[id].BindMatrix = temp; break;}
+                    {
+                        loadedModel.limbs[id].BindMatrix = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
+                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
+                        break;
+                    }
                 temp = {};
                 readID = "";
             }
         }
     }
+
+    // LINK POST LOADING
+    for (int i = 0; i < Links.length(); i+=2){
+        prevLine = Links[i];
+        line = Links[i + 1];
+        if (prevLine.indexOf("NodeAttribute::") == 1 && prevLine.indexOf("Model::", 6) >= 0){
+            QStringList IDS = line.split(',');
+            int atributeNumber = -1, limbNumber = -1;
+            for (int ch = 0; ch < loadedModel.limbs.length(); ch++){
+                if (loadedModel.limbAtts[ch].ID == IDS[IDS.length() - 2])
+                    atributeNumber = ch;
+                if (loadedModel.limbs[ch].ID == IDS[IDS.length() - 1])
+                    limbNumber = ch;
+                if (atributeNumber >= 0 && limbNumber >=0)
+                    break;  // found already both
+            }
+            if (atributeNumber>= 0 && limbNumber >=0){
+//                    qDebug () << "!!!" <<
+//                                 loadedModel.limbAtts[atributeNumber].length <<
+//                                 ((loadedModel.limbs[limbNumber].pater != NULL)?
+//                                 (loadedModel.limbs[limbNumber].translation -
+//                                  loadedModel.limbs[limbNumber].pater->translation).length()
+//                                  : -1);
+                loadedModel.limbs[limbNumber].lengthFromAttribute =
+                        loadedModel.limbAtts[atributeNumber].length / 100.0 *
+                            ((loadedModel.limbs[limbNumber].pater != NULL)?
+                            (loadedModel.limbs[limbNumber].translation -
+                             loadedModel.limbs[limbNumber].pater->translation).length()
+                             : 0);
+            }
+        }
+        if (prevLine.indexOf("Model::") == 1 && prevLine.indexOf("Model::", 6) >= 0){
+            // we have lines eqaul to
+            //;Model::LeftHandThumb4, Model::LeftHandThumb3
+            //C: "OO",1702780768,1702776384
+            QStringList IDS = line.split(',');
+            int childNumber = -1, paterNumber = -1;
+            for (int ch = 0; ch < loadedModel.limbs.length(); ch++){
+                if (loadedModel.limbs[ch].ID == IDS[IDS.length() - 2])
+                    childNumber = ch;
+                if (loadedModel.limbs[ch].ID == IDS[IDS.length() - 1])
+                    paterNumber = ch;
+                if (childNumber >= 0 && paterNumber >=0)
+                    break;  // found already both
+            }
+            if (childNumber < 0 || paterNumber < 0)
+                qDebug() << "Can not find NODES for " << line;
+            else
+            {
+                loadedModel.limbs[childNumber].pater = &(loadedModel.limbs[paterNumber]);
+                qDebug () << "Connect" << childNumber << "to" << paterNumber;
+            }
+        }
+
+    }
+    // bind matrixes problems
+//    for (int i = 0; i < loadedModel.limbs.length(); i++){
+//        QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
+//        tempCoord = tempCoord * loadedModel.limbs[i].BindMatrix;
+//        loadedModel.limbs[i].translation = QVector3D(tempCoord.x()/tempCoord.w(), tempCoord.y()/tempCoord.w(), tempCoord.z()/tempCoord.w());
+//    }
+
+
     for (int i = 0; i < loadedModel.limbs.length(); i++)
         qDebug() << loadedModel.limbs[i].ID + "->" +
                     ((loadedModel.limbs[i].pater == NULL)? "null" : loadedModel.limbs[i].pater->ID);
