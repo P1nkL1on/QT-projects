@@ -91,7 +91,12 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     newCluster.indexes << ::atof(numbers[i].toStdString().c_str());
                 if (nowDirectory.indexOf("/Weights") == nowDirectory.length() - 8)
                     newCluster.weights << ::atof(numbers[i].toStdString().c_str());
-            }
+                if (prevLine.indexOf("TransformLink") == 0)
+                    newCluster.LinkTransform << ::atof(numbers[i].toStdString().c_str());
+                else
+                    if (prevLine.indexOf("Transform") == 0)
+                        newCluster.Transform << ::atof(numbers[i].toStdString().c_str());
+                }
         }
         // try parse BONES
         if (lineName == "LimbNode"){
@@ -122,6 +127,28 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                     ::atof(seps[seps.length() - 2].toStdString().c_str()),
                                     ::atof(seps[seps.length() - 1].toStdString().c_str()));
                         newLimbNode.ID += "@";
+                        newLimbNode.RotatMatrix.rotate(newLimbNode.rotation.y(), newLimbNode.rotation.z(), newLimbNode.rotation.x());
+                        /*
+                         * xyz  X
+                         * xzy  X
+                         * yxz
+                         * yzx
+                         * zyx  X
+                         * zxy  X
+
+                            */
+                        //QMatrix3x3 rotat();
+//                        QVector3D angles = newLimbNode.rotation;
+//                        rotat[0,0] = cos(angles.x())*cos(angles.z()) - sin(angles.x())*cos(angles.y())*sin(angles.z());
+//                        rotat[0,1] = -cos(angles.x())*sin(angles.z()) - sin(angles.x())*cos(angles.y())*cos(angles.z());
+//                        rotat[0,2] = sin(angles.x())*sin(angles.y());
+//                        rotat[1,0] = sin(angles.x())*cos(angles.z()) + cos(angles.x())*cos(angles.y())*sin(angles.z());
+//                        rotat[1,1] = -sin(angles.x())*sin(angles.z()) + cos(angles.x())*cos(angles.y())*cos(angles.z());
+//                        rotat[1,2] = -cos(angles.x())*sin(angles.y());
+//                        rotat[2,0] = sin(angles.y()) * sin(angles.z());
+//                        rotat[2,1] = sin(angles.y())*cos(angles.z());
+//                        rotat[2,2] = cos(angles.y());
+//                        newLimbNode.RotatMatrix = QMatrix3x3();
                 }
             }
             if (nowDirectory.indexOf("NodeAttribute/Properties70") > 0
@@ -206,6 +233,22 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                         loadedModel.limbs[boneNumber].indexes << loadedModel.clusters[clusterNumber].indexes[i];
                         loadedModel.limbs[boneNumber].weights << loadedModel.clusters[clusterNumber].weights[i];
                     }
+                    if (   loadedModel.clusters[clusterNumber].Transform.length() == 16
+                        && loadedModel.clusters[clusterNumber].LinkTransform.length() == 16){
+
+                        loadedModel.limbs[boneNumber].correctTransformsCluster = true;
+
+                        temp = loadedModel.clusters[clusterNumber].Transform;
+                        loadedModel.limbs[boneNumber].Transform = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
+                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
+                        temp = loadedModel.clusters[clusterNumber].LinkTransform;
+                        loadedModel.limbs[boneNumber].LinkTransform = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
+                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
+                    }else{
+                        loadedModel.limbs[boneNumber].Transform = {};
+                        loadedModel.limbs[boneNumber].LinkTransform = {};
+                        qDebug() << "Invalid CLUSTER transform and link tranform" << loadedModel.clusters[clusterNumber].Transform << "/" << loadedModel.clusters[clusterNumber].LinkTransform;
+                    }
                     qDebug () << "Connect NODE " << boneNumber << "and CLUSTER" << clusterNumber << line;
                 }
             }
@@ -239,11 +282,23 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     }
 
 
-//    for (int i = 0; i < loadedModel.limbs.length(); i++){
-//        QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
-//        tempCoord = tempCoord * loadedModel.limbs[i].BindMatrix;
-//        loadedModel.limbs[i].translation = QVector3D(tempCoord.x()/tempCoord.w(), tempCoord.y()/tempCoord.w(), tempCoord.z()/tempCoord.w());
-//    }
+    for (int i = 0; i < loadedModel.limbs.length(); i++){
+        QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
+
+        LimbNode* ln = &loadedModel.limbs[i];
+        do {
+            //tempCoord = tempCoord * ln->RotatMatrix;
+            ln = ln->pater;
+        }while(ln != NULL);
+
+        if (loadedModel.limbs[i].correctTransformsCluster)
+            tempCoord = tempCoord
+                    * loadedModel.limbs[i].LinkTransform.inverted()
+                    * loadedModel.limbs[i].Transform.inverted()
+                    * loadedModel.limbs[i].BindMatrix;
+
+        loadedModel.limbs[i].translation = QVector3D(tempCoord.x()/tempCoord.w(), tempCoord.y()/tempCoord.w(), tempCoord.z()/tempCoord.w());
+    }
 
 
     for (int i = 0; i < loadedModel.limbs.length(); i++)

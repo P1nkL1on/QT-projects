@@ -21,9 +21,11 @@ LimbNode::LimbNode()
     pater = NULL;
     lengthFromAttribute = 0;
     BindMatrix = {};
+    RotatMatrix = {};
 
     indexes = {};
     weights = {};
+    correctTransformsCluster = false;
 
     name = "Unknown";
 }

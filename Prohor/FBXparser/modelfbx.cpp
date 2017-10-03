@@ -65,34 +65,40 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
 
     // joint drawing
 
-
-
-
-
     for (int i = 0; i < limbs.length(); i++){
         pen.setColor(Qt::blue);
         pen.setWidth(10);
         painter->setPen(pen);
         QVector<QVector2D> resJoint = {};
-        QVector3D finalTranform = {0,0,0};//{limbs[0].translation.x(), limbs[0].translation.y(), limbs[0].translation.z()};
+        QVector3D finalTranform = {};//{limbs[0].translation.x(), limbs[0].translation.y(), limbs[0].translation.z()};
         LimbNode* ln = &limbs[i];
+        QVector3D prevTransform = {-ln->translation.x(), -ln->translation.y(), -ln->translation.z()};
         do {
+
             finalTranform = {finalTranform.x() + ln->translation.x(),
                              finalTranform.y() + ln->translation.y(),
                              finalTranform.z() + ln->translation.z()};
             ln = ln->pater;
+            //depthRecursion++;
         }while(ln != NULL);
+        prevTransform = {finalTranform.x() + prevTransform.x(),
+                         finalTranform.y() + prevTransform.y(),
+                         finalTranform.z() + prevTransform.z()};
 
-        QString errJ = DrawItSelf(resJoint, {finalTranform}, view, perspective);
+        QString errJ = DrawItSelf(resJoint, {finalTranform, prevTransform}, view, perspective);
 
         QVector2D res = toScrCoords(resJoint[0], width, hei);
+        QVector2D resPater = toScrCoords(resJoint[1], width, hei);
         painter->drawPoint((int)res[0],(int)res[1]);
+        pen.setWidth(5);
+        painter->setPen(pen);
+        painter->drawLine((int)res[0],(int)res[1], (int)resPater[0], (int)resPater[1]);
 
         painter->drawText((int)res[0],(int)res[1],300,20,0, (limbs[i].name));
 
-        // cluster guys
+        // cluster boys
         pen.setWidth(1);
-        pen.setColor(QColor(0,0,255,10));
+        pen.setColor(QColor(0,0,255,1));
         painter->setPen(pen);
 
         for (int j = 0; j < limbs[i].indexes.length(); j++){

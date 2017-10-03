@@ -4,6 +4,7 @@
 #include "QString"
 #include "QVector"
 #include "QMatrix4x4"
+#include "QMatrix3x3"
 
 
 struct Cluster
@@ -13,8 +14,9 @@ public:
     QString ID;
     QVector<int> indexes;
     QVector<float> weights;
-    //QMatrix4x4 Transform;
-    //QMatrix4x4 LinkTransform;
+
+    QVector<float> Transform;
+    QVector<float> LinkTransform;
 };
 
 struct LimbNodeAttribute
@@ -37,6 +39,10 @@ public:
     float lengthFromAttribute;
     //bind read
     QMatrix4x4 BindMatrix;
+    QMatrix4x4 RotatMatrix;
+    QMatrix4x4 Transform;
+    QMatrix4x4 LinkTransform;
+    bool correctTransformsCluster;
     // cluster add
     QVector<int> indexes;
     QVector<float> weights;
