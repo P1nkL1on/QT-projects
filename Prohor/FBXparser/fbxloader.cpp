@@ -127,7 +127,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                     ::atof(seps[seps.length() - 2].toStdString().c_str()),
                                     ::atof(seps[seps.length() - 1].toStdString().c_str()));
                         newLimbNode.ID += "@";
-                        newLimbNode.RotatMatrix.rotate(newLimbNode.rotation.y(), newLimbNode.rotation.z(), newLimbNode.rotation.x());
+                        newLimbNode.RotatMatrix.rotate(newLimbNode.rotation.x(), newLimbNode.rotation.y(), newLimbNode.rotation.z());
                         /*
                          * xyz  X
                          * xzy  X
@@ -228,27 +228,43 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     qDebug() << "Can not find CLUSTER for " << line << boneNumber << clusterNumber;
                 else
                 {
+
+                    temp = loadedModel.clusters[clusterNumber].Transform;
+                    QMatrix4x4 clusterTransform =
+                            QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
+                                       temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
+                    temp = loadedModel.clusters[clusterNumber].LinkTransform;
+                    QMatrix4x4 clusterLinkTransform =
+                            QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
+                                       temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
+
                     for (int i = 0; i < loadedModel.clusters[clusterNumber].indexes.length(); i++)
                     {
                         loadedModel.limbs[boneNumber].indexes << loadedModel.clusters[clusterNumber].indexes[i];
                         loadedModel.limbs[boneNumber].weights << loadedModel.clusters[clusterNumber].weights[i];
-                    }
-                    if (   loadedModel.clusters[clusterNumber].Transform.length() == 16
-                        && loadedModel.clusters[clusterNumber].LinkTransform.length() == 16){
 
-                        loadedModel.limbs[boneNumber].correctTransformsCluster = true;
-
-                        temp = loadedModel.clusters[clusterNumber].Transform;
-                        loadedModel.limbs[boneNumber].Transform = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
-                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
-                        temp = loadedModel.clusters[clusterNumber].LinkTransform;
-                        loadedModel.limbs[boneNumber].LinkTransform = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
-                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
-                    }else{
-                        loadedModel.limbs[boneNumber].Transform = {};
-                        loadedModel.limbs[boneNumber].LinkTransform = {};
-                        qDebug() << "Invalid CLUSTER transform and link tranform" << loadedModel.clusters[clusterNumber].Transform << "/" << loadedModel.clusters[clusterNumber].LinkTransform;
+                        QVector3D transformOld = loadedModel.vertexes[loadedModel.limbs[boneNumber].indexes[i]];
+                        QVector4D tempCoord = {transformOld.x(), transformOld.y(), transformOld.z(), 1.0};
+                        tempCoord = tempCoord;// * clusterTransform.inverted() * clusterLinkTransform.inverted();
+                        loadedModel.vertexes[loadedModel.limbs[boneNumber].indexes[i]]
+                                = {tempCoord.x() / tempCoord.w(), tempCoord.y() / tempCoord.w(), tempCoord.z() / tempCoord.w()};
                     }
+//                    if (   loadedModel.clusters[clusterNumber].Transform.length() == 16
+//                        && loadedModel.clusters[clusterNumber].LinkTransform.length() == 16){
+
+//                        loadedModel.limbs[boneNumber].correctTransformsCluster = true;
+
+//                        temp = loadedModel.clusters[clusterNumber].Transform;
+//                        loadedModel.limbs[boneNumber].Transform = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
+//                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
+//                        temp = loadedModel.clusters[clusterNumber].LinkTransform;
+//                        loadedModel.limbs[boneNumber].LinkTransform = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
+//                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
+//                    }else{
+//                        loadedModel.limbs[boneNumber].Transform = {};
+//                        loadedModel.limbs[boneNumber].LinkTransform = {};
+//                        qDebug() << "Invalid CLUSTER transform and link tranform" << loadedModel.clusters[clusterNumber].Transform << "/" << loadedModel.clusters[clusterNumber].LinkTransform;
+//                    }
                     qDebug () << "Connect NODE " << boneNumber << "and CLUSTER" << clusterNumber << line;
                 }
             }
@@ -292,10 +308,10 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         }while(ln != NULL);
 
         if (loadedModel.limbs[i].correctTransformsCluster)
-            tempCoord = tempCoord
-                    * loadedModel.limbs[i].LinkTransform.inverted()
-                    * loadedModel.limbs[i].Transform.inverted()
-                    * loadedModel.limbs[i].BindMatrix;
+            tempCoord = tempCoord;
+                    //* loadedModel.limbs[i].LinkTransform.inverted()
+                    //* loadedModel.limbs[i].Transform.inverted()
+                    //* loadedModel.limbs[i].BindMatrix.inverted();
 
         loadedModel.limbs[i].translation = QVector3D(tempCoord.x()/tempCoord.w(), tempCoord.y()/tempCoord.w(), tempCoord.z()/tempCoord.w());
     }
