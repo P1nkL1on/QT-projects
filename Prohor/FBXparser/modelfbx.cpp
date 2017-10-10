@@ -9,6 +9,8 @@ ModelFBX::ModelFBX()
     clusters = {};
     limbs = {};
     limbAtts = {};
+    animCurves = {};
+    animNodes = {};
 }
 
 QVector2D toScrCoords (const QVector2D point, const int screenWidth, const int screenHeight){

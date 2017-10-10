@@ -19,13 +19,32 @@ LimbNode::LimbNode()
     translation = {};
     rotation = {};
     pater = NULL;
+    animRotation = NULL;
+    animTrnaslation = NULL;
+
     lengthFromAttribute = 0;
     BindMatrix = {};
     RotatMatrix = {};
 
     indexes = {};
     weights = {};
-    correctTransformsCluster = false;
+    //correctTransformsCluster = false;
 
     name = "Unknown";
+}
+
+AnimCurve::AnimCurve()
+{
+    ID = "";
+    values = {};
+    //typ = -1;
+}
+
+AnimNode::AnimNode()
+{
+    xvalues = {};
+    yvalues = {};
+    zvalues = {};
+    ID = "";
+    typ = -1;
 }

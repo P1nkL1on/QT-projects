@@ -22,6 +22,8 @@ public:
     QVector<Cluster> clusters;
     QVector<LimbNode> limbs;
     QVector<LimbNodeAttribute> limbAtts;
+    QVector<AnimCurve> animCurves;
+    QVector<AnimNode> animNodes;
 
     QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                            const int width, const int hei) override;

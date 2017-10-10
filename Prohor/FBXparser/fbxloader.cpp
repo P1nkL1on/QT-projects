@@ -9,11 +9,14 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     //QRegExp reg_exp_number("^[-+]?[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?$"), reg_exp_R("^[0-9]+$");
     //current folder
     QString nowDirectory = "";
-    bool parseCluster = false, parseLimb = false, nextLineIsLink = false;
+    bool parseCluster = false, parseLimb = false, nextLineIsLink = false, parseAnimCurve = false, parseAnimNode = false;
 
     Cluster newCluster;
     LimbNodeAttribute newLimbNodeAttribbute;
     LimbNode newLimbNode;
+    AnimCurve newAnimCurve;
+    AnimNode newAnimNode;
+
     QString line = "", prevLine = "";
     QString readID = ""; QVector<float> temp;
 
@@ -24,7 +27,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
             line.remove(0,1);
 
         //qDebug() << line;
-        QString IDstring = (line.indexOf("NodeAttribute") == 0 || line.indexOf("Model") == 0 || line.indexOf("Deformer") == 0)?
+        QString IDstring = (line.indexOf("NodeAttribute") == 0 || line.indexOf("Model") == 0 || line.indexOf("Deformer") == 0 || line.indexOf("Animation") >= 0)?
                     line.mid(line.indexOf(":") + 2, line.indexOf(",") - line.indexOf(":") - 2)
                     : "";
         // parse line to vertexes
@@ -39,6 +42,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         }
         if (line.length() > 0 && line.lastIndexOf('}') >= 0){
             nowDirectory = nowDirectory.mid(0, nowDirectory.lastIndexOf('/'));
+            qDebug() << nowDirectory;
             // cluster end
             if (parseCluster && nowDirectory.indexOf("Deformer") < 0)
             {
@@ -57,6 +61,15 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     newLimbNodeAttribbute.ID = newLimbNodeAttribbute.ID.mid(0, newLimbNodeAttribbute.ID.length() - 1);
                     loadedModel.limbAtts << newLimbNodeAttribbute;
                 }
+            }
+            if (parseAnimCurve && newAnimCurve.ID.indexOf("@") >= 0){
+                parseAnimCurve = false;
+                newAnimCurve.ID = newAnimCurve.ID.mid(0, newAnimCurve.ID.length() - 1);
+                loadedModel.animCurves << newAnimCurve;
+            }
+            if (parseAnimNode){
+                parseAnimNode = false;
+                loadedModel.animNodes << newAnimNode;
             }
         }
 
@@ -100,7 +113,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         }
         // try parse BONES
         if (lineName == "LimbNode"){
-               parseLimb = true;
+                parseLimb = true;
                 newLimbNode = LimbNode();
                 newLimbNodeAttribbute = LimbNodeAttribute();
                 newLimbNode.ID = IDstring;
@@ -108,6 +121,24 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                 newLimbNode.name = line.mid(line.indexOf("::") + 2, line.indexOf("\",") - line.indexOf("::") - 2);
 
         }
+        // try parse ANIM ARRAY
+        if (line.indexOf("AnimationCurve") >= 0){
+            if (!parseAnimNode && nowDirectory.indexOf("/Objects/AnimationCurveNode") >= 0){
+                parseAnimNode = true;
+                newAnimNode = AnimNode();
+                newAnimNode.ID = IDstring;
+                newAnimNode.typ = (line.indexOf("AnimCurveNode::R")> 0)? 3 : 0;
+
+            }else{
+                if (!parseAnimCurve && nowDirectory.indexOf("/Objects/AnimationCurve") >= 0){
+                        parseAnimCurve = true;
+                        newAnimCurve = AnimCurve();
+                        newAnimCurve.ID = IDstring;
+                }
+            }
+        }
+
+        //
         if (parseLimb){
             if (nowDirectory.indexOf("Model/Properties70") > 0)// define limbnode translation n rotation
             {
@@ -128,6 +159,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                     ::atof(seps[seps.length() - 1].toStdString().c_str()));
                         newLimbNode.ID += "@";
                         newLimbNode.RotatMatrix.rotate(newLimbNode.rotation.x(), newLimbNode.rotation.y(), newLimbNode.rotation.z());
+                        //newLimbNode.RotatMatrix = newLimbNode.RotatMatrix.inverted();
                         /*
                          * xyz  X
                          * xzy  X
@@ -136,7 +168,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                          * zyx  X
                          * zxy  X
 
-                            */
+
                         //QMatrix3x3 rotat();
 //                        QVector3D angles = newLimbNode.rotation;
 //                        rotat[0,0] = cos(angles.x())*cos(angles.z()) - sin(angles.x())*cos(angles.y())*sin(angles.z());
@@ -148,7 +180,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 //                        rotat[2,0] = sin(angles.y()) * sin(angles.z());
 //                        rotat[2,1] = sin(angles.y())*cos(angles.z());
 //                        rotat[2,2] = cos(angles.y());
-//                        newLimbNode.RotatMatrix = QMatrix3x3();
+//                        newLimbNode.RotatMatrix = QMatrix3x3(); */
                 }
             }
             if (nowDirectory.indexOf("NodeAttribute/Properties70") > 0
@@ -157,6 +189,31 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                 QStringList seps = line.split(',');
                 newLimbNodeAttribbute.length = ::atof(seps[seps.length() - 1].toStdString().c_str());
                 newLimbNodeAttribbute.ID += "@";
+            }
+        }
+        if (parseAnimCurve){
+            if (line.indexOf("a: ") == 0)
+                line = line.remove(0, 3);
+            if (line.lastIndexOf(",") == line.length() - 1)
+                line = line.remove(line.length() - 1, 1);
+            QStringList numbers = line.split(',');
+            for (int i = 0; i < numbers.length(); i++)
+                if (nowDirectory.indexOf("/KeyValueFloat") > 0){
+                    newAnimCurve.values << ::atof(numbers[i].toStdString().c_str());
+                    if (newAnimCurve.ID.indexOf("@") < 0)
+                        newAnimCurve.ID += "@";
+                }
+        }
+
+        if (parseAnimNode){
+            if (nowDirectory.indexOf("/Properties70") > 0){
+                QStringList numbers = line.split(',');
+                if (numbers.length() == 5){
+                    float zerovalue = ::atof(numbers[4].toStdString().c_str());
+                    if (newAnimNode.xvalues.length() == 0){newAnimNode.xvalues << zerovalue;} else
+                        if (newAnimNode.yvalues.length() == 0){newAnimNode.yvalues << zerovalue;} else
+                            if (newAnimNode.zvalues.length() == 0){newAnimNode.zvalues << zerovalue;}
+                }
             }
         }
 
@@ -188,6 +245,62 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                  : 0);
                 }
             }
+            // ->
+            if (prevLine.indexOf("AnimCurve::") == 1 && prevLine.indexOf("AnimCurveNode::", 9) >= 0){
+                //;AnimCurve::, AnimCurveNode::R
+                //C: "OP",1857085248,1859214048, "d|Y"
+                QStringList IDS = line.split(',');
+                int animCurveNumber = -1, animNodeNumber = -1;
+
+                for (int i = 0; i < loadedModel.animCurves.length(); i++)
+                    if (loadedModel.animCurves[i].ID == IDS[2])
+                    {animCurveNumber = i; break;}
+                for (int i = 0; i < loadedModel.animNodes.length(); i++)
+                    if (loadedModel.animNodes[i].ID == IDS[1])
+                    {animNodeNumber = i; break;}
+
+                if (animNodeNumber < 0 || animCurveNumber < 0)
+                    qDebug() << "X Can not connect animNode and animCurve " << line;
+                else
+                {
+                    for (int j = 1; j < loadedModel.animCurves[animCurveNumber].values.length(); j++)
+                    {
+                        if (IDS[IDS.length() -1] == "d|X")
+                            loadedModel.animNodes[animNodeNumber].xvalues
+                                << loadedModel.animCurves[animCurveNumber].values[j];
+                        if (IDS[IDS.length() -1] == "d|Y")
+                            loadedModel.animNodes[animNodeNumber].yvalues
+                                << loadedModel.animCurves[animCurveNumber].values[j];
+                        if (IDS[IDS.length() -1] == "d|Z")
+                            loadedModel.animNodes[animNodeNumber].zvalues
+                                << loadedModel.animCurves[animCurveNumber].values[j];
+                    }
+                    qDebug () << animNodeNumber << animCurveNumber << "<-" <<  loadedModel.animCurves[animCurveNumber].values.length();
+                }
+            }
+            if (prevLine.indexOf("AnimCurveNode::") == 1 && prevLine.indexOf("Model::", 13) >= 0){
+                //;AnimCurveNode::T, Model::Hips
+                //C: "OP",1859218000,1848440928, "Lcl Translation"
+                QStringList IDS = line.split(',');
+                int animNodeNumber = -1, boneNumber = -1;
+
+                for (int i = 0; i < loadedModel.limbs.length(); i++)
+                    if (loadedModel.limbs[i].ID == IDS[2])
+                    {boneNumber = i; break;}
+                for (int i = 0; i < loadedModel.animNodes.length(); i++)
+                    if (loadedModel.animNodes[i].ID == IDS[1])
+                    {animNodeNumber = i; break;}
+                if (animNodeNumber < 0 || boneNumber < 0)
+                    qDebug() << "X Can not connect animNode and bone " << line;
+                else
+                {
+                    if (IDS[IDS.length() - 1] == "Lcl Translation")
+                        loadedModel.limbs[boneNumber].animTrnaslation = &(loadedModel.animNodes[animNodeNumber]);
+                    else
+                        loadedModel.limbs[boneNumber].animRotation = &(loadedModel.animNodes[animNodeNumber]);
+                    qDebug() << IDS[IDS.length() - 1] << " connected. Bone" << boneNumber << " AnimNode" << animNodeNumber;
+                }
+            }
             if (prevLine.indexOf("Model::") == 1 && prevLine.indexOf("Model::", 6) >= 0){
                 // we have lines eqaul to
                 //;Model::LeftHandThumb4, Model::LeftHandThumb3
@@ -203,7 +316,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                         break;  // found already both
                 }
                 if (childNumber < 0 || paterNumber < 0)
-                    qDebug() << "Can not find NODES for " << line;
+                    qDebug() << "X Can not find NODES for " << line;
                 else
                 {
                     loadedModel.limbs[childNumber].pater = &(loadedModel.limbs[paterNumber]);
@@ -225,7 +338,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     {clusterNumber = ch; break;}
                 }
                 if (boneNumber < 0 || clusterNumber < 0)
-                    qDebug() << "Can not find CLUSTER for " << line << boneNumber << clusterNumber;
+                    qDebug() << "X Can not find CLUSTER for " << line << boneNumber << clusterNumber;
                 else
                 {
 
@@ -303,14 +416,15 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
         LimbNode* ln = &loadedModel.limbs[i];
         do {
-            //tempCoord = tempCoord * ln->RotatMatrix;
+            tempCoord = tempCoord * ln->RotatMatrix;
             ln = ln->pater;
         }while(ln != NULL);
 
-        if (loadedModel.limbs[i].correctTransformsCluster)
+        //if (loadedModel.limbs[i].correctTransformsCluster)
             tempCoord = tempCoord;
+                    //*loadedModel.limbs[i].RotatMatrix;
                     //* loadedModel.limbs[i].LinkTransform.inverted()
-                    //* loadedModel.limbs[i].Transform.inverted()
+                    //* loadedModel.limbs[i].Transform.inverted();
                     //* loadedModel.limbs[i].BindMatrix.inverted();
 
         loadedModel.limbs[i].translation = QVector3D(tempCoord.x()/tempCoord.w(), tempCoord.y()/tempCoord.w(), tempCoord.z()/tempCoord.w());
