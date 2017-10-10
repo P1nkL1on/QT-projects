@@ -58,6 +58,7 @@ public:
     AnimNode* animTrnaslation;
     AnimNode* animRotation;
 
+    QMatrix4x4 animRottMatrix;
     LimbNode* pater;
     //from limbs
     float lengthFromAttribute;

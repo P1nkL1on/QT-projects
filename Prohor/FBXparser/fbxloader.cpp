@@ -53,8 +53,8 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
             }
             if (parseLimb){
                 parseLimb = false;
-                if (newLimbNode.ID.indexOf("@@") >= 0){
-                    newLimbNode.ID = newLimbNode.ID.mid(0, newLimbNode.ID.length() - 2);
+                if (newLimbNode.ID.indexOf("@") >= 0){//@@
+                    newLimbNode.ID = newLimbNode.ID.mid(0, newLimbNode.ID.length() - (((newLimbNode.ID.indexOf("@@") >= 0)? 2 : 1) ));
                     loadedModel.limbs << newLimbNode;
                 }
                 if (newLimbNodeAttribbute.ID.indexOf("@") >= 0){
@@ -122,7 +122,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
         }
         // try parse ANIM ARRAY
-        if (line.indexOf("AnimationCurve") >= 0){
+        if (false & line.indexOf("AnimationCurve") >= 0){
             if (!parseAnimNode && nowDirectory.indexOf("/Objects/AnimationCurveNode") >= 0){
                 parseAnimNode = true;
                 newAnimNode = AnimNode();
@@ -297,7 +297,13 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     if (IDS[IDS.length() - 1] == "Lcl Translation")
                         loadedModel.limbs[boneNumber].animTrnaslation = &(loadedModel.animNodes[animNodeNumber]);
                     else
+                    {
                         loadedModel.limbs[boneNumber].animRotation = &(loadedModel.animNodes[animNodeNumber]);
+                        loadedModel.limbs[boneNumber].animRottMatrix.rotate(loadedModel.animNodes[animNodeNumber].xvalues[0],
+                                                                         loadedModel.animNodes[animNodeNumber].yvalues[0],
+                                                                         loadedModel.animNodes[animNodeNumber].zvalues[0]);
+
+                    }
                     qDebug() << IDS[IDS.length() - 1] << " connected. Bone" << boneNumber << " AnimNode" << animNodeNumber;
                 }
             }
@@ -362,22 +368,22 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                         loadedModel.vertexes[loadedModel.limbs[boneNumber].indexes[i]]
                                 = {tempCoord.x() / tempCoord.w(), tempCoord.y() / tempCoord.w(), tempCoord.z() / tempCoord.w()};
                     }
-//                    if (   loadedModel.clusters[clusterNumber].Transform.length() == 16
-//                        && loadedModel.clusters[clusterNumber].LinkTransform.length() == 16){
+                    if (   loadedModel.clusters[clusterNumber].Transform.length() == 16
+                        && loadedModel.clusters[clusterNumber].LinkTransform.length() == 16){
 
-//                        loadedModel.limbs[boneNumber].correctTransformsCluster = true;
+                        //loadedModel.limbs[boneNumber].correctTransformsCluster = true;
 
-//                        temp = loadedModel.clusters[clusterNumber].Transform;
-//                        loadedModel.limbs[boneNumber].Transform = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
-//                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
-//                        temp = loadedModel.clusters[clusterNumber].LinkTransform;
-//                        loadedModel.limbs[boneNumber].LinkTransform = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
-//                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
-//                    }else{
-//                        loadedModel.limbs[boneNumber].Transform = {};
-//                        loadedModel.limbs[boneNumber].LinkTransform = {};
-//                        qDebug() << "Invalid CLUSTER transform and link tranform" << loadedModel.clusters[clusterNumber].Transform << "/" << loadedModel.clusters[clusterNumber].LinkTransform;
-//                    }
+                        temp = loadedModel.clusters[clusterNumber].Transform;
+                        loadedModel.limbs[boneNumber].Transform = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
+                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
+                        temp = loadedModel.clusters[clusterNumber].LinkTransform;
+                        loadedModel.limbs[boneNumber].LinkTransform = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
+                                temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
+                    }else{
+                        loadedModel.limbs[boneNumber].Transform = {};
+                        loadedModel.limbs[boneNumber].LinkTransform = {};
+                        qDebug() << "Invalid CLUSTER transform and link tranform" << loadedModel.clusters[clusterNumber].Transform << "/" << loadedModel.clusters[clusterNumber].LinkTransform;
+                    }
                     qDebug () << "Connect NODE " << boneNumber << "and CLUSTER" << clusterNumber << line;
                 }
             }
@@ -416,16 +422,17 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
         LimbNode* ln = &loadedModel.limbs[i];
         do {
-            tempCoord = tempCoord * ln->RotatMatrix;
+            tempCoord = tempCoord //* ln->animRottMatrix
+                    * ln->RotatMatrix;
             ln = ln->pater;
         }while(ln != NULL);
 
         //if (loadedModel.limbs[i].correctTransformsCluster)
-            tempCoord = tempCoord;
-                    //*loadedModel.limbs[i].RotatMatrix;
+            tempCoord = tempCoord
+                    //*loadedModel.limbs[i].RotatMatrix
                     //* loadedModel.limbs[i].LinkTransform.inverted()
                     //* loadedModel.limbs[i].Transform.inverted();
-                    //* loadedModel.limbs[i].BindMatrix.inverted();
+                    * loadedModel.limbs[i].BindMatrix.inverted();
 
         loadedModel.limbs[i].translation = QVector3D(tempCoord.x()/tempCoord.w(), tempCoord.y()/tempCoord.w(), tempCoord.z()/tempCoord.w());
     }
