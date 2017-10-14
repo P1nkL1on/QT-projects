@@ -42,7 +42,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         }
         if (line.length() > 0 && line.lastIndexOf('}') >= 0){
             nowDirectory = nowDirectory.mid(0, nowDirectory.lastIndexOf('/'));
-            qDebug() << nowDirectory;
+            //qDebug() << nowDirectory;
             // cluster end
             if (parseCluster && nowDirectory.indexOf("Deformer") < 0)
             {
@@ -122,7 +122,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
         }
         // try parse ANIM ARRAY
-        if (false & line.indexOf("AnimationCurve") >= 0){
+        if (line.indexOf("AnimationCurve") >= 0){
             if (!parseAnimNode && nowDirectory.indexOf("/Objects/AnimationCurveNode") >= 0){
                 parseAnimNode = true;
                 newAnimNode = AnimNode();
@@ -260,7 +260,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     {animNodeNumber = i; break;}
 
                 if (animNodeNumber < 0 || animCurveNumber < 0)
-                    qDebug() << "X Can not connect animNode and animCurve " << line;
+                    qDebug() << "X Can not connect animNode and animCurve " << line << animCurveNumber << animNodeNumber;
                 else
                 {
                     for (int j = 1; j < loadedModel.animCurves[animCurveNumber].values.length(); j++)
@@ -299,9 +299,11 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     else
                     {
                         loadedModel.limbs[boneNumber].animRotation = &(loadedModel.animNodes[animNodeNumber]);
-                        loadedModel.limbs[boneNumber].animRottMatrix.rotate(loadedModel.animNodes[animNodeNumber].xvalues[0],
-                                                                         loadedModel.animNodes[animNodeNumber].yvalues[0],
-                                                                         loadedModel.animNodes[animNodeNumber].zvalues[0]);
+                        int frame = 20;
+                        if (loadedModel.animNodes[animNodeNumber].xvalues.length() > frame + 1)
+                            loadedModel.limbs[boneNumber].animRottMatrix.rotate(loadedModel.animNodes[animNodeNumber].xvalues[frame],
+                                                                             loadedModel.animNodes[animNodeNumber].yvalues[frame],
+                                                                             loadedModel.animNodes[animNodeNumber].zvalues[frame]);
 
                     }
                     qDebug() << IDS[IDS.length() - 1] << " connected. Bone" << boneNumber << " AnimNode" << animNodeNumber;
@@ -408,6 +410,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     {
                         loadedModel.limbs[id].BindMatrix = QMatrix4x4(temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],temp[6],temp[7],
                                 temp[8],temp[9],temp[10],temp[11],temp[12],temp[13],temp[14],temp[15]);
+                        qDebug() << "Bind matrix connected";
                         break;
                     }
                 temp = {};
@@ -420,21 +423,25 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     for (int i = 0; i < loadedModel.limbs.length(); i++){
         QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
 
-        LimbNode* ln = &loadedModel.limbs[i];
-        do {
-            tempCoord = tempCoord //* ln->animRottMatrix
-                    * ln->RotatMatrix;
-            ln = ln->pater;
-        }while(ln != NULL);
-
         //if (loadedModel.limbs[i].correctTransformsCluster)
             tempCoord = tempCoord
                     //*loadedModel.limbs[i].RotatMatrix
-                    //* loadedModel.limbs[i].LinkTransform.inverted()
-                    //* loadedModel.limbs[i].Transform.inverted();
-                    * loadedModel.limbs[i].BindMatrix.inverted();
+                    * loadedModel.limbs[i].LinkTransform.inverted()
+                    * loadedModel.limbs[i].Transform.inverted();
+                    //* loadedModel.limbs[i].BindMatrix.inverted();
 
-        loadedModel.limbs[i].translation = QVector3D(tempCoord.x()/tempCoord.w(), tempCoord.y()/tempCoord.w(), tempCoord.z()/tempCoord.w());
+        LimbNode* ln = &loadedModel.limbs[i];
+            do {
+                tempCoord = tempCoord
+                        * ln->animRottMatrix;
+                        //* ln->RotatMatrix;
+                ln = ln->pater;
+            }while(ln != NULL);
+
+        loadedModel.limbs[i].translation = QVector3D(
+                    tempCoord.x()/tempCoord.w(),
+                    tempCoord.y()/tempCoord.w(),
+                    tempCoord.z()/tempCoord.w());
     }
 
 
