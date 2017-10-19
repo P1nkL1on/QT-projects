@@ -454,13 +454,6 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         //tempCoord = {20,0,0,1};
         // ROTATE
         LimbNode* ln = &loadedModel.limbs[i];
-        if (false)
-            do {
-                if (ln->pater != NULL)
-                    tempCoord = tempCoord //* ln->animRottMatrix
-                            * ln->pater->RotatMatrix;
-                ln = ln->pater;
-            }while(ln != NULL);
 
         // BIND POSE
         ln = &loadedModel.limbs[i];
@@ -470,7 +463,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                 ln = ln->pater;
             }while (ln != NULL);
         // GLOBAL BING
-        tempCoord = QVector3D(ln->globalTranslation.x(), ln->globalTranslation.y(), ln->globalTranslation.z()) * ln->BindMatrix.inverted();
+        QVector4D tempGCoord = QVector3D(ln->globalTranslation.x(), ln->globalTranslation.y(), ln->globalTranslation.z()) * ln->BindMatrix.inverted();
         // WOW
         //if (loadedModel.limbs[i].correctTransformsCluster)
         //tempCoord = tempCoord
@@ -479,13 +472,28 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     //* loadedModel.limbs[i].Transform.inverted();
                     //* loadedModel.limbs[i].BindMatrix.inverted();
 
-        loadedModel.limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
+        loadedModel.limbs[i].globalTranslation = QVector3D(tempGCoord.x(), tempGCoord.y(), tempGCoord.z());
         //QVector3D(tempCoord.x()/tempCoord.w(), tempCoord.y()/tempCoord.w(), tempCoord.z()/tempCoord.w());
     }
 
-    for (int i = 0; i < loadedModel.limbs.length(); i++)
+    for (int i = 0; i < loadedModel.limbs.length(); i++){
         qDebug() << loadedModel.limbs[i].ID + "->" +
                     ((loadedModel.limbs[i].pater == NULL)? "null" : loadedModel.limbs[i].pater->ID);
+        // dorotate
+
+        LimbNode* ln = &loadedModel.limbs[i];
+        if (ln->pater != NULL)
+            ln->translation = ln->globalTranslation - ln->pater->globalTranslation;
+
+        QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
+        do {
+            if (ln->pater != NULL)
+                tempCoord = tempCoord //* ln->animRottMatrix
+                        * ln->pater->RotatMatrix;
+            ln = ln->pater;
+        }while(ln != NULL);
+        loadedModel.limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
+    }
 
 //    QVector<QVector3D> newverts;
 
