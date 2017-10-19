@@ -55,6 +55,8 @@ public:
     QVector3D translation;
     QVector3D rotation;
 
+    QVector3D globalTranslation;
+
     AnimNode* animTrnaslation;
     AnimNode* animRotation;
 

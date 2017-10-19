@@ -440,8 +440,19 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
 
     for (int i = 0; i < loadedModel.limbs.length(); i++){
+        LimbNode* ln = &loadedModel.limbs[i];
+        QVector3D resCoord(0,0,0);
+            do {
+                resCoord = QVector3D(ln->translation.x() + resCoord.x(), ln->translation.y() + resCoord.y(), ln->translation.z()+ resCoord.z());
+                ln = ln->pater;
+            }while(ln != NULL);
+        loadedModel.limbs[i].globalTranslation = QVector3D(resCoord.x(), resCoord.y(), resCoord.z());
+    }
+
+    for (int i = 0; i < loadedModel.limbs.length(); i++){
         QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
         //tempCoord = {20,0,0,1};
+        // ROTATE
         LimbNode* ln = &loadedModel.limbs[i];
         if (false)
             do {
@@ -451,14 +462,16 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                 ln = ln->pater;
             }while(ln != NULL);
 
+        // BIND POSE
         ln = &loadedModel.limbs[i];
-        //if (false)
-        do {
-            tempCoord = tempCoord * ln->BindMatrix;
-            ln = ln->pater;
-        }while (ln != NULL);
-
-
+        if (false)
+            do {
+                tempCoord = tempCoord * ln->BindMatrix;
+                ln = ln->pater;
+            }while (ln != NULL);
+        // GLOBAL BING
+        tempCoord = QVector3D(ln->globalTranslation.x(), ln->globalTranslation.y(), ln->globalTranslation.z()) * ln->BindMatrix.inverted();
+        // WOW
         //if (loadedModel.limbs[i].correctTransformsCluster)
         //tempCoord = tempCoord
                     //* loadedModel.limbs[i].BindMatrix;
@@ -469,7 +482,6 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         loadedModel.limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
         //QVector3D(tempCoord.x()/tempCoord.w(), tempCoord.y()/tempCoord.w(), tempCoord.z()/tempCoord.w());
     }
-
 
     for (int i = 0; i < loadedModel.limbs.length(); i++)
         qDebug() << loadedModel.limbs[i].ID + "->" +

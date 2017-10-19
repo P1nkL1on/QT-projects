@@ -74,18 +74,24 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
         QVector<QVector2D> resJoint = {};
         QVector3D finalTranform = {};//{limbs[0].translation.x(), limbs[0].translation.y(), limbs[0].translation.z()};
         LimbNode* ln = &limbs[i];
-        QVector3D prevTransform = {-ln->translation.x(), -ln->translation.y(), -ln->translation.z()};
-        do {
+//        QVector3D prevTransform = {-ln->translation.x(), -ln->translation.y(), -ln->translation.z()};
+//        do {
 
-            finalTranform = {finalTranform.x() + ln->translation.x(),
-                             finalTranform.y() + ln->translation.y(),
-                             finalTranform.z() + ln->translation.z()};
-            ln = ln->pater;
-            //depthRecursion++;
-        }while(ln != NULL);
-        prevTransform = {finalTranform.x() + prevTransform.x(),
-                         finalTranform.y() + prevTransform.y(),
-                         finalTranform.z() + prevTransform.z()};
+//            finalTranform = {finalTranform.x() + ln->translation.x(),
+//                             finalTranform.y() + ln->translation.y(),
+//                             finalTranform.z() + ln->translation.z()};
+//            ln = ln->pater;
+//        }while(ln != NULL);
+//        prevTransform = {finalTranform.x() + prevTransform.x(),
+//                         finalTranform.y() + prevTransform.y(),
+//                         finalTranform.z() + prevTransform.z()};
+        QVector3D prevTransform;
+        finalTranform = QVector3D(ln->translation.x(), ln->translation.y(), ln->translation.z());
+        if (ln->pater != NULL)
+            prevTransform = QVector3D(ln->pater->translation.x(), ln->pater->translation.y(), ln->pater->translation.z());
+        else
+            prevTransform = finalTranform;
+        //___________
 
         QString errJ = DrawItSelf(resJoint, {finalTranform, prevTransform}, view, perspective);
 
