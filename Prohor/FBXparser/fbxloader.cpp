@@ -418,18 +418,6 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                            temp[4],temp[5],temp[6],temp[7],
                                            temp[8],temp[9],temp[10],temp[11],
                                            temp[12],temp[13],temp[14],temp[15]);
-
-//                        QVector3D extractedScales = QVector3D(
-//                            loadedModel.limbs[id].BindMatrix.column(0).toVector3D().length(),
-//                            loadedModel.limbs[id].BindMatrix.column(1).toVector3D().length(),
-//                            loadedModel.limbs[id].BindMatrix.column(2).toVector3D().length()
-//                        );
-//                        //
-//                        loadedModel.limbs[id].BindMatrix =
-//                                QMatrix4x4(temp[0]/extractedScales[0],temp[1]/extractedScales[1],temp[2]/extractedScales[2],0,
-//                                           temp[4]/extractedScales[0],temp[5]/extractedScales[1],temp[6]/extractedScales[2],0,
-//                                           temp[8]/extractedScales[0],temp[9]/extractedScales[1],temp[10]/extractedScales[2],0,
-//                                           0,0,0,1);
                         break;
                     }
                 temp = {};
@@ -437,10 +425,12 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
             }
         }
     }
-
+    //return QString();
 
     for (int i = 0; i < loadedModel.limbs.length(); i++){
         LimbNode* ln = &loadedModel.limbs[i];
+        ln->lengthFromAttribute = ln->translation.length();
+
         QVector3D resCoord(0,0,0);
             do {
                 resCoord = QVector3D(ln->translation.x() + resCoord.x(), ln->translation.y() + resCoord.y(), ln->translation.z()+ resCoord.z());
@@ -457,25 +447,19 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
         // BIND POSE
         ln = &loadedModel.limbs[i];
-        if (false)
-            do {
-                tempCoord = tempCoord * ln->BindMatrix;
-                ln = ln->pater;
-            }while (ln != NULL);
-        // GLOBAL BING
-        QVector4D tempGCoord = QVector3D(ln->globalTranslation.x(), ln->globalTranslation.y(), ln->globalTranslation.z()) * ln->BindMatrix.inverted();
-        // WOW
-        //if (loadedModel.limbs[i].correctTransformsCluster)
-        //tempCoord = tempCoord
-                    //* loadedModel.limbs[i].BindMatrix;
-                    //* loadedModel.limbs[i].LinkTransform.inverted()
-                    //* loadedModel.limbs[i].Transform.inverted();
-                    //* loadedModel.limbs[i].BindMatrix.inverted();
+        QVector4D tempGCoord = QVector4D(ln->globalTranslation.x(), ln->globalTranslation.y(), ln->globalTranslation.z(), 1.0)
+                * ln->BindMatrix.inverted();//* ((ln->pater != NULL)? ln->pater->BindMatrix.inverted() : QMatrix4x4());
+
 
         loadedModel.limbs[i].globalTranslation = QVector3D(tempGCoord.x(), tempGCoord.y(), tempGCoord.z());
-        //QVector3D(tempCoord.x()/tempCoord.w(), tempCoord.y()/tempCoord.w(), tempCoord.z()/tempCoord.w());
+            //QVector3D(tempGCoord.x()/tempGCoord.w(), tempGCoord.y()/tempGCoord.w(), tempGCoord.z()/tempGCoord.w());
+        //____________________
+        //float nL = loadedModel.limbs[i].lengthFromAttribute / loadedModel.limbs[i].globalTranslation.length();
+        //loadedModel.limbs[i].translation = loadedModel.limbs[i].globalTranslation;
+
     }
 
+    return QString();
     for (int i = 0; i < loadedModel.limbs.length(); i++){
         qDebug() << loadedModel.limbs[i].ID + "->" +
                     ((loadedModel.limbs[i].pater == NULL)? "null" : loadedModel.limbs[i].pater->ID);
@@ -485,16 +469,33 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         if (ln->pater != NULL)
             ln->translation = ln->globalTranslation - ln->pater->globalTranslation;
 
-        QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
+        //nL = 1.0;
+        QVector4D tempCoord(loadedModel.limbs[i].translation.x(),
+                            loadedModel.limbs[i].translation.y(),
+                            loadedModel.limbs[i].translation.z(), 1.0);
         do {
             if (ln->pater != NULL)
                 tempCoord = tempCoord //* ln->animRottMatrix
-                        * ln->pater->RotatMatrix;
+                        * ln->pater->RotatMatrix.inverted();
             ln = ln->pater;
         }while(ln != NULL);
         loadedModel.limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
     }
 
+
+    for (int i = 0; i < loadedModel.limbs.length(); i++)
+        if (loadedModel.limbs[i].lengthFromAttribute > 0.0){
+            float length =  loadedModel.limbs[i].translation.length(),
+                  need = loadedModel.limbs[i].lengthFromAttribute,
+                  nL =  10.0 / length;
+            loadedModel.limbs[i].translation = QVector3D(
+                    loadedModel.limbs[i].translation.x() * nL,
+                    loadedModel.limbs[i].translation.y() * nL,
+                    loadedModel.limbs[i].translation.z() * nL);
+            int n = 0;
+        }
+
+    //______________________
 //    QVector<QVector3D> newverts;
 
 //    for (int i = 0 ; i < loadedModel.limbs.length(); i++){

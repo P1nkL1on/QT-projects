@@ -93,7 +93,11 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
 //        else
 //            prevTransform = finalTranform;
         //___________
-
+        ln = &limbs[i];
+        finalTranform = ln->globalTranslation;
+        if (ln->pater != NULL)
+            prevTransform = ln->pater->globalTranslation;
+            //_______
         QString errJ = DrawItSelf(resJoint, {finalTranform, prevTransform}, view, perspective);
 
         QVector2D res = toScrCoords(resJoint[0], width, hei);
