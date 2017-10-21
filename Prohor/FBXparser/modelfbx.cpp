@@ -93,10 +93,10 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
 //        else
 //            prevTransform = finalTranform;
         //___________
-        ln = &limbs[i];
-        finalTranform = ln->globalTranslation;
-        if (ln->pater != NULL)
-            prevTransform = ln->pater->globalTranslation;
+//        ln = &limbs[i];
+//        finalTranform = ln->globalTranslation;
+//        if (ln->pater != NULL)
+//            prevTransform = ln->pater->globalTranslation;
             //_______
         QString errJ = DrawItSelf(resJoint, {finalTranform, prevTransform}, view, perspective);
 
@@ -108,6 +108,7 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
         painter->drawLine((int)res[0],(int)res[1], (int)resPater[0], (int)resPater[1]);
 
         painter->drawText((int)res[0],(int)res[1],300,20,0, (limbs[i].name));
+
 
         // cluster boys
         pen.setWidth(1);

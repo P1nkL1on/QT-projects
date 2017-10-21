@@ -71,7 +71,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     if (isLoaded)
         return;
     const QString err = loadModelByAdress(
-                "D:/QT-projects/Prohor/Models/FBX/joints_only2.FBX", modelFBX);
+                "D:/QT-projects/QT-projects/Prohor/Models/FBX/joints_only2.FBX", modelFBX);
                 //FBXmaya/h1    !guard yelling exported     FBXmaya/bendedhand      /!1710_2
     if (!err.isEmpty()){
         qDebug() << err;
