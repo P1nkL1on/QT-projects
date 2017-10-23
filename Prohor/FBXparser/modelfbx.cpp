@@ -22,7 +22,7 @@ QVector2D toScrCoords (const QVector2D point, const int screenWidth, const int s
 QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
 {
     SetFrameRotate(curTime);
-    curTime += 10000; if (curTime > 4000000) curTime = 0;
+    curTime += 5000; if (curTime > 2600000) curTime = 0;
     qDebug() << curTime;
     // first get a point array
     QVector<QVector2D> resPoints = {};
@@ -172,6 +172,23 @@ void ModelFBX::SetFrameRotate(float timeKey)
                     tempCoord = tempCoord * ln->pater->RotatMatrix.inverted();
             ln = ln->pater;
         }while(ln != NULL);
+
+//        ln = &limbs[i];
+//        do {
+//            if (ln != NULL && ln->animTrnaslation != NULL && ln->animTrnaslation->rotat.length() > 0)
+//            {
+//                int needIndex = -1;
+//                AnimNode* rot = ln->animTrnaslation;
+
+//                for (int fr = 0; fr < rot->times.length(); fr++)
+//                    if (rot->times[fr] >= timeKey)
+//                    {needIndex = fr; break;}
+//                if (needIndex == -1) needIndex = rot->times.length() - 1;
+
+//                tempCoord = tempCoord * rot->rotat[needIndex].inverted();
+//            }
+//            ln = ln -> pater;
+//        }while (ln != NULL);
         limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
     }
 }

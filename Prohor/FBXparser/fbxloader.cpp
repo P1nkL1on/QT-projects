@@ -528,30 +528,41 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
             if (ch){
                 loadedModel.animNodes[i].times << currentTime;
+                if (loadedModel.animNodes[i].typ >= 3){
+                    qDebug () << i << currentTime << "  <  " << posX<<"/"<< loadedModel.animNodes[i].xvalues.length() - 1
+                                                             << posY<<"/"<< loadedModel.animNodes[i].yvalues.length() - 1
+                                                             << posZ<<"/"<< loadedModel.animNodes[i].zvalues.length() - 1;
 
-                qDebug () << i << currentTime << "  <  " << posX<<"/"<< loadedModel.animNodes[i].xvalues.length() - 1
-                                                         << posY<<"/"<< loadedModel.animNodes[i].yvalues.length() - 1
-                                                         << posZ<<"/"<< loadedModel.animNodes[i].zvalues.length() - 1;
+                    QMatrix4x4 newRotat;
+                    newRotat.setToIdentity();
+                    newRotat.rotate(loadedModel.animNodes[i].xvalues[(posX < loadedModel.animNodes[i].xvalues.length())? posX : loadedModel.animNodes[i].xvalues.length() -1], 1.0, 0, 0);
+                    newRotat.rotate(loadedModel.animNodes[i].yvalues[(posY < loadedModel.animNodes[i].yvalues.length())? posY : loadedModel.animNodes[i].yvalues.length() -1], 0, 1.0, 0);
+                    newRotat.rotate(loadedModel.animNodes[i].zvalues[(posZ < loadedModel.animNodes[i].zvalues.length())? posZ : loadedModel.animNodes[i].zvalues.length() -1], 0, 0, 1.0);
 
-                QMatrix4x4 newRotat;
-                newRotat.setToIdentity();
-                newRotat.rotate(loadedModel.animNodes[i].xvalues[(posX < loadedModel.animNodes[i].xvalues.length())? posX : loadedModel.animNodes[i].xvalues.length() -1], 1.0, 0, 0);
-                newRotat.rotate(loadedModel.animNodes[i].yvalues[(posY < loadedModel.animNodes[i].yvalues.length())? posY : loadedModel.animNodes[i].yvalues.length() -1], 0, 1.0, 0);
-                newRotat.rotate(loadedModel.animNodes[i].zvalues[(posZ < loadedModel.animNodes[i].zvalues.length())? posZ : loadedModel.animNodes[i].zvalues.length() -1], 0, 0, 1.0);
+                    loadedModel.animNodes[i].rotat << newRotat;
+                }else{
+                    QMatrix4x4 newTran;
+                    newTran.setToIdentity();
+                    newTran.translate(loadedModel.animNodes[i].xvalues[(posX < loadedModel.animNodes[i].xvalues.length())? posX : loadedModel.animNodes[i].xvalues.length() -1],
+                                      loadedModel.animNodes[i].xvalues[(posY < loadedModel.animNodes[i].yvalues.length())? posY : loadedModel.animNodes[i].yvalues.length() -1],
+                                      loadedModel.animNodes[i].xvalues[(posZ < loadedModel.animNodes[i].zvalues.length())? posZ : loadedModel.animNodes[i].zvalues.length() -1]);
+                    qDebug () << i << currentTime << "movement";
 
-                loadedModel.animNodes[i].rotat << newRotat;
+                    loadedModel.animNodes[i].rotat << newTran;
+                }
             }
 
         }while (   posX != loadedModel.animNodes[i].xtimes.length()
                 || posY != loadedModel.animNodes[i].ytimes.length()
                 || posZ != loadedModel.animNodes[i].ztimes.length());
-
-        loadedModel.animNodes[i].xtimes = {};
-        loadedModel.animNodes[i].ytimes = {};
-        loadedModel.animNodes[i].ztimes = {};
-        loadedModel.animNodes[i].xvalues = {};
-        loadedModel.animNodes[i].yvalues = {};
-        loadedModel.animNodes[i].zvalues = {};
+        if (loadedModel.animNodes[i].typ >= 3){
+            loadedModel.animNodes[i].xtimes = {};
+            loadedModel.animNodes[i].ytimes = {};
+            loadedModel.animNodes[i].ztimes = {};
+            loadedModel.animNodes[i].xvalues = {};
+            loadedModel.animNodes[i].yvalues = {};
+            loadedModel.animNodes[i].zvalues = {};
+        }
     }
 
     loadedModel.modelColor = Qt::green;
