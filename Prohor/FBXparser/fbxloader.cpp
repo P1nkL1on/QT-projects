@@ -62,9 +62,9 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     loadedModel.limbAtts << newLimbNodeAttribbute;
                 }
             }
-            if (parseAnimCurve && newAnimCurve.ID.indexOf("@") >= 0){
+            if (parseAnimCurve && newAnimCurve.ID.indexOf("@@") >= 0){
                 parseAnimCurve = false;
-                newAnimCurve.ID = newAnimCurve.ID.mid(0, newAnimCurve.ID.length() - 1);
+                newAnimCurve.ID = newAnimCurve.ID.mid(0, newAnimCurve.ID.length() - 2);
                 loadedModel.animCurves << newAnimCurve;
             }
             if (parseAnimNode){
@@ -89,7 +89,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
             }
         }
         // cluster parsing
-        if (false & lineName == "Cluster"){
+        if (lineName == "Cluster"){
             parseCluster = true; newCluster = Cluster();
             newCluster.ID = IDstring;
         }
@@ -122,7 +122,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
         }
         // try parse ANIM ARRAY
-        if (false & line.indexOf("AnimationCurve") >= 0){
+        if (line.indexOf("AnimationCurve") >= 0){
             if (!parseAnimNode && nowDirectory.indexOf("/Objects/AnimationCurveNode") >= 0){
                 parseAnimNode = true;
                 newAnimNode = AnimNode();
@@ -203,12 +203,18 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
             if (line.lastIndexOf(",") == line.length() - 1)
                 line = line.remove(line.length() - 1, 1);
             QStringList numbers = line.split(',');
-            for (int i = 0; i < numbers.length(); i++)
+            for (int i = 0; i < numbers.length(); i++){
                 if (nowDirectory.indexOf("/KeyValueFloat") > 0){
                     newAnimCurve.values << ::atof(numbers[i].toStdString().c_str());
+                    if (newAnimCurve.ID.indexOf("@@") < 0)
+                        newAnimCurve.ID += "@";
+                }
+                if (nowDirectory.indexOf("/KeyTime") > 0){
+                    newAnimCurve.times << (::atof(numbers[i].toStdString().c_str())) / 100000.0;
                     if (newAnimCurve.ID.indexOf("@") < 0)
                         newAnimCurve.ID += "@";
                 }
+            }
         }
 
         if (parseAnimNode){
@@ -260,10 +266,10 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                 int animCurveNumber = -1, animNodeNumber = -1;
 
                 for (int i = 0; i < loadedModel.animCurves.length(); i++)
-                    if (loadedModel.animCurves[i].ID == IDS[2])
+                    if (loadedModel.animCurves[i].ID == IDS[1])
                     {animCurveNumber = i; break;}
                 for (int i = 0; i < loadedModel.animNodes.length(); i++)
-                    if (loadedModel.animNodes[i].ID == IDS[1])
+                    if (loadedModel.animNodes[i].ID == IDS[2])
                     {animNodeNumber = i; break;}
 
                 if (animNodeNumber < 0 || animCurveNumber < 0)
@@ -272,15 +278,24 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                 {
                     for (int j = 1; j < loadedModel.animCurves[animCurveNumber].values.length(); j++)
                     {
-                        if (IDS[IDS.length() -1] == "d|X")
+                        if (IDS[IDS.length() -1] == " \"d|X\""){
+                            loadedModel.animNodes[animNodeNumber].xtimes
+                                << loadedModel.animCurves[animCurveNumber].times[j];
                             loadedModel.animNodes[animNodeNumber].xvalues
                                 << loadedModel.animCurves[animCurveNumber].values[j];
-                        if (IDS[IDS.length() -1] == "d|Y")
+                        }
+                        if (IDS[IDS.length() -1] == " \"d|Y\""){
+                            loadedModel.animNodes[animNodeNumber].ytimes
+                                << loadedModel.animCurves[animCurveNumber].times[j];
                             loadedModel.animNodes[animNodeNumber].yvalues
                                 << loadedModel.animCurves[animCurveNumber].values[j];
-                        if (IDS[IDS.length() -1] == "d|Z")
+                        }
+                        if (IDS[IDS.length() -1] == " \"d|Z\""){
+                            loadedModel.animNodes[animNodeNumber].ztimes
+                                << loadedModel.animCurves[animCurveNumber].times[j];
                             loadedModel.animNodes[animNodeNumber].zvalues
                                 << loadedModel.animCurves[animCurveNumber].values[j];
+                        }
                     }
                     qDebug () << animNodeNumber << animCurveNumber << "<-" <<  loadedModel.animCurves[animCurveNumber].values.length();
                 }
@@ -475,44 +490,9 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         //____________________
         //float nL = loadedModel.limbs[i].lengthFromAttribute / loadedModel.limbs[i].globalTranslation.length();
         //loadedModel.limbs[i].translation = loadedModel.limbs[i].globalTranslation;
-
+        loadedModel.limbs[i].translationBinded = loadedModel.limbs[i].translation;
     }
 
-    return QString();
-    for (int i = 0; i < loadedModel.limbs.length(); i++){
-        qDebug() << loadedModel.limbs[i].ID + "->" +
-                    ((loadedModel.limbs[i].pater == NULL)? "null" : loadedModel.limbs[i].pater->ID);
-        // dorotate
-
-        LimbNode* ln = &loadedModel.limbs[i];
-        if (ln->pater != NULL)
-            ln->translation = ln->globalTranslation - ln->pater->globalTranslation;
-
-        //nL = 1.0;
-        QVector4D tempCoord(loadedModel.limbs[i].translation.x(),
-                            loadedModel.limbs[i].translation.y(),
-                            loadedModel.limbs[i].translation.z(), 1.0);
-        do {
-            if (ln->pater != NULL)
-                tempCoord = tempCoord //* ln->animRottMatrix
-                        * ln->pater->RotatMatrix.inverted();
-            ln = ln->pater;
-        }while(ln != NULL);
-        loadedModel.limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
-    }
-
-
-    for (int i = 0; i < loadedModel.limbs.length(); i++)
-        if (loadedModel.limbs[i].lengthFromAttribute > 0.0){
-            float length =  loadedModel.limbs[i].translation.length(),
-                  need = loadedModel.limbs[i].lengthFromAttribute,
-                  nL =  10.0 / length;
-            loadedModel.limbs[i].translation = QVector3D(
-                    loadedModel.limbs[i].translation.x() * nL,
-                    loadedModel.limbs[i].translation.y() * nL,
-                    loadedModel.limbs[i].translation.z() * nL);
-            int n = 0;
-        }
 
     //______________________
 //    QVector<QVector3D> newverts;
@@ -528,6 +508,51 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
 //    loadedModel.vertexes = {};
 //    loadedModel.vertexes = newverts;
+
+    // animation parawa solving
+    float step = 1000;
+    for (int i = 0; i < loadedModel.animNodes.length(); i++){
+
+        int posX = 0, posY = 0, posZ = 0;
+        float currentTime = - step, cX = 0, cY = 0, cZ = 0;
+        do {
+
+            currentTime += step; //qDebug () << currentTime;
+            bool ch = false;
+            if (posX < loadedModel.animNodes[i].xtimes.length() && loadedModel.animNodes[i].xtimes[posX] < currentTime)
+            {posX ++; ch = true;}
+            if (posY < loadedModel.animNodes[i].ytimes.length() && loadedModel.animNodes[i].ytimes[posY] < currentTime)
+            {posY ++; ch = true;}
+            if (posZ < loadedModel.animNodes[i].ztimes.length() && loadedModel.animNodes[i].ztimes[posZ] < currentTime)
+            {posZ ++; ch = true;}
+
+            if (ch){
+                loadedModel.animNodes[i].times << currentTime;
+
+                qDebug () << i << currentTime << "  <  " << posX<<"/"<< loadedModel.animNodes[i].xvalues.length() - 1
+                                                         << posY<<"/"<< loadedModel.animNodes[i].yvalues.length() - 1
+                                                         << posZ<<"/"<< loadedModel.animNodes[i].zvalues.length() - 1;
+
+                QMatrix4x4 newRotat;
+                newRotat.setToIdentity();
+                newRotat.rotate(loadedModel.animNodes[i].xvalues[(posX < loadedModel.animNodes[i].xvalues.length())? posX : loadedModel.animNodes[i].xvalues.length() -1], 1.0, 0, 0);
+                newRotat.rotate(loadedModel.animNodes[i].yvalues[(posY < loadedModel.animNodes[i].yvalues.length())? posY : loadedModel.animNodes[i].yvalues.length() -1], 0, 1.0, 0);
+                newRotat.rotate(loadedModel.animNodes[i].zvalues[(posZ < loadedModel.animNodes[i].zvalues.length())? posZ : loadedModel.animNodes[i].zvalues.length() -1], 0, 0, 1.0);
+
+                loadedModel.animNodes[i].rotat << newRotat;
+            }
+
+        }while (   posX != loadedModel.animNodes[i].xtimes.length()
+                || posY != loadedModel.animNodes[i].ytimes.length()
+                || posZ != loadedModel.animNodes[i].ztimes.length());
+
+        loadedModel.animNodes[i].xtimes = {};
+        loadedModel.animNodes[i].ytimes = {};
+        loadedModel.animNodes[i].ztimes = {};
+        loadedModel.animNodes[i].xvalues = {};
+        loadedModel.animNodes[i].yvalues = {};
+        loadedModel.animNodes[i].zvalues = {};
+    }
 
     loadedModel.modelColor = Qt::green;
     return QString();

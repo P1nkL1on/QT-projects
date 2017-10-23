@@ -66,13 +66,16 @@ bool isLoaded = false;
 ModelFBX modelFBX;
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
+    if (event->key() != Qt::Key_Any)
+        this->repaint();
+
     if (event->key() != Qt::Key_Space)
         return;
     if (isLoaded)
         return;
     const QString err = loadModelByAdress(
-                "D:/QT-projects/QT-projects/Prohor/Models/FBX/joints_only2.FBX", modelFBX);
-                //FBXmaya/h1    !guard yelling exported     FBXmaya/bendedhand      /!1710_2
+                "D:/QT-projects/Prohor/Models/FBX/!Samba exported.FBX", modelFBX);
+                //FBXmaya/h1    !guard yelling exported     FBXmaya/bendedhand      /!1710_2        joints_only2
     if (!err.isEmpty()){
         qDebug() << err;
         return;

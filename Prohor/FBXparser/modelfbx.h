@@ -13,6 +13,7 @@ private:
     QString DrawItSelf(QVector<QVector2D> &points,const QVector<QVector3D> vertGiven,
                        const QMatrix4x4 view, const QMatrix4x4 perspective);
 
+    float curTime = 0;
 public:
     QColor modelColor;
     ModelFBX();
@@ -27,6 +28,8 @@ public:
 
     QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                            const int width, const int hei) override;
+
+    void SetFrameRotate (float timeKey);
 };
 
 #endif // MODELFBX_H

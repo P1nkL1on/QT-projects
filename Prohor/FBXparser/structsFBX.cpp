@@ -37,6 +37,7 @@ AnimCurve::AnimCurve()
 {
     ID = "";
     values = {};
+    times = {};
     //typ = -1;
 }
 
@@ -45,6 +46,9 @@ AnimNode::AnimNode()
     xvalues = {};
     yvalues = {};
     zvalues = {};
+    xtimes = {};
+    ytimes = {};
+    ztimes = {};
     ID = "";
     typ = -1;
 }

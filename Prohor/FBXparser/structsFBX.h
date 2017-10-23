@@ -30,6 +30,7 @@ public:
 struct AnimCurve{
 public:
     QVector<float> values;
+    QVector<float> times;
     QString ID;
     //short typ;  // 0 - XTRAN 1 - YTAN 2 - ZTRAN 3 - XROT 4 - YROT 5 - ZROT
     AnimCurve();
@@ -40,6 +41,14 @@ public:
     QVector<float> xvalues;
     QVector<float> yvalues;
     QVector<float> zvalues;
+
+    QVector<float> xtimes;
+    QVector<float> ytimes;
+    QVector<float> ztimes;
+
+    QVector<QMatrix4x4> rotat;
+    QVector<float> times;
+
     QString ID;
     short typ;  // 0 - TRNASLATION  3 - ROTATION
     AnimNode();
@@ -53,6 +62,7 @@ public:
     QString name;
 
     QVector3D translation;
+    QVector3D translationBinded;
     QVector3D rotation;
 
     QVector3D globalTranslation;
