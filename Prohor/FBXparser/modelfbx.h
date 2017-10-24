@@ -20,16 +20,19 @@ public:
     QVector<QVector3D> vertexes;
     QVector<unsigned int> polygon_vertex_indexes;
     QVector<unsigned int> polygon_start;
+
     QVector<Cluster> clusters;
     QVector<LimbNode> limbs;
     QVector<LimbNodeAttribute> limbAtts;
     QVector<AnimCurve> animCurves;
     QVector<AnimNode> animNodes;
+    QMatrix4x4 meshTransform;
 
     QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                            const int width, const int hei) override;
 
     void SetFrameRotate (float timeKey);
+    void SetLocalRotate ();
 };
 
 #endif // MODELFBX_H

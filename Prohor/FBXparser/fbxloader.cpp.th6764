@@ -9,7 +9,6 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     //QRegExp reg_exp_number("^[-+]?[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?$"), reg_exp_R("^[0-9]+$");
     //current folder
     QString nowDirectory = "";
-    loadedModel.meshTransform.setToIdentity();
     bool parseCluster = false, parseLimb = false,
          nextLineIsLink = false, parseAnimCurve = false, parseAnimNode = false,
          parseMesh = false;
@@ -45,7 +44,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         }
         if (line.length() > 0 && line.lastIndexOf('}') >= 0){
             nowDirectory = nowDirectory.mid(0, nowDirectory.lastIndexOf('/'));
-            //qDebug() << nowDirectory;
+            qDebug() << nowDirectory;
             // cluster end
             if (parseCluster && nowDirectory.indexOf("Deformer") < 0)
             {
@@ -74,8 +73,6 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                 parseAnimNode = false;
                 loadedModel.animNodes << newAnimNode;
             }
-            if (parseMesh)
-                parseMesh = false;
         }
 
         //
@@ -117,7 +114,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                 }
         }
         if (lineName == "Mesh"){
-            parseMesh = true;
+
         }
         // try parse BONES
         if (lineName == "LimbNode"){
@@ -233,28 +230,6 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     if (newAnimNode.xvalues.length() == 0){newAnimNode.xvalues << zerovalue;} else
                         if (newAnimNode.yvalues.length() == 0){newAnimNode.yvalues << zerovalue;} else
                             if (newAnimNode.zvalues.length() == 0){newAnimNode.zvalues << zerovalue;}
-                }
-            }
-        }
-
-        if (parseMesh){
-            if (nowDirectory.indexOf("/Model/Properties70") > 0){
-                if (line.indexOf("Lcl") >= 0)
-                {
-                    QStringList spl = line.split(',');
-                    QVector3D rotn = QVector3D(::atof(spl[spl.length() - 3].toStdString().c_str()),
-                                               ::atof(spl[spl.length() - 2].toStdString().c_str()),
-                                               ::atof(spl[spl.length() - 1].toStdString().c_str()));
-                    if (line.indexOf("Rotation") >= 0){
-//                        loadedModel.meshTransform.rotate(rotn.x(), 1.0, 0, 0);
-//                        loadedModel.meshTransform.rotate(rotn.y(), 0, 1.0, 0);
-//                        loadedModel.meshTransform.rotate(rotn.z(), 0, 0, 1.0);
-                    }
-                    if (line.indexOf("Scaling") >= 0)
-                        loadedModel.meshTransform.scale(rotn.x(), rotn.y(), rotn.z());
-
-                    if (line.indexOf("Translation") >= 0)
-                        loadedModel.meshTransform.translate(rotn.x(), rotn.y(), rotn.z());
                 }
             }
         }
@@ -522,18 +497,6 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         loadedModel.limbs[i].translationBinded = loadedModel.limbs[i].translation;
     }
 
-    for (int i = 0 ; i < loadedModel.limbs.length(); i++){\
-        //
-        LimbNode* ln = loadedModel.limbs[i].pater;
-        if (ln == NULL)
-            continue;
-        QVector4D tempCoord = loadedModel.limbs[i].translation;
-        tempCoord = tempCoord * ln->Transform * ln->LinkTransform;
-
-        loadedModel.limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
-        loadedModel.limbs[i].translationBinded = loadedModel.limbs[i].translation;
-    }
-
 
     //______________________
 //    QVector<QVector3D> newverts;
@@ -585,8 +548,8 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     QMatrix4x4 newTran;
                     newTran.setToIdentity();
                     newTran.translate(loadedModel.animNodes[i].xvalues[(posX < loadedModel.animNodes[i].xvalues.length())? posX : loadedModel.animNodes[i].xvalues.length() -1],
-                                      loadedModel.animNodes[i].yvalues[(posY < loadedModel.animNodes[i].yvalues.length())? posY : loadedModel.animNodes[i].yvalues.length() -1],
-                                      loadedModel.animNodes[i].zvalues[(posZ < loadedModel.animNodes[i].zvalues.length())? posZ : loadedModel.animNodes[i].zvalues.length() -1]);
+                                      loadedModel.animNodes[i].xvalues[(posY < loadedModel.animNodes[i].yvalues.length())? posY : loadedModel.animNodes[i].yvalues.length() -1],
+                                      loadedModel.animNodes[i].xvalues[(posZ < loadedModel.animNodes[i].zvalues.length())? posZ : loadedModel.animNodes[i].zvalues.length() -1]);
                     qDebug () << i << currentTime << "movement";
 
                     loadedModel.animNodes[i].rotat << newTran;
@@ -608,14 +571,14 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
 
     // mesh transforms
-
-    // each vertex transform apply
-
-    //loadedModel.meshTransform = loadedModel.meshTransform.inverted();
-    for (int i = 0 ; i < loadedModel.vertexes.length(); i++){
-        QVector4D tempCoord = loadedModel.vertexes[i];
-        tempCoord = tempCoord * loadedModel.meshTransform;
-        loadedModel.vertexes[i] = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
+    for (int i = 0 ; i < loadedModel.limbs.length(); i++){\
+        for (int j = 0; j < loadedModel.limbs[i].indexes.length(); j++){
+            QVector4D tempCoord = loadedModel.vertexes[loadedModel.limbs[i].indexes[j]];
+            tempCoord = tempCoord * loadedModel.limbs[i].Transform * loadedModel.limbs[i].LinkTransform;
+            loadedModel.vertexes[loadedModel.limbs[i].indexes[j]]
+                    = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
+            qDebug() << i << j;
+        }
     }
 
     loadedModel.modelColor = Qt::green;

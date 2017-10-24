@@ -21,8 +21,8 @@ QVector2D toScrCoords (const QVector2D point, const int screenWidth, const int s
 
 QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
 {
-    SetFrameRotate(curTime);
-    curTime += 5000; if (curTime > 2600000) curTime = 0;
+    //if (curTime == 0){ SetLocalRotate(); curTime = -1;}
+    //curTime += 5000; if (curTime > 2600000) curTime = 0;
     qDebug() << curTime;
     // first get a point array
     QVector<QVector2D> resPoints = {};
@@ -59,14 +59,7 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
 //            painter->drawLine((int)res[0],(int)res[1], (int)controllable2D[0], (int)controllable2D[1]);
 //        }
 //    }
-//    pen.setWidth(2);
-//    pen.setColor(modelColor);//((currentPolygon == polygonSelectedIndex)? Qt::red : modelColor);
-//    painter->setPen(pen);
 
-//    for (int currentVert = 0; currentVert < vertexes.length(); currentVert ++){
-//        QVector2D res = toScrCoords(resPoints[currentVert], width, hei);
-//        painter->drawPoint((int)res[0],(int)res[1]);
-//    }
 
     // joint drawing
 
@@ -108,23 +101,31 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
         painter->drawPoint((int)res[0],(int)res[1]);
         pen.setWidth(5);
         painter->setPen(pen);
-        painter->drawLine((int)res[0],(int)res[1], (int)resPater[0], (int)resPater[1]);
+        if (limbs[i].pater != NULL)
+            painter->drawLine((int)res[0],(int)res[1], (int)resPater[0], (int)resPater[1]);
 
         painter->drawText((int)res[0],(int)res[1],300,20,0, (limbs[i].name));
-
-
         // cluster boys
-//        pen.setWidth(1);
-//        pen.setColor(QColor(0,0,255,1));
-//        painter->setPen(pen);
+        pen.setWidth(1);
+        pen.setColor(QColor(0,0,255,10));
+        painter->setPen(pen);
 
-//        for (int j = 0; j < limbs[i].indexes.length(); j++){
-//            QVector<QVector2D> controllablePoint = {};
-//            QString errCC = DrawItSelf(controllablePoint,{vertexes[limbs[i].indexes[j]]}, view, perspective);
-//            QVector2D controllable2D = toScrCoords(controllablePoint[0], width, hei);
+        for (int j = 0; j < limbs[i].indexes.length(); j++){
+            QVector<QVector2D> controllablePoint = {};
+            QString errCC = DrawItSelf(controllablePoint,{vertexes[limbs[i].indexes[j]]}, view, perspective);
+            QVector2D controllable2D = toScrCoords(controllablePoint[0], width, hei);
 
-//            painter->drawLine((int)res[0],(int)res[1], (int)controllable2D[0], (int)controllable2D[1]);
-//        }
+            painter->drawLine((int)res[0],(int)res[1], (int)controllable2D[0], (int)controllable2D[1]);
+        }
+    }
+
+    pen.setWidth(3);
+    pen.setColor(modelColor);//((currentPolygon == polygonSelectedIndex)? Qt::red : modelColor);
+    painter->setPen(pen);
+
+    for (int currentVert = 0; currentVert < vertexes.length(); currentVert ++){
+        QVector2D res = toScrCoords(resPoints[currentVert], width, hei);
+        painter->drawPoint((int)res[0],(int)res[1]);
     }
 }
 
@@ -142,13 +143,26 @@ QString ModelFBX::DrawItSelf(QVector<QVector2D> &resultPoints, const QVector<QVe
 }
 
 
+void ModelFBX::SetLocalRotate(){
+    // perform a rotation for current frame
+    for (int i = 0; i < limbs.length(); i++){
+        LimbNode* ln = &limbs[i];
+        QVector4D tempCoord(limbs[i].translationBinded.x(),
+                            limbs[i].translationBinded.y(),
+                            limbs[i].translationBinded.z(), 1.0);
+        do {
+            if (ln->pater != NULL)
+                tempCoord = tempCoord * ln->pater->RotatMatrix.inverted();
+            ln = ln->pater;
+        }while(ln != NULL);
+        limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
+    }
+}
+
 void ModelFBX::SetFrameRotate(float timeKey)
 {
     // perform a rotation for current frame
     for (int i = 0; i < limbs.length(); i++){
-        qDebug() << limbs[i].ID + "->" +
-                    ((limbs[i].pater == NULL)? "null" : limbs[i].pater->ID);
-
         LimbNode* ln = &limbs[i];
         //nL = 1.0;
         QVector4D tempCoord(limbs[i].translationBinded.x(),
@@ -172,23 +186,6 @@ void ModelFBX::SetFrameRotate(float timeKey)
                     tempCoord = tempCoord * ln->pater->RotatMatrix.inverted();
             ln = ln->pater;
         }while(ln != NULL);
-
-//        ln = &limbs[i];
-//        do {
-//            if (ln != NULL && ln->animTrnaslation != NULL && ln->animTrnaslation->rotat.length() > 0)
-//            {
-//                int needIndex = -1;
-//                AnimNode* rot = ln->animTrnaslation;
-
-//                for (int fr = 0; fr < rot->times.length(); fr++)
-//                    if (rot->times[fr] >= timeKey)
-//                    {needIndex = fr; break;}
-//                if (needIndex == -1) needIndex = rot->times.length() - 1;
-
-//                tempCoord = tempCoord * rot->rotat[needIndex].inverted();
-//            }
-//            ln = ln -> pater;
-//        }while (ln != NULL);
         limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
     }
 }
