@@ -15,6 +15,8 @@ private:
 
     float curTime = 0;
 public:
+    QVector3D offset;
+
     QColor modelColor;
     ModelFBX();
     QVector<QVector3D> vertexes;

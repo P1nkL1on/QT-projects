@@ -76,6 +76,7 @@ public:
     float lengthFromAttribute;
     //bind read
     QMatrix4x4 BindMatrix;
+    QMatrix4x4 BindScaleMatrix;
     QMatrix4x4 RotatMatrix;
     //
     QMatrix4x4 Transform;

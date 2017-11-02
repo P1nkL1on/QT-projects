@@ -463,6 +463,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                            temp[4],temp[5],temp[6],temp[7],
                                            temp[8],temp[9],temp[10],temp[11],
                                            temp[12],temp[13],temp[14],temp[15]);
+                       loadedModel.limbs[id].BindScaleMatrix = loadedModel.limbs[id].BindMatrix;
                        QVector3D extractedScales = QVector3D(
                                 loadedModel.limbs[id].BindMatrix.column(0).toVector3D().length(),
                                 loadedModel.limbs[id].BindMatrix.column(1).toVector3D().length(),
@@ -522,13 +523,14 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         loadedModel.limbs[i].translationBinded = loadedModel.limbs[i].translation;
     }
 
+    //if (false)
     for (int i = 0 ; i < loadedModel.limbs.length(); i++){\
         //
         LimbNode* ln = loadedModel.limbs[i].pater;
         if (ln == NULL)
             continue;
         QVector4D tempCoord = loadedModel.limbs[i].translation;
-        tempCoord = tempCoord * ln->Transform * ln->LinkTransform;
+        tempCoord = tempCoord * (/*ln->Transform*/ ln->LinkTransform);
 
         loadedModel.limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
         loadedModel.limbs[i].translationBinded = loadedModel.limbs[i].translation;
@@ -612,12 +614,38 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     // each vertex transform apply
 
     //loadedModel.meshTransform = loadedModel.meshTransform.inverted();
+    if (false)
     for (int i = 0 ; i < loadedModel.vertexes.length(); i++){
-        QVector4D tempCoord = loadedModel.vertexes[i];
+        QVector4D tempCoord = QVector4D(loadedModel.vertexes[i].x(),
+                                        loadedModel.vertexes[i].y(),
+                                        loadedModel.vertexes[i].z(),
+                                        1.0);
         tempCoord = tempCoord * loadedModel.meshTransform;
         loadedModel.vertexes[i] = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
     }
 
+
+    //_____________________________________________
+
+    int vertCount = loadedModel.vertexes.length();
+    for (int i = 0; i < loadedModel.limbs.length(); i++){
+        LimbNode lm = (loadedModel.limbs[i]);
+        QMatrix4x4 prom = lm.Transform * lm.BindScaleMatrix;
+        int n = 10;
+        for (int j = 0; j < lm.indexes.length(); j++){
+            QVector4D tempCoord = QVector4D(loadedModel.vertexes[lm.indexes[j]].x(),
+                                            loadedModel.vertexes[lm.indexes[j]].y(),
+                                            loadedModel.vertexes[lm.indexes[j]].z(),
+                                            1.0);
+            tempCoord = tempCoord * prom;
+
+            loadedModel.vertexes << QVector3D (tempCoord.x(), tempCoord.y(), tempCoord.z());
+        }
+    }
+    for (int i = 0; i < vertCount; i++)
+        loadedModel.vertexes[i] += QVector3D(-150, 0, 0);
+
+    //_____________________________________________
     loadedModel.modelColor = Qt::green;
     return QString();
 }

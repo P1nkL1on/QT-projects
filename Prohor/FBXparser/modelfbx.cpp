@@ -11,6 +11,7 @@ ModelFBX::ModelFBX()
     limbAtts = {};
     animCurves = {};
     animNodes = {};
+    offset = {};
 }
 
 QVector2D toScrCoords (const QVector2D point, const int screenWidth, const int screenHeight){
@@ -106,24 +107,24 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
 
         painter->drawText((int)res[0],(int)res[1],300,20,0, (limbs[i].name));
         // cluster boys
-        pen.setWidth(1);
-        pen.setColor(QColor(0,0,255,10));
-        painter->setPen(pen);
+//        pen.setWidth(1);
+//        pen.setColor(QColor(0,0,255,10));
+//        painter->setPen(pen);
 
-        for (int j = 0; j < limbs[i].indexes.length(); j++){
-            QVector<QVector2D> controllablePoint = {};
-            QString errCC = DrawItSelf(controllablePoint,{vertexes[limbs[i].indexes[j]]}, view, perspective);
-            QVector2D controllable2D = toScrCoords(controllablePoint[0], width, hei);
+//        for (int j = 0; j < limbs[i].indexes.length(); j++){
+//            QVector<QVector2D> controllablePoint = {};
+//            QString errCC = DrawItSelf(controllablePoint,{vertexes[limbs[i].indexes[j]]}, view, perspective);
+//            QVector2D controllable2D = toScrCoords(controllablePoint[0], width, hei);
 
-            painter->drawLine((int)res[0],(int)res[1], (int)controllable2D[0], (int)controllable2D[1]);
-        }
+//            painter->drawLine((int)res[0],(int)res[1], (int)controllable2D[0], (int)controllable2D[1]);
+//        }
     }
 
     pen.setWidth(3);
     pen.setColor(modelColor);//((currentPolygon == polygonSelectedIndex)? Qt::red : modelColor);
     painter->setPen(pen);
 
-    for (int currentVert = 0; currentVert < vertexes.length(); currentVert ++){
+    for (int currentVert = 0; currentVert < resPoints.length(); currentVert ++){
         QVector2D res = toScrCoords(resPoints[currentVert], width, hei);
         painter->drawPoint((int)res[0],(int)res[1]);
     }
@@ -134,7 +135,7 @@ QString ModelFBX::DrawItSelf(QVector<QVector2D> &resultPoints, const QVector<QVe
                           const QMatrix4x4 view, const QMatrix4x4 perspective){
 
     for (int i = 0; i < vertGiven.length(); i++){
-        QVector4D vertexCoords = QVector4D(vertGiven[i].x(), vertGiven[i].y(), vertGiven[i].z(), 1.0 ) ;
+        QVector4D vertexCoords = QVector4D(vertGiven[i].x() + offset.x(), vertGiven[i].y() + offset.y(), vertGiven[i].z() + offset.z(), 1.0 ) ;
 
         vertexCoords = vertexCoords * view * perspective;
         resultPoints << QVector2D (vertexCoords[0] / vertexCoords[3], vertexCoords[1] / vertexCoords[3]);

@@ -63,9 +63,14 @@ void MainWindow::paintEvent(QPaintEvent *e){
 }
 
 bool isLoaded = false;
-ModelFBX modelFBX;
+QVector<ModelFBX> modelsFBX;
+QVector<QString> names;
+
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
+    names << "!Samba exported" << "!guard yelling exported" << "!bboy exported";
+    //FBXmaya/h1    !guard yelling exported     FBXmaya/bendedhand      /!1710_2        joints_only2
+
     if (event->key() != Qt::Key_Any)
         this->repaint();
 
@@ -73,15 +78,22 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         return;
     if (isLoaded)
         return;
-    const QString err = loadModelByAdress(
-                "D:/QT-projects/Prohor/Models/FBX/!Samba exported.FBX", modelFBX);
-                //FBXmaya/h1    !guard yelling exported     FBXmaya/bendedhand      /!1710_2        joints_only2
-    if (!err.isEmpty()){
-        qDebug() << err;
-        return;
-    }
 
+    for (int i = 0 ; i < names.length(); i++){
+        ModelFBX newModelFBX;
+        const QString err = loadModelByAdress(
+                    "D:/QT-projects/Prohor/Models/FBX/"+names[i]+".FBX", newModelFBX);
+        if (!err.isEmpty()){
+            qDebug() << err;
+            return;
+        }
+        newModelFBX.offset = QVector3D( i * -420, 0, 0);
+
+        modelsFBX << newModelFBX;
+    }
+    for (int i = 0 ; i < modelsFBX.length(); i++)
+        tv.addGraphicsObject(&modelsFBX[i]);
     isLoaded = true;
-    tv.addGraphicsObject(&modelFBX);
+
     qDebug() << "loading complete";
 }
