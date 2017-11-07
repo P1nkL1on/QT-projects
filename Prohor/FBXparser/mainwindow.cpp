@@ -68,7 +68,7 @@ QVector<QString> names;
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    names  <<  "joints_only2"/* << "!Samba exported"*/ << "!guard yelling exported"/*<< "!bboy exported"*/;
+    names   << "!guard yelling exported"/*<< "!bboy exported"*/;
     //FBXmaya/h1    !guard yelling exported     FBXmaya/bendedhand      /!1710_2        joints_only2
 
     if (event->key() != Qt::Key_Any)
@@ -87,7 +87,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             qDebug() << err;
             return;
         }
-        newModelFBX.offset = QVector3D( i * -420, 0, 0);
+        newModelFBX.offset = QVector3D( i * -220, 0, 0);
 
         modelsFBX << newModelFBX;
     }

@@ -349,7 +349,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     qDebug() << "X Can not connect animNode and bone " << line;
                 else
                 {
-                    if (IDS[IDS.length() - 1] == "Lcl Translation")
+                    if (IDS[IDS.length() - 1].indexOf("Lcl Translation") > 0)
                         loadedModel.limbs[boneNumber].animTrnaslation = &(loadedModel.animNodes[animNodeNumber]);
                     else
                     {
@@ -359,7 +359,8 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                                                          loadedModel.animNodes[animNodeNumber].zvalues[0]);
 
                     }
-                    qDebug() << IDS[IDS.length() - 1] << " connected. Bone" << boneNumber << " AnimNode" << animNodeNumber;
+                    qDebug() << IDS[IDS.length() - 1] << " connected. Bone" << boneNumber << " AnimNode" << animNodeNumber
+                                                      << (((IDS[IDS.length() - 1].indexOf("Lcl Translation") > 0))? "transl" : "rotat");
                 }
             }
             if (prevLine.indexOf("Model::") == 1 && prevLine.indexOf("Model::", 6) >= 0){
@@ -566,9 +567,9 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
             if (ch){
                 loadedModel.animNodes[i].times << currentTime;
                 if (loadedModel.animNodes[i].typ >= 3){
-                    qDebug () << i << currentTime << "  <  " << posX<<"/"<< loadedModel.animNodes[i].xvalues.length() - 1
-                                                             << posY<<"/"<< loadedModel.animNodes[i].yvalues.length() - 1
-                                                             << posZ<<"/"<< loadedModel.animNodes[i].zvalues.length() - 1;
+//                    qDebug () << i << currentTime << "  <  " << posX<<"/"<< loadedModel.animNodes[i].xvalues.length() - 1
+//                                                             << posY<<"/"<< loadedModel.animNodes[i].yvalues.length() - 1
+//                                                             << posZ<<"/"<< loadedModel.animNodes[i].zvalues.length() - 1;
 
                     QMatrix4x4 newRotat;
                     newRotat.setToIdentity();
@@ -583,7 +584,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     newTran.translate(loadedModel.animNodes[i].xvalues[(posX < loadedModel.animNodes[i].xvalues.length())? posX : loadedModel.animNodes[i].xvalues.length() -1],
                                       loadedModel.animNodes[i].yvalues[(posY < loadedModel.animNodes[i].yvalues.length())? posY : loadedModel.animNodes[i].yvalues.length() -1],
                                       loadedModel.animNodes[i].zvalues[(posZ < loadedModel.animNodes[i].zvalues.length())? posZ : loadedModel.animNodes[i].zvalues.length() -1]);
-                    qDebug () << i << currentTime << "movement";
+                    //qDebug () << i << currentTime << "movement";
 
                     loadedModel.animNodes[i].rotat << newTran;
                 }
@@ -612,14 +613,14 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                         loadedModel.vertexes[i].y(),
                                         loadedModel.vertexes[i].z(),
                                         1.0);
-        tempCoord = tempCoord * loadedModel.meshTransform;
+        tempCoord = tempCoord * loadedModel.meshTransform.transposed();
         loadedModel.vertexes[i] = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
     }
 
     int vertCount = loadedModel.vertexes.length();
 
     // new transformed mesh created
-    // COMPLETELY THE SAME THING WITH PREVIOUSE SHIT
+    // COMPLETELY THE SAME THING WITH PREVIOUS SHIT
     if (false){
     for (int i = 0; i < loadedModel.limbs.length(); i++){
         LimbNode lm = (loadedModel.limbs[i]);

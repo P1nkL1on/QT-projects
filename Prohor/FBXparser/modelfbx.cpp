@@ -24,6 +24,8 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
 {
     //if (curTime == 0){ SetLocalRotate(); curTime = -1;}
     //curTime += 5000; if (curTime > 2600000) curTime = 0;
+    //SetFrameRotate(curTime);
+
     qDebug() << curTime;
     // first get a point array
     QVector<QVector2D> resPoints = {};
@@ -170,21 +172,23 @@ void ModelFBX::SetFrameRotate(float timeKey)
                             limbs[i].translationBinded.y(),
                             limbs[i].translationBinded.z(), 1.0);
         do {
-            if (ln->pater != NULL)
-                if (ln->pater->animRotation != NULL && ln->pater->animRotation->rotat.length() > 0)
+            LimbNode* ptr = ln->pater;
+            if (ptr != NULL){
+                if (ptr->animRotation != NULL && ptr->animRotation->rotat.length() > 0)
                 {
                     int needIndex = -1;
-                    AnimNode* rot = ln->pater->animRotation;
+                    AnimNode* rot = ptr->animRotation;
 
                     for (int fr = 0; fr < rot->times.length(); fr++)
                         if (rot->times[fr] >= timeKey)
                         {needIndex = fr; break;}
                     if (needIndex == -1) needIndex = rot->times.length() - 1;
 
-                    tempCoord = tempCoord * rot->rotat[needIndex].inverted();
+                    tempCoord = tempCoord * rot->rotat[needIndex];
                 }
                 else
-                    tempCoord = tempCoord * ln->pater->RotatMatrix.inverted();
+                    tempCoord = tempCoord * ptr->RotatMatrix;
+            }
             ln = ln->pater;
         }while(ln != NULL);
         limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
