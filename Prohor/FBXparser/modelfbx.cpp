@@ -22,7 +22,7 @@ QVector2D toScrCoords (const QVector2D point, const int screenWidth, const int s
 
 QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
 {
-    //if (curTime == 0){ SetLocalRotate(); curTime = -1;}
+    if (curTime == 0){ SetLocalRotate(); curTime = -1;}
     //curTime += 5000; if (curTime > 2600000) curTime = 0;
     qDebug() << curTime;
     // first get a point array

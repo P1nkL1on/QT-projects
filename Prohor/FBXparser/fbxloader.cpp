@@ -28,11 +28,13 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         line = textStream.readLine();
         while (line[0] == '\t')
             line.remove(0,1);
-
-        //qDebug() << line;
-        QString IDstring = (line.indexOf("NodeAttribute") == 0 || line.indexOf("Model") == 0 || line.indexOf("Deformer") == 0 || line.indexOf("Animation") >= 0)?
-                    line.mid(line.indexOf(":") + 2, line.indexOf(",") - line.indexOf(":") - 2)
-                    : "";
+        if (line.length() == 0)
+            continue;
+//qDebug() << line;
+        QString IDstring;
+        IDstring = (line.indexOf("NodeAttribute") == 0 || line.indexOf("Model") == 0 || line.indexOf("Deformer") == 0 || line.indexOf("Animation") >= 0)?
+            line.mid(line.indexOf(":") + 2, line.indexOf(",") - line.indexOf(":") - 2)
+            : "";
         // parse line to vertexes
          QString lineName = "";
         if (line.length() > 0 && line.lastIndexOf('{') == line.length() - 1){
@@ -350,7 +352,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                         loadedModel.limbs[boneNumber].animTrnaslation = &(loadedModel.animNodes[animNodeNumber]);
                     else
                     {
-                        loadedModel.limbs[boneNumber].animRotation = &(loadedModel.animNodes[animNodeNumber]);
+                        loadedModel.limbs[boneNumber].animRotation = &(loadedModel.animNodes[animNodeNumber]);                        
                         loadedModel.limbs[boneNumber].animRottMatrix.rotate(loadedModel.animNodes[animNodeNumber].xvalues[0],
                                                                          loadedModel.animNodes[animNodeNumber].yvalues[0],
                                                                          loadedModel.animNodes[animNodeNumber].zvalues[0]);
@@ -459,6 +461,10 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                     if (loadedModel.limbs[id].ID == readID)
                     {
                        loadedModel.limbs[id].BindMatrix =
+//                                  QMatrix4x4(temp[0],temp[4],temp[8],temp[12],
+//                                             temp[1],temp[5],temp[9],temp[13],
+//                                             temp[2],temp[6],temp[10],temp[14],
+//                                             temp[3],temp[7],temp[11],temp[15]);
                                 QMatrix4x4(temp[0],temp[1],temp[2],temp[3],
                                            temp[4],temp[5],temp[6],temp[7],
                                            temp[8],temp[9],temp[10],temp[11],
@@ -628,6 +634,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     //_____________________________________________
 
     int vertCount = loadedModel.vertexes.length();
+
     for (int i = 0; i < loadedModel.limbs.length(); i++){
         LimbNode lm = (loadedModel.limbs[i]);
         QMatrix4x4 prom = lm.Transform * lm.BindScaleMatrix;
@@ -637,7 +644,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                             loadedModel.vertexes[lm.indexes[j]].y(),
                                             loadedModel.vertexes[lm.indexes[j]].z(),
                                             1.0);
-            tempCoord = tempCoord * prom;
+            tempCoord = tempCoord * prom;// * meshTransform;
 
             loadedModel.vertexes << QVector3D (tempCoord.x(), tempCoord.y(), tempCoord.z());
         }

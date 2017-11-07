@@ -51,4 +51,12 @@ AnimNode::AnimNode()
     ztimes = {};
     ID = "";
     typ = -1;
+
+    xvalues << 0;
+    yvalues << 0;
+    zvalues << 0;
+
+    xtimes << 0;
+    ytimes << 0;
+    ztimes << 0;
 }

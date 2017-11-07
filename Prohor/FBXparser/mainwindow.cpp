@@ -68,7 +68,7 @@ QVector<QString> names;
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    names << "!Samba exported" << "!guard yelling exported" << "!bboy exported";
+    names  << "joints_only2"/* << "!Samba exported"*/ << "!guard yelling exported" /*<< "!bboy exported"*/;
     //FBXmaya/h1    !guard yelling exported     FBXmaya/bendedhand      /!1710_2        joints_only2
 
     if (event->key() != Qt::Key_Any)
