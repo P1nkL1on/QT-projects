@@ -6,8 +6,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 {
     if (textStream.atEnd()) return "Can not load a file";
     // while not and of file read line by line
-    //QRegExp reg_exp_number("^[-+]?[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?$"), reg_exp_R("^[0-9]+$");
-    //current folder
+
     QString nowDirectory = "";
     loadedModel.meshTransform.setToIdentity();
     bool parseCluster = false, parseLimb = false,
@@ -23,6 +22,8 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     QString line = "", prevLine = "";
     QString readID = ""; QVector<float> temp;
 
+
+    // Reading and connecting
     while (!textStream.atEnd()){
         prevLine = line;
         line = textStream.readLine();
@@ -489,6 +490,8 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         }
     }
 
+
+    // Getting a global coordinates for bind calculating
     for (int i = 0; i < loadedModel.limbs.length(); i++){
         LimbNode* ln = &loadedModel.limbs[i];
         ln->lengthFromAttribute = ln->translation.length();
@@ -500,8 +503,8 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
             }while(ln != NULL);
         loadedModel.limbs[i].globalTranslation = QVector3D(resCoord.x(), resCoord.y(), resCoord.z());
     }
-    //return QString();
 
+    // Bind pose geted in TranslationBinded
     for (int i = 0; i < loadedModel.limbs.length(); i++){
         QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
         //tempCoord = {20,0,0,1};
@@ -529,6 +532,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         loadedModel.limbs[i].translationBinded = loadedModel.limbs[i].translation;
     }
 
+    // Link transform apply !!!!PROBLEM on spiral
     //if (false)
     for (int i = 0 ; i < loadedModel.limbs.length(); i++){\
         //
@@ -542,23 +546,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         loadedModel.limbs[i].translationBinded = loadedModel.limbs[i].translation;
     }
 
-
-    //______________________
-//    QVector<QVector3D> newverts;
-
-//    for (int i = 0 ; i < loadedModel.limbs.length(); i++){
-//        for (int j = 0 ; j < loadedModel.limbs[i].indexes.length(); j++){
-//            QVector3D newPoint = loadedModel.vertexes[loadedModel.limbs[i].indexes[j]];
-//            QVector4D temp = QVector4D(newPoint.x(), newPoint.y(), newPoint.z(), 1);
-//            temp = temp * loadedModel.limbs[i].BindMatrix.inverted();
-//            newverts << newPoint;
-//        }
-//    }
-
-//    loadedModel.vertexes = {};
-//    loadedModel.vertexes = newverts;
-
-    // animation parawa solving
+    // animation timing solving
     float step = 1000;
     for (int i = 0; i < loadedModel.animNodes.length(); i++){
 
@@ -615,12 +603,10 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     }
 
 
-    // mesh transforms
 
-    // each vertex transform apply
-
-    //loadedModel.meshTransform = loadedModel.meshTransform.inverted();
-    if (false)
+    //______________MESH_WORK_____________________
+    //Mesh scale transform
+    //if (false)
     for (int i = 0 ; i < loadedModel.vertexes.length(); i++){
         QVector4D tempCoord = QVector4D(loadedModel.vertexes[i].x(),
                                         loadedModel.vertexes[i].y(),
@@ -630,11 +616,11 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         loadedModel.vertexes[i] = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
     }
 
-
-    //_____________________________________________
-
     int vertCount = loadedModel.vertexes.length();
 
+    // new transformed mesh created
+    // COMPLETELY THE SAME THING WITH PREVIOUSE SHIT
+    if (false){
     for (int i = 0; i < loadedModel.limbs.length(); i++){
         LimbNode lm = (loadedModel.limbs[i]);
         QMatrix4x4 prom = lm.Transform * lm.BindScaleMatrix;
@@ -649,8 +635,11 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
             loadedModel.vertexes << QVector3D (tempCoord.x(), tempCoord.y(), tempCoord.z());
         }
     }
+
+    // multymodel meshes offset
     for (int i = 0; i < vertCount; i++)
         loadedModel.vertexes[i] += QVector3D(-150, 0, 0);
+    }
 
     //_____________________________________________
     loadedModel.modelColor = Qt::green;
