@@ -257,7 +257,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                         loadedModel.meshTransform.scale(rotn.x(), rotn.y(), rotn.z());
 
                     if (line.indexOf("Translation") >= 0)
-                        loadedModel.meshTransform.translate(rotn.x(), rotn.y(), rotn.z());
+                        loadedModel.meshTransform.translate(-rotn.x(), -rotn.y(), -rotn.z());
                 }
             }
         }
@@ -276,12 +276,12 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                         break;  // found already both
                 }
                 if (atributeNumber>= 0 && limbNumber >=0){
-                    qDebug () << "!!!" <<
-                                 loadedModel.limbAtts[atributeNumber].length <<
-                                 ((loadedModel.limbs[limbNumber].pater != NULL)?
-                                 (loadedModel.limbs[limbNumber].translation -
-                                  loadedModel.limbs[limbNumber].pater->translation).length()
-                                  : -1);
+//                    qDebug () << "!!!" <<
+//                                 loadedModel.limbAtts[atributeNumber].length <<
+//                                 ((loadedModel.limbs[limbNumber].pater != NULL)?
+//                                 (loadedModel.limbs[limbNumber].translation -
+//                                  loadedModel.limbs[limbNumber].pater->translation).length()
+//                                  : -1);
                     loadedModel.limbs[limbNumber].lengthFromAttribute =
                             loadedModel.limbAtts[atributeNumber].length;
 //                                h / 100.0 *
@@ -359,8 +359,8 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                                                          loadedModel.animNodes[animNodeNumber].zvalues[0]);
 
                     }
-                    qDebug() << IDS[IDS.length() - 1] << " connected. Bone" << boneNumber << " AnimNode" << animNodeNumber
-                                                      << (((IDS[IDS.length() - 1].indexOf("Lcl Translation") > 0))? "transl" : "rotat");
+//                    qDebug() << IDS[IDS.length() - 1] << " connected. Bone" << boneNumber << " AnimNode" << animNodeNumber
+//                                                      << (((IDS[IDS.length() - 1].indexOf("Lcl Translation") > 0))? "transl" : "rotat");
                 }
             }
             if (prevLine.indexOf("Model::") == 1 && prevLine.indexOf("Model::", 6) >= 0){
@@ -518,7 +518,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                 //QVector4D(10,0,0,1)
                 //((ln->pater != NULL)? (ln->pater->globalTranslation + ln->translation) : ln->globalTranslation);
                 QVector4D(ln->translation.x(), ln->translation.y(), ln->translation.z(), 1.0)
-                * ((ln->pater != NULL)? ln->pater->BindMatrix.inverted() : QMatrix4x4());
+                * ((ln->pater != NULL)? ln->pater->BindMatrix.inverted() : QMatrix4x4());                  // !!!!!!! SCALE -> _QMatrix4x4()__
 
 
         loadedModel.limbs[i].translation = QVector3D(tempGCoord.x(), tempGCoord.y(), tempGCoord.z());
@@ -534,7 +534,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     }
 
     // Link transform apply !!!!PROBLEM on spiral
-    //if (false)
+    if (false)
     for (int i = 0 ; i < loadedModel.limbs.length(); i++){\
         //
         LimbNode* ln = loadedModel.limbs[i].pater;
@@ -622,24 +622,24 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     // new transformed mesh created
     // COMPLETELY THE SAME THING WITH PREVIOUS SHIT
     if (false){
-    for (int i = 0; i < loadedModel.limbs.length(); i++){
-        LimbNode lm = (loadedModel.limbs[i]);
-        QMatrix4x4 prom = lm.Transform * lm.BindScaleMatrix;
-        int n = 10;
-        for (int j = 0; j < lm.indexes.length(); j++){
-            QVector4D tempCoord = QVector4D(loadedModel.vertexes[lm.indexes[j]].x(),
-                                            loadedModel.vertexes[lm.indexes[j]].y(),
-                                            loadedModel.vertexes[lm.indexes[j]].z(),
-                                            1.0);
-            tempCoord = tempCoord * prom;// * meshTransform;
+        for (int i = 0; i < loadedModel.limbs.length(); i++){
+            LimbNode lm = (loadedModel.limbs[i]);
+            QMatrix4x4 prom = lm.Transform * lm.BindScaleMatrix;
+            int n = 10;
+            for (int j = 0; j < lm.indexes.length(); j++){
+                QVector4D tempCoord = QVector4D(loadedModel.vertexes[lm.indexes[j]].x(),
+                                                loadedModel.vertexes[lm.indexes[j]].y(),
+                                                loadedModel.vertexes[lm.indexes[j]].z(),
+                                                1.0);
+                tempCoord = tempCoord * prom;// * meshTransform;
 
-            loadedModel.vertexes << QVector3D (tempCoord.x(), tempCoord.y(), tempCoord.z());
+                loadedModel.vertexes << QVector3D (tempCoord.x(), tempCoord.y(), tempCoord.z());
+            }
         }
-    }
 
-    // multymodel meshes offset
-    for (int i = 0; i < vertCount; i++)
-        loadedModel.vertexes[i] += QVector3D(-150, 0, 0);
+        // multymodel meshes offset
+        for (int i = 0; i < vertCount; i++)
+            loadedModel.vertexes[i] += QVector3D(-150, 0, 0);
     }
 
     //_____________________________________________

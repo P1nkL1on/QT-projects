@@ -76,7 +76,6 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
         //__________
         QVector3D prevTransform = {-ln->translation.x(), -ln->translation.y(), -ln->translation.z()};
         do {
-
             finalTranform = {finalTranform.x() + ln->translation.x(),
                              finalTranform.y() + ln->translation.y(),
                              finalTranform.z() + ln->translation.z()};
@@ -85,18 +84,9 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
         prevTransform = {finalTranform.x() + prevTransform.x(),
                          finalTranform.y() + prevTransform.y(),
                          finalTranform.z() + prevTransform.z()};
-//        QVector3D prevTransform;
-//        finalTranform = QVector3D(ln->translation.x(), ln->translation.y(), ln->translation.z());
-//        if (ln->pater != NULL)
-//            prevTransform = QVector3D(ln->pater->translation.x(), ln->pater->translation.y(), ln->pater->translation.z());
-//        else
-//            prevTransform = finalTranform;
-        //___________
-//        ln = &limbs[i];
-//        finalTranform = ln->globalTranslation;
-//        if (ln->pater != NULL)
-//            prevTransform = ln->pater->globalTranslation;
-            //_______
+
+
+        //_______
         QString errJ = DrawItSelf(resJoint, {finalTranform, prevTransform}, view, perspective);
 
         QVector2D res = toScrCoords(resJoint[0], width, hei);
