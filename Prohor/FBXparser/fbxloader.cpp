@@ -249,15 +249,15 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                                ::atof(spl[spl.length() - 2].toStdString().c_str()),
                                                ::atof(spl[spl.length() - 1].toStdString().c_str()));
                     if (line.indexOf("Rotation") >= 0){
-//                        loadedModel.meshTransform.rotate(rotn.x(), 1.0, 0, 0);
-//                        loadedModel.meshTransform.rotate(rotn.y(), 0, 1.0, 0);
-//                        loadedModel.meshTransform.rotate(rotn.z(), 0, 0, 1.0);
+                        //loadedModel.meshTransform.rotate(-rotn.x(), 1.0, 0, 0);
+                        //loadedModel.meshTransform.rotate(-rotn.y(), 0, 1.0, 0);
+                        //loadedModel.meshTransform.rotate(-rotn.z(), 0, 0, 1.0);
                     }
                     if (line.indexOf("Scaling") >= 0)
                         loadedModel.meshTransform.scale(rotn.x(), rotn.y(), rotn.z());
 
                     if (line.indexOf("Translation") >= 0)
-                        loadedModel.meshTransform.translate(-rotn.x(), -rotn.y(), -rotn.z());
+                        loadedModel.meshTransform.translate(-rotn.x(), -rotn.y(), rotn.z());
                 }
             }
         }
@@ -472,17 +472,22 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                                            temp[8],temp[9],temp[10],temp[11],
                                            temp[12],temp[13],temp[14],temp[15]);
                        loadedModel.limbs[id].BindScaleMatrix = loadedModel.limbs[id].BindMatrix;
+                       //!!!!!!!!!!!!!!!!!!!!
                        QVector3D extractedScales = QVector3D(
-                                loadedModel.limbs[id].BindMatrix.column(0).toVector3D().length(),
-                                loadedModel.limbs[id].BindMatrix.column(1).toVector3D().length(),
-                                loadedModel.limbs[id].BindMatrix.column(2).toVector3D().length());
+                                - loadedModel.limbs[id].BindMatrix.column(0).toVector3D().length(),
+                                - loadedModel.limbs[id].BindMatrix.column(1).toVector3D().length(),
+                                - loadedModel.limbs[id].BindMatrix.column(2).toVector3D().length());
 
 
                         loadedModel.limbs[id].BindMatrix =
-                                QMatrix4x4(temp[0]/extractedScales[0],temp[1]/extractedScales[1],temp[2]/extractedScales[2],0,
-                                           temp[4]/extractedScales[0],temp[5]/extractedScales[1],temp[6]/extractedScales[2],0,
-                                           temp[8]/extractedScales[0],temp[9]/extractedScales[1],temp[10]/extractedScales[2],0,
-                                           0,0,0,1);
+                                QMatrix4x4(temp[0]/extractedScales[0],temp[1]/extractedScales[1],temp[2]/extractedScales[2],temp[3],
+                                           temp[4]/extractedScales[0],temp[5]/extractedScales[1],temp[6]/extractedScales[2],temp[7],
+                                           temp[8]/extractedScales[0],temp[9]/extractedScales[1],temp[10]/extractedScales[2],temp[11],
+                                          0,0,0,temp[15]);
+//                                QMatrix4x4(temp[0]/extractedScales[0],temp[1]/extractedScales[1],temp[2]/extractedScales[2],0,
+//                                           temp[4]/extractedScales[0],temp[5]/extractedScales[1],temp[6]/extractedScales[2],0,
+//                                           temp[8]/extractedScales[0],temp[9]/extractedScales[1],temp[10]/extractedScales[2],0,
+//                                           0,0,0,1);
                         break;
                     }
                 temp = {};
@@ -534,14 +539,19 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     }
 
     // Link transform apply !!!!PROBLEM on spiral
-    if (false)
+    //if (false)
     for (int i = 0 ; i < loadedModel.limbs.length(); i++){\
         //
         LimbNode* ln = loadedModel.limbs[i].pater;
         if (ln == NULL)
             continue;
         QVector4D tempCoord = loadedModel.limbs[i].translation;
-        tempCoord = tempCoord * (/*ln->Transform*/ ln->LinkTransform);
+        QMatrix4x4 dd;
+        dd.scale(ln->LinkTransform.transposed().column(0).length(),
+                 ln->LinkTransform.transposed().column(1).length(),
+                 ln->LinkTransform.transposed().column(2).length());
+        tempCoord = tempCoord * (/*ln->Transform*/ dd);                 // only scale from linktransfom
+
 
         loadedModel.limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
         loadedModel.limbs[i].translationBinded = loadedModel.limbs[i].translation;
@@ -621,7 +631,8 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
     // new transformed mesh created
     // COMPLETELY THE SAME THING WITH PREVIOUS SHIT
-    if (false){
+    if (false)
+    {
         for (int i = 0; i < loadedModel.limbs.length(); i++){
             LimbNode lm = (loadedModel.limbs[i]);
             QMatrix4x4 prom = lm.Transform * lm.BindScaleMatrix;

@@ -68,7 +68,8 @@ QVector<QString> names;
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    names   << "joints_only2" << "!guard yelling exported"<< "!bboy exported";
+    names   << "joints_only2" << "joints_only2t" << "!pucn export"//
+    << "!guard yelling exported";//<< "!bboy exported";
     //FBXmaya/h1    !guard yelling exported     FBXmaya/bendedhand      /!1710_2        joints_only2
 
     if (event->key() != Qt::Key_Any)
@@ -82,12 +83,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     for (int i = 0 ; i < names.length(); i++){
         ModelFBX newModelFBX;
         const QString err = loadModelByAdress(
-                    "D:/QT-projects/QT-projects/Prohor/Models/FBX/"+names[i]+".FBX", newModelFBX);
+                    "D:/QT-projects/Prohor/Models/FBX/"+names[i]+".FBX", newModelFBX);
         if (!err.isEmpty()){
             qDebug() << err;
             return;
         }
-        newModelFBX.offset = QVector3D( i * -220, 0, 0);
+        newModelFBX.offset = QVector3D( i * -60, 0, 0);
 
         modelsFBX << newModelFBX;
     }
