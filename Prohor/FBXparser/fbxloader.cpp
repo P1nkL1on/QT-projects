@@ -257,7 +257,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                         loadedModel.meshTransform.scale(rotn.x(), rotn.y(), rotn.z());
 
                     if (line.indexOf("Translation") >= 0)
-                        loadedModel.meshTransform.translate(-rotn.x(), -rotn.y(), rotn.z());
+                        loadedModel.meshTransform.translate(-rotn.x(), rotn.y(), rotn.z());
                 }
             }
         }
@@ -474,9 +474,9 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                        loadedModel.limbs[id].BindScaleMatrix = loadedModel.limbs[id].BindMatrix;
                        //!!!!!!!!!!!!!!!!!!!!
                        QVector3D extractedScales = QVector3D(
-                                - loadedModel.limbs[id].BindMatrix.column(0).toVector3D().length(),
-                                - loadedModel.limbs[id].BindMatrix.column(1).toVector3D().length(),
-                                - loadedModel.limbs[id].BindMatrix.column(2).toVector3D().length());
+                                 -loadedModel.limbs[id].BindMatrix.column(0).toVector3D().length(),
+                                 loadedModel.limbs[id].BindMatrix.column(1).toVector3D().length(),
+                                 loadedModel.limbs[id].BindMatrix.column(2).toVector3D().length());
 
 
                         loadedModel.limbs[id].BindMatrix =
@@ -512,6 +512,10 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
     // Bind pose geted in TranslationBinded
     for (int i = 0; i < loadedModel.limbs.length(); i++){
+        if (i == 0)
+        {
+            int n = 0;
+        }
         QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
         //tempCoord = {20,0,0,1};
         // ROTATE
@@ -520,11 +524,22 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         // BIND POSE
         ln = &loadedModel.limbs[i];
         QVector4D tempGCoord =
-                //QVector4D(10,0,0,1)
-                //((ln->pater != NULL)? (ln->pater->globalTranslation + ln->translation) : ln->globalTranslation);
                 QVector4D(ln->translation.x(), ln->translation.y(), ln->translation.z(), 1.0)
                 * ((ln->pater != NULL)? ln->pater->BindMatrix.inverted() : QMatrix4x4());                  // !!!!!!! SCALE -> _QMatrix4x4()__
 
+        // kostil
+        if (ln->pater == NULL)//!!!!
+        {
+            qDebug() << "______________________________________________";
+            qDebug() << tempGCoord;
+
+            QVector4D scl = ln->BindScaleMatrix.row(3);
+            QMatrix4x4 transl;  transl.translate(QVector3D(0, scl.y() * .2 * ln->BindScaleMatrix.column(1).toVector3D().length(), 0));
+
+            tempGCoord = QVector4D(ln->translation.x(), ln->translation.y(), ln->translation.z(), 1.0) * transl.transposed();  //!!!!
+            qDebug() << tempGCoord;
+
+        }
 
         loadedModel.limbs[i].translation = QVector3D(tempGCoord.x(), tempGCoord.y(), tempGCoord.z());
         float newL = loadedModel.limbs[i].translation.length(),
