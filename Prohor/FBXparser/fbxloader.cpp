@@ -257,7 +257,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                         loadedModel.meshTransform.scale(rotn.x(), rotn.y(), rotn.z());
 
                     if (line.indexOf("Translation") >= 0)
-                        loadedModel.meshTransform.translate(-rotn.x(), rotn.y(), rotn.z());
+                        loadedModel.meshTransform.translate(-rotn.x(), -rotn.y(), rotn.z());
                 }
             }
         }
@@ -533,12 +533,12 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
             qDebug() << "______________________________________________";
             qDebug() << tempGCoord;
 
-            QVector4D scl = ln->BindScaleMatrix.row(3);
-            QMatrix4x4 transl;  transl.translate(QVector3D(0, scl.y() * .2 * ln->BindScaleMatrix.column(1).toVector3D().length(), 0));
+            QVector4D scl = ln->Transform.row(3);//BindScaleMatrix.row(3);
+//            QMatrix4x4 transl;  transl.translate(QVector3D(-scl.x(), -scl.y(), -scl.z()));//(0, scl.y()/* * .1 *//* * ln->BindScaleMatrix.column(1).toVector3D().length() */, 0));
 
-            tempGCoord = QVector4D(ln->translation.x(), ln->translation.y(), ln->translation.z(), 1.0) * transl.transposed();  //!!!!
-            qDebug() << tempGCoord;
-
+//            tempGCoord = QVector4D(ln->translation.x(), 0, ln->translation.z(), 1.0) * transl.transposed();  //!!!!
+            //qDebug() << tempGCoord;
+            tempGCoord = QVector3D(ln->translation.x(), -scl.y(), ln->translation.z());
         }
 
         loadedModel.limbs[i].translation = QVector3D(tempGCoord.x(), tempGCoord.y(), tempGCoord.z());
@@ -554,7 +554,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     }
 
     // Link transform apply !!!!PROBLEM on spiral
-    //if (false)
+    if (false)//!!!!
     for (int i = 0 ; i < loadedModel.limbs.length(); i++){\
         //
         LimbNode* ln = loadedModel.limbs[i].pater;
@@ -632,7 +632,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
     //______________MESH_WORK_____________________
     //Mesh scale transform
-    //if (false)
+    if (false)
     for (int i = 0 ; i < loadedModel.vertexes.length(); i++){
         QVector4D tempCoord = QVector4D(loadedModel.vertexes[i].x(),
                                         loadedModel.vertexes[i].y(),
