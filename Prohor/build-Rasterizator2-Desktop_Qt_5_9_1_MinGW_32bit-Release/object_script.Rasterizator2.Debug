@@ -1,0 +1,17 @@
+INPUT(
+./debug\modelloader.o
+./debug\model.o
+./debug\scenetools.o
+./debug\stereometry.o
+./debug\transforms.o
+./debug\camera.o
+./debug\lightsourse.o
+./debug\testviewer.o
+./debug\graphicsobject.o
+./debug\main.o
+./debug\mainwindow.o
+./debug\testkdtree.o
+./debug\raycast.o
+./debug\moc_mainwindow.o
+./debug\moc_raycast.o
+);

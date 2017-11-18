@@ -157,7 +157,7 @@ QVector3D* Model::RayIntersection(const QVector3D *rayStart,
         switch (textureIndex){
             case 0:
                 if (textureMain.isNull())
-                    return Qt::red;
+                    return Qt::white;
                 texture = textureMain; break;
             case 1:
             if (normalMap.isNull())
@@ -168,7 +168,7 @@ QVector3D* Model::RayIntersection(const QVector3D *rayStart,
                 return QColor(0,0,0);
                 texture = mirrorMap; break;
             default:
-                return QColor(Qt::red);
+                return QColor(Qt::white);
                 break;
         }
         return (texture.pixel((int)(interPoint->x() * (texture.width() - 1)),

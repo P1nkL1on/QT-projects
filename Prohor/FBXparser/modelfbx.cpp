@@ -102,11 +102,11 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
         if (limbs[i].pater != NULL)
             painter->drawLine((int)res[0],(int)res[1], (int)resPater[0], (int)resPater[1]);
 
-        painter->drawText((int)res[0],(int)res[1],300,20,0, (limbs[i].name));
-        QString ff = QString::number(finalTranform.x()) + "\n"
-                     + QString::number(finalTranform.y()) + "\n"
-                     + QString::number(finalTranform.z());
-        painter->drawText((int)res[0], (int)res[1] + 20, 300, 300, 0, (ff));
+//        painter->drawText((int)res[0],(int)res[1],300,20,0, (limbs[i].name));
+//        QString ff = QString::number(finalTranform.x()) + "\n"
+//                     + QString::number(finalTranform.y()) + "\n"
+//                     + QString::number(finalTranform.z());
+//        painter->drawText((int)res[0], (int)res[1] + 20, 300, 300, 0, (ff));
         // cluster boys
 //        pen.setWidth(1);
 //        pen.setColor(QColor(0,0,255,10));
@@ -122,18 +122,18 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
     }
 
     pen.setWidth(3);
-    pen.setColor(modelColor);//((currentPolygon == polygonSelectedIndex)? Qt::red : modelColor);
+    pen.setColor(Qt::red);//((currentPolygon == polygonSelectedIndex)? Qt::red : modelColor);
     painter->setPen(pen);
 
     for (int currentVert = 0; currentVert < resPoints.length(); currentVert ++){
         QVector2D res = toScrCoords(resPoints[currentVert], width, hei);
         painter->drawPoint((int)res[0],(int)res[1]);
-           if (currentVert > resPoints.length() - 2){
-                QString ff = QString::number(vertexes[currentVert].x()) + "\n"
-                             + QString::number(vertexes[currentVert].y()) + "\n"
-                             + QString::number(vertexes[currentVert].z());
-                painter->drawText((int)res[0], (int)res[1], 300, 300, 0, (ff));
-           }
+//           if (currentVert > resPoints.length() - 2){
+//                QString ff = QString::number(vertexes[currentVert].x()) + "\n"
+//                             + QString::number(vertexes[currentVert].y()) + "\n"
+//                             + QString::number(vertexes[currentVert].z());
+//                painter->drawText((int)res[0], (int)res[1], 300, 300, 0, (ff));
+//           }
     }
 }
 

@@ -1,0 +1,17 @@
+INPUT(
+./release\modelloader.o
+./release\model.o
+./release\scenetools.o
+./release\stereometry.o
+./release\transforms.o
+./release\camera.o
+./release\lightsourse.o
+./release\testviewer.o
+./release\graphicsobject.o
+./release\main.o
+./release\mainwindow.o
+./release\testkdtree.o
+./release\raycast.o
+./release\moc_mainwindow.o
+./release\moc_raycast.o
+);

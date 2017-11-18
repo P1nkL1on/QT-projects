@@ -689,8 +689,8 @@ int main(int argc, char *argv[])
     TTriangle tt[2000];
 
     // lightsources
-    LightSourse ls[2] = {{{0.0, 0.0, 50},250.0,0,255}, {{ -25,25, 25},150.0, 0, 255}};
-    LightSourse* rls[2] = {&(ls[0]), &(ls[1])};
+    LightSourse ls[3] = {{{0.0, 0.0, 50},250.0,0,255}, {{ -55,25, 25},150.0, 0, 255}, {{ 30,25, 25},150.0, 0, 255}};
+    LightSourse* rls[3] = {&(ls[0]), &(ls[1]), &(ls[2])};
     //Camera camera = {{-30.0,0,0},{45.0,0,0}, false};
     Camera camera = {{-20, 0, 0}, {60, 0, 0}, true};
     Camera* cm = &camera;
@@ -707,12 +707,13 @@ int main(int argc, char *argv[])
     // creating a plane with different colors
     //spheres
     // sphere creating
-    TPoint sp1_c = {0,-8,0}, sp2_c = {0, 8, 0}, sp3_c = {0,0, -10}, sp4_c = {0, -5, 5};
-    sf[0] = TSphere{&sp1_c, 5, 0.5, QColor(Qt::red)};
+    TPoint sp1_c = {0,-8,0}, sp2_c = {0, 8, 0}, sp3_c = {0,0, -10}, sp4_c = {0, -5, 5}, sp5_c = {0, -3, 0};
+    sf[0] = TSphere{&sp1_c, 5, 0.5, QColor(Qt::white)};
     sf[1] = TSphere{&sp2_c, 5, 0.5, QColor(Qt::green)};
-    sf[2] = TSphere{&sp3_c, 8, 0.5, QColor(Qt::white)};
+    sf[2] = TSphere{&sp3_c, 8, 0.5, QColor(Qt::yellow)};
     sf[3] = TSphere{&sp4_c, 4.5, 0.8};
-    sphere_count = 3;
+    sf[4] = TSphere{&sp5_c, 2, 0.5, QColor(Qt::black)};
+    sphere_count = 5;
 
     zoom = 20;
     X_mult = 0.0;

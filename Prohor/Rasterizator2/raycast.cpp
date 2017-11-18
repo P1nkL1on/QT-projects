@@ -144,3 +144,8 @@ QColor RayCast::ColorMult(QColor mainColor, float shadow)
                   (int)(mainColor.green() * shadow ),
                   (int)(mainColor.blue() * shadow ));
 }
+
+void DrawPixelThread::run()
+{
+
+}

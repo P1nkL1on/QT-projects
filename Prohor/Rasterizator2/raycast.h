@@ -7,6 +7,7 @@
 #include "qvector3d.h"
 #include "QImage"
 #include "modelloader.h"
+#include "qthread.h"
 
 namespace RayCast{
     QColor ColorSumm (QColor A, QColor B, float koeff);
@@ -25,5 +26,11 @@ namespace RayCast{
                          const TreeSpace::KDTree* tree, const int pixelCount,
                          ModelStructs::Model* &intersectionPoints);
 
+    class DrawPixelThread : public QThread
+    {
+        Q_OBJECT
+    private:
+        void run();
+    };
 }
 #endif // RAYCAST_H
