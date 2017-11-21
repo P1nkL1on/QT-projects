@@ -89,7 +89,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     for (int i = 0 ; i < names.length(); i++){
         ModelFBX newModelFBX;
         const QString err = loadModelByAdress(
-                    "D:/QT-projects/QT-projects/Prohor/Models/FBX/"+names[i]+".FBX", newModelFBX);
+                    "D:/QT-projects/Prohor/Models/FBX/"+names[i]+".FBX", newModelFBX);
         if (!err.isEmpty()){
             qDebug() << err;
             return;

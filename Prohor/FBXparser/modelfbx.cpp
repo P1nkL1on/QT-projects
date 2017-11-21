@@ -68,7 +68,7 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
 
     for (int i = 0; i < limbs.length(); i++){
         pen.setColor(Qt::blue);
-        pen.setWidth(10);
+        pen.setWidth(2);
         painter->setPen(pen);
         QVector<QVector2D> resJoint = {};
         QVector3D finalTranform = {};//{limbs[0].translation.x(), limbs[0].translation.y(), limbs[0].translation.z()};
@@ -97,16 +97,17 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
         QVector2D res = toScrCoords(resJoint[0], width, hei);
         QVector2D resPater = toScrCoords(resJoint[1], width, hei);
         painter->drawPoint((int)res[0],(int)res[1]);
-        pen.setWidth(5);
+        pen.setWidth(1);
         painter->setPen(pen);
         if (limbs[i].pater != NULL)
             painter->drawLine((int)res[0],(int)res[1], (int)resPater[0], (int)resPater[1]);
 
 //        painter->drawText((int)res[0],(int)res[1],300,20,0, (limbs[i].name));
+
 //        QString ff = QString::number(finalTranform.x()) + "\n"
 //                     + QString::number(finalTranform.y()) + "\n"
 //                     + QString::number(finalTranform.z());
-//        painter->drawText((int)res[0], (int)res[1] + 20, 300, 300, 0, (ff));
+        //painter->drawText((int)res[0], (int)res[1] + 20, 300, 300, 0, (ff));
         // cluster boys
 //        pen.setWidth(1);
 //        pen.setColor(QColor(0,0,255,10));
@@ -121,7 +122,7 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
 //        }
     }
 
-    pen.setWidth(3);
+    pen.setWidth(1);
     pen.setColor(Qt::red);//((currentPolygon == polygonSelectedIndex)? Qt::red : modelColor);
     painter->setPen(pen);
 

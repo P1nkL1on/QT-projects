@@ -474,7 +474,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
                        loadedModel.limbs[id].BindScaleMatrix = loadedModel.limbs[id].BindMatrix;
                        //!!!!!!!!!!!!!!!!!!!!
                        QVector3D extractedScales = QVector3D(
-                                 -loadedModel.limbs[id].BindMatrix.column(0).toVector3D().length(),
+                                 /*-*/loadedModel.limbs[id].BindMatrix.column(0).toVector3D().length(),
                                  loadedModel.limbs[id].BindMatrix.column(1).toVector3D().length(),
                                  loadedModel.limbs[id].BindMatrix.column(2).toVector3D().length());
 
@@ -538,7 +538,8 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
 //            tempGCoord = QVector4D(ln->translation.x(), 0, ln->translation.z(), 1.0) * transl.transposed();  //!!!!
             //qDebug() << tempGCoord;
-            tempGCoord = QVector3D(ln->translation.x(), -scl.y(), ln->translation.z());
+            tempGCoord =  - QVector3D(scl);
+                    /* ^NORMAL WORK^ *///QVector3D(ln->translation.x(), -scl.y(), ln->translation.z());
         }
 
         loadedModel.limbs[i].translation = QVector3D(tempGCoord.x(), tempGCoord.y(), tempGCoord.z());

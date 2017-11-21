@@ -1,0 +1,17 @@
+INPUT(
+./release\main.o
+./release\mainwindow.o
+./release\fbxloader.o
+./release\modelfbx.o
+./release\structsFBX.o
+./release\modelloader.o
+./release\model.o
+./release\stereometry.o
+./release\transforms.o
+./release\camera.o
+./release\lightsourse.o
+./release\testviewer.o
+./release\graphicsobject.o
+./release\scenetools.o
+./release\moc_mainwindow.o
+);
