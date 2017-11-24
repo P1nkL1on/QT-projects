@@ -23,7 +23,7 @@ public:
     QVector3D currentRotation;
 
     Joint();
-    Joint(QString ID, QString name);
+    Joint(QString ID0, QString name0);
 };
 
 struct Skin{
