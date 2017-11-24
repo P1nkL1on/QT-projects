@@ -555,23 +555,23 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
     }
 
     // Link transform apply !!!!PROBLEM on spiral
-    if (false)//!!!!
-    for (int i = 0 ; i < loadedModel.limbs.length(); i++){\
-        //
-        LimbNode* ln = loadedModel.limbs[i].pater;
-        if (ln == NULL)
-            continue;
-        QVector4D tempCoord = loadedModel.limbs[i].translation;
-        QMatrix4x4 dd;
-        dd.scale(ln->LinkTransform.transposed().column(0).length(),
-                 ln->LinkTransform.transposed().column(1).length(),
-                 ln->LinkTransform.transposed().column(2).length());
-        tempCoord = tempCoord * (/*ln->Transform*/ dd);                 // only scale from linktransfom
+//    if (false)//!!!!
+//    for (int i = 0 ; i < loadedModel.limbs.length(); i++){\
+//        //
+//        LimbNode* ln = loadedModel.limbs[i].pater;
+//        if (ln == NULL)
+//            continue;
+//        QVector4D tempCoord = loadedModel.limbs[i].translation;
+//        QMatrix4x4 dd;
+//        dd.scale(ln->LinkTransform.transposed().column(0).length(),
+//                 ln->LinkTransform.transposed().column(1).length(),
+//                 ln->LinkTransform.transposed().column(2).length());
+//        tempCoord = tempCoord * (/*ln->Transform*/ dd);                 // only scale from linktransfom
 
 
-        loadedModel.limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
-        loadedModel.limbs[i].translationBinded = loadedModel.limbs[i].translation;
-    }
+//        loadedModel.limbs[i].translation = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
+//        loadedModel.limbs[i].translationBinded = loadedModel.limbs[i].translation;
+//    }
 
     // animation timing solving
     float step = 1000;
@@ -633,41 +633,41 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
 
     //______________MESH_WORK_____________________
     //Mesh scale transform
-    if (false)
-    for (int i = 0 ; i < loadedModel.vertexes.length(); i++){
-        QVector4D tempCoord = QVector4D(loadedModel.vertexes[i].x(),
-                                        loadedModel.vertexes[i].y(),
-                                        loadedModel.vertexes[i].z(),
-                                        1.0);
-        tempCoord = tempCoord * loadedModel.meshTransform.transposed();
-        loadedModel.vertexes[i] = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
-    }
+//    if (false)
+//    for (int i = 0 ; i < loadedModel.vertexes.length(); i++){
+//        QVector4D tempCoord = QVector4D(loadedModel.vertexes[i].x(),
+//                                        loadedModel.vertexes[i].y(),
+//                                        loadedModel.vertexes[i].z(),
+//                                        1.0);
+//        tempCoord = tempCoord * loadedModel.meshTransform.transposed();
+//        loadedModel.vertexes[i] = QVector3D(tempCoord.x(), tempCoord.y(), tempCoord.z());
+//    }
 
     int vertCount = loadedModel.vertexes.length();
 
     // new transformed mesh created
     // COMPLETELY THE SAME THING WITH PREVIOUS SHIT
-    if (false)
-    {
-        for (int i = 0; i < loadedModel.limbs.length(); i++){
-            LimbNode lm = (loadedModel.limbs[i]);
-            QMatrix4x4 prom = lm.Transform * lm.BindScaleMatrix;
-            int n = 10;
-            for (int j = 0; j < lm.indexes.length(); j++){
-                QVector4D tempCoord = QVector4D(loadedModel.vertexes[lm.indexes[j]].x(),
-                                                loadedModel.vertexes[lm.indexes[j]].y(),
-                                                loadedModel.vertexes[lm.indexes[j]].z(),
-                                                1.0);
-                tempCoord = tempCoord * prom;// * meshTransform;
+//    if (false)
+//    {
+//        for (int i = 0; i < loadedModel.limbs.length(); i++){
+//            LimbNode lm = (loadedModel.limbs[i]);
+//            QMatrix4x4 prom = lm.Transform * lm.BindScaleMatrix;
+//            int n = 10;
+//            for (int j = 0; j < lm.indexes.length(); j++){
+//                QVector4D tempCoord = QVector4D(loadedModel.vertexes[lm.indexes[j]].x(),
+//                                                loadedModel.vertexes[lm.indexes[j]].y(),
+//                                                loadedModel.vertexes[lm.indexes[j]].z(),
+//                                                1.0);
+//                tempCoord = tempCoord * prom;// * meshTransform;
 
-                loadedModel.vertexes << QVector3D (tempCoord.x(), tempCoord.y(), tempCoord.z());
-            }
-        }
+//                loadedModel.vertexes << QVector3D (tempCoord.x(), tempCoord.y(), tempCoord.z());
+//            }
+//        }
 
-        // multymodel meshes offset
-        for (int i = 0; i < vertCount; i++)
-            loadedModel.vertexes[i] += QVector3D(-150, 0, 0);
-    }
+//        // multymodel meshes offset
+//        for (int i = 0; i < vertCount; i++)
+//            loadedModel.vertexes[i] += QVector3D(-150, 0, 0);
+//    }
 
     //_____________________________________________
     loadedModel.modelColor = Qt::green;

@@ -18,7 +18,7 @@ public:
     QString ID;
     QString name;
     Joint* pater;
-    Joint* kids[];
+    QVector<Joint*> kids;
     QVector3D currentTranslation;
     QVector3D currentRotation;
 

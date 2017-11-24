@@ -68,13 +68,13 @@ QVector<QString> names;
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    names   << "!bboy 2 exported"
-            << "joints_only2"
-            << "!pucn export"
+    names   //<< "!bboy 2 exported"
+            //<< "joints_only2"
+            //<< "!pucn export"
             //<< "joints_only2t"
-            << "!Samba exported"
-            << "!guard yelling exported"
-            << "!bboy exported";
+            //<< "!Samba exported"
+            << "!guard yelling exported";
+            //<< "!bboy exported";
 
     //FBXmaya/h1    !guard yelling exported     FBXmaya/bendedhand      /!1710_2        joints_only2
 

@@ -28,14 +28,23 @@ int QStringToInt (QString str){
 }
 
 QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
+
+    // вынест ив модули биндматрицы
+
+
     //check empty file
     if (textStream.atEnd())
         return "Empty file FBX loaded";
+
+    // .... static counters ....
+    int limbsConnected = 0, limbToClusterConnected = 0;
+
 
     // ..mesh..
     QVector<QVector3D> loadedVertexes;
     QVector<int> loadedVertexIndexes;
     QVector<int> loadedPolygonStartIndexes;
+    Mesh resMesh = Mesh();
     // ..bones..
     QVector<Joint> loadedJoints;
     Joint lastJointCreated;
@@ -43,10 +52,11 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
     QVector<QString> loadedClusterID;
     QVector<QVector<int>> loadedClusterVertIndexes;
     QVector<QVector<float>> loadedClusterVertWeightes;
+    Skin resSkin = Skin();
 
     QString line = "", prevLine, currentDirectory = "", currentName, currentID = "", currentParse = "";
     QStringList currentParseSplited;
-    int parseType = -1;
+    int parseType = -1, nextJointUseInd = -1;
 
 
     while (!textStream.atEnd()){
@@ -103,17 +113,16 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
                     loadedJoints << lastJointCreated;
                     break;
                 case 9: // parse vertexes from giant array int
-                    if (currentDirectory.indexOf("Vertexes") > 0){
-                        currentParseSplited = currentParse.split(',');
-                        for (int parsedID = 0; parsedID < currentParseSplited.length(); parsedID ++)
-                            parsedIDs0 << QStringToInt(currentParseSplited[parsedID]);
-                        loadedClusterVertIndexes << parsedIDs0;
-                    }else{
-                        currentParseSplited = currentParse.split(',');
-                        for (int parsedWei = 0; parsedWei < currentParseSplited.length(); parsedWei ++)
-                            parsedWeight0 << QStringToFloat(currentParseSplited[parsedWei]);
-                        loadedClusterVertWeightes << parsedWeight0;
-                    }
+                    currentParseSplited = currentParse.split(',');
+                    for (int parsedID = 0; parsedID < currentParseSplited.length(); parsedID ++)
+                        parsedIDs0 << QStringToInt(currentParseSplited[parsedID]);
+                    loadedClusterVertIndexes << parsedIDs0;
+                    break;
+                case 10:
+                    currentParseSplited = currentParse.split(',');
+                    for (int parsedWei = 0; parsedWei < currentParseSplited.length(); parsedWei ++)
+                        parsedWeight0 << QStringToFloat(currentParseSplited[parsedWei]);
+                    loadedClusterVertWeightes << parsedWeight0;
                     break;
                 default:
                     break;
@@ -132,24 +141,31 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
         // ...
         // 9 == cluster indexes
         // 10 == cluster weightes
+        // ...
+        // 11 == bindpose parse
+        // ...
+        // 15 == bone_to_bone_connection
+        // 16 == cluster_to_bone_connection
 
-        // getting a mesh from file.FBX
+        // CONDITION
         if (prevLine.indexOf("Vertices:")>=0 || parseType == 0)
             parseType = 0;
         if (prevLine.indexOf("PolygonVertexIndex") >= 0 || parseType == 1)
             parseType = 1;
-
-        if (prevLine.indexOf("LimbNode") >= 0 || parseType == 5)
+        if ((prevLine.indexOf("Model") == 0 && prevLine.indexOf("LimbNode") >= 0) || parseType == 5)
             parseType = 5;
-        if (prevLine.indexOf("\"SubDeformer::\", \"Cluster\"") >= 0 || parseType == 9)
-        {if (parseType != 9 || parseType != 10) loadedClusterID << currentID; parseType = 9;}
-
-
-        if (currentDirectory.indexOf("/Indexes") == currentDirectory.length() - 8)
+        if ((currentDirectory.indexOf("Deformer") >= 0 && line.indexOf("Indexes:") >= 0)|| parseType == 9)
             parseType = 9;
-        if (currentDirectory.indexOf("/Weights") == currentDirectory.length() - 8)
+        if ((currentDirectory.indexOf("Deformer") >= 0 && line.indexOf("Weights") >= 0)|| parseType == 10)
             parseType = 10;
+        if (currentDirectory.indexOf("/Pose/PoseNode")>=0 || parseType == 11)
+            parseType = 11;
+        if (prevLine.indexOf("Model::") == 1 && prevLine.indexOf("Model::",8) > 0)
+            parseType = 15;
+        if (prevLine.indexOf("Model::") == 1 && prevLine.indexOf("SubDeformer::",8) > 0)
+            parseType = 16;
 
+        //PARSING
         // || currentDirectory.indexOf("/Weights") == currentDirectory.length() - 8)
         if (parseType == 0 || parseType == 1 ||
             parseType == 9 || parseType == 10 )
@@ -157,7 +173,6 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
             currentParse += (line.indexOf("a: ") == 0)? line.remove(0, 3) : line;
 
         // limb parse
-
         if (line.indexOf("LimbNode") >= 0)
             lastJointCreated = Joint(currentID, line.mid(line.indexOf("::") + 2, line.indexOf("\",") - line.indexOf("::") - 2));
 
@@ -177,9 +192,71 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
                     // IGNORE THIS
                 //qDebug() << lastJointCreated.ID << lastJointCreated.name;
             }
+        if (line.indexOf("\"Cluster\"") > 0)
+            loadedClusterID << currentID;
+        // checking bindpose loler
+        // now we know the index of joint, which will be bindmatrixed next
+        if (parseType == 11 && line.indexOf("Node: ") == 0){
+            // ......kostil......
+            // ......kostil......
+            QString jointID = line.remove(0,6);
+            for (int curJoint = 0; curJoint < loadedJoints.length(); curJoint ++)
+                if (loadedJoints[curJoint].ID == jointID)
+                { nextJointUseInd = curJoint; break; }
+        }
+        // connect limb to limb
+        if (parseType == 15)
+        {
+            currentParseSplited = line.split(',');
+            int childInd = -1, parentInd = -1;
+            for (int jointInd = 0; jointInd < loadedJoints.length(); jointInd++)
+            {
+                if (loadedJoints[jointInd].ID == currentParseSplited[currentParseSplited.length() - 1])
+                    parentInd = jointInd;
+                if (loadedJoints[jointInd].ID == currentParseSplited[currentParseSplited.length() - 2])
+                    childInd = jointInd;
+            }
+            if (childInd >= 0 && parentInd >= 0 && childInd != parentInd)  // we have a pair
+            {
+                limbsConnected ++;
+                qDebug () << ("    V    Limbs connected child->parent " + QString::number(childInd) + " -> " + QString::number(parentInd));
+                loadedJoints[childInd].pater = &(loadedJoints[parentInd]);
+                loadedJoints[parentInd].kids << &(loadedJoints[childInd]);
+            }else
+                qDebug() << "    X    Limbs connection failed: " + line;
+            parseType = -1;
+        }
+        // connect limb to cluster
+            if (parseType == 16)
+            {
+                currentParseSplited = line.split(',');
+                int boneInd = -1, clusterInd = -1;
+                for (int jointInd = 0; jointInd < loadedJoints.length(); jointInd++)
+                    if (loadedJoints[jointInd].ID == currentParseSplited[currentParseSplited.length() - 2])
+                    { boneInd = jointInd; break; }
+                for (int clustInd = 0; clustInd < loadedClusterID.length(); clustInd ++)
+                    if (loadedClusterID[clustInd] == currentParseSplited[currentParseSplited.length() - 1])
+                    { clusterInd = clustInd; break; }
 
-
+                if (boneInd >= 0 && clusterInd >= 0)  // we have a pair
+                {
+                    limbToClusterConnected ++;
+                    qDebug () << ("    V    Limb connected with cluster " + QString::number(boneInd) + " <- " + QString::number(clusterInd));
+                    resSkin.addInfo(boneInd, loadedClusterVertIndexes[clusterInd], loadedClusterVertWeightes[clusterInd]);
+                }else
+                    qDebug() << "    X    Limb and cluster connection failed: " + line;
+                parseType = -1;
+            }
     }
+    // final mesh transforms
+    resMesh = Mesh();
+    resMesh.vertexes = loadedVertexes;
+    resMesh.polygonIndexes = loadedVertexIndexes;
+    resMesh.polygonStartIndexes = loadedPolygonStartIndexes;
+
     // success
+    Q_ASSERT(loadedClusterID.length() == loadedClusterVertIndexes.length() && loadedClusterVertIndexes.length() == loadedClusterVertWeightes.length());
+    qDebug() << "    V    " + QString::number(limbsConnected) + " from " + QString::number(loadedJoints.length())+" joints are connected;";
+    qDebug() << "    V    " + QString::number(limbToClusterConnected) +" from "+QString::number(loadedClusterID.length())+ " clusters are connected to bones;";
     return QString();
 }
