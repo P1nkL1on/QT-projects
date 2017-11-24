@@ -516,7 +516,7 @@ QString FBXLoader::loadModel(QTextStream &textStream, ModelFBX &loadedModel)
         {
             int n = 0;
         }
-        QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
+        //QVector4D tempCoord(loadedModel.limbs[i].translation.x(),loadedModel.limbs[i].translation.y(),loadedModel.limbs[i].translation.z(), 1.0);
         //tempCoord = {20,0,0,1};
         // ROTATE
         LimbNode* ln = &loadedModel.limbs[i];

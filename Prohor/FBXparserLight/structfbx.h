@@ -4,6 +4,7 @@
 #include "qstring.h"
 #include "qvector3d.h"
 #include "qvector.h"
+#include "QMatrix4x4"
 
 struct Mesh{
 public:
@@ -21,6 +22,8 @@ public:
     QVector<Joint*> kids;
     QVector3D currentTranslation;
     QVector3D currentRotation;
+    QMatrix4x4 bindMatrix;
+    QVector3D bindTransform;
 
     Joint();
     Joint(QString ID0, QString name0);
@@ -38,8 +41,10 @@ public:
 
 struct Skeleton{
 public:
-    Joint joints[];
+    QVector<Joint> joints;
     Skeleton();
+
+    void DebugTree ();
 };
 
 
@@ -50,6 +55,7 @@ public:
     Skin* skin;
 
     Rig();
+    Rig(Mesh *mesh, Skeleton *skel, Skin *sk);
 };
 
 #endif // STRUCTFBX_H

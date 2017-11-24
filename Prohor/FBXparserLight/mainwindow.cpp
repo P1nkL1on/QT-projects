@@ -22,5 +22,9 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         Rig rg;
         QString err =
         loaderFBX::loadModelFBXAdress("D:/QT-projects/Prohor/Models/FBX/!guard yelling exported.FBX", rg);
+        if (!err.isEmpty())
+            qDebug() << err;
+        else
+            rg.skeleton->DebugTree();
     }
 }
