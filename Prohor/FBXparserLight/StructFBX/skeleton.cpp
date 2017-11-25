@@ -42,24 +42,12 @@ void Skeleton::DebugTree() const
         qDebug () << QString::number(curJoint) + ". " + joints[curJoint]->name;
 }
 
-QVector3D AddDirect (const QVector3D to, const QVector3D Transform, const QVector3D Rotation){
-    QMatrix4x4 rotateMatrix;
-
-    rotateMatrix.rotate(Rotation.x(), 1.0, 0, 0);
-    rotateMatrix.rotate(Rotation.y(), 0, 1.0, 0);
-    rotateMatrix.rotate(Rotation.z(), 0, 0, 1.0);
-
-    QVector4D temp = QVector4D(Transform, 1.0) * rotateMatrix;
-
-    return QVector3D(to.x() + temp.x(), to.y() + temp.y(), to.z() + temp.z());
-}
-
 void Skeleton::RecursiveApplyLocalRotations(Joint *joint, QVector3D currentRotation)
 {
     transformesApplied ++ ;
     //qDebug() << "Applying rotation for " + joint->name << currentRotation;
     QVector3D newRotation = QVector3D(joint->currentRotation.x() + currentRotation.x(), joint->currentRotation.y() + currentRotation.y(), joint->currentRotation.z() + currentRotation.z());
-    joint->currentTranslation = AddDirect(
+    joint->currentTranslation = CommonFuncs::AddDirect(
                 (joint->pater == NULL)? joint->currentTranslation : joint->pater->currentTranslation,
                 joint->localTranslation, newRotation);
     for (int childId = 0; childId < joint->kids.length(); childId++)
@@ -130,16 +118,18 @@ void Skeleton::SetRotations(QVector<QVector3D> newRotations){
 bool Skeleton::getJointTranslationAndRotation(const int jointIndex, QVector3D &translation, QVector3D &rotation) const
 {
     translation = joints[jointIndex]->currentTranslation;
-    rotation = joints[jointIndex]->currentRotation;
+    rotation = QVector3D(); Joint* jn = joints[jointIndex];
+    do{
+        rotation = rotation + jn->currentRotation;
+        jn = jn->pater;
+    } while ( jn != NULL );
     return true;
 }
 
-QVector<QVector3D> Skeleton::getJointGlobalTranslations() const
+QVector<QVector3D> Skeleton::getJointGlobalTranslationsForSkin() const
 {
     QVector<QVector3D> res;
     for (int curJoint = 0; curJoint < joints.length(); curJoint++)
-        res << joints[curJoint]->currentTranslation;
-
-
+            res << joints[curJoint]->currentTranslation;
     return res;
 }

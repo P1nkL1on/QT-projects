@@ -86,6 +86,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
                    // add a loaded morel to test viewer
                    rgs << rg;
                    rgs[loadedModel].skeleton->DebugTree();
+
                    loadedModel++;
                }
         }

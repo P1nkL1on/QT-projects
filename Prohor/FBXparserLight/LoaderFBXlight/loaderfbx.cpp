@@ -341,7 +341,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
 
 
     resSkeleton->CalculateGlobalCoordForEachJoint();
-    resSkin->GenerateAttends(resMesh->vertexes, resSkeleton->getJointGlobalTranslations());
+    resSkin->GenerateAttends(resMesh->vertexes, resSkeleton->getJointGlobalTranslationsForSkin());
 
     loadedRig = Rig(resMesh, resSkeleton, resSkin);
 

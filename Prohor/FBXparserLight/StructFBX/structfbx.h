@@ -31,6 +31,10 @@ public:
     AttendedVertex();
 };
 
+namespace CommonFuncs {
+    QVector3D AddDirect (const QVector3D to, const QVector3D Transform, const QVector3D Rotation);
+}
+
 
 
 #endif // STRUCTFBX_H

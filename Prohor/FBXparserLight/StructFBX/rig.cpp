@@ -8,6 +8,7 @@ Rig::Rig()
     skeleton = NULL;
     skin = NULL;
 
+    bendedMesh = NULL;
 }
 
 Rig::Rig(Mesh *mesh, Skeleton *skel, Skin *sk)
@@ -15,6 +16,45 @@ Rig::Rig(Mesh *mesh, Skeleton *skel, Skin *sk)
     bindMesh = mesh;
     skeleton = skel;
     skin = sk;
+
+    bendedMesh = NULL;
+}
+
+void Rig::BendSkinToSkeleton()
+{
+    Q_ASSERT(bindMesh->vertexes.length() == skin->vertAttends.length());
+    Mesh* newMesh = new Mesh();
+    int vertexesTransformed = 0;
+    for (int currentVertexInd = 0; currentVertexInd < skin->vertAttends.length(); currentVertexInd ++){
+        QVector<QVector3D> bendedVariants;
+        QVector<float> weightes;
+
+        // we have 0.3 && QVec3D && from joint a place and rotation
+        for (int jointInd = 0; jointInd < skin->vertAttends[currentVertexInd].jointIndexs.length(); jointInd++){
+            int jointBendInd = skin->vertAttends[currentVertexInd].jointIndexs[jointInd];
+            QVector3D originalOffset = skin->vertAttends[currentVertexInd].localJointCoords[jointInd];
+            QVector3D jointBendTranslation, jointBendRotation;
+            skeleton->getJointTranslationAndRotation(jointBendInd, jointBendTranslation, jointBendRotation);
+
+            //qDebug() << currentVertexInd<< jointBendInd<< originalOffset << jointBendTranslation << jointBendRotation;
+
+            bendedVariants << CommonFuncs::AddDirect(jointBendTranslation, -originalOffset, jointBendRotation);
+            //bendedVariants << jointBendTranslation - originalOffset;
+            weightes << skin->vertAttends[currentVertexInd].weights[jointInd];
+        }
+
+        QVector3D result = QVector3D();
+
+        for (int curPoint = 0; curPoint < bendedVariants.length(); curPoint++)
+            result = result +  weightes[curPoint] * bendedVariants[curPoint];
+
+        if (bendedVariants.length() > 0)
+            vertexesTransformed ++;
+        newMesh->vertexes << result;
+    }
+    //qDebug() << QString::number(vertexesTransformed) + " / " + QString::number(skin->vertAttends.length()) + " / " + QString::number(bindMesh->vertexes.length()) +" vertexes transformed";
+    //
+    bendedMesh = newMesh;
 }
 
 // ____________drawing____________
@@ -45,21 +85,35 @@ QPen ChangeQPainter (QColor clr, int width){
 float ang = 0;
 QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
 {
-    skeleton->SetRotation(QVector3D(0, -90, 0), 22);
+    skeleton->SetRotation(QVector3D(0,-90,0), 21);
     skeleton->CalculateGlobalCoordForEachJoint();
-
-
+    BendSkinToSkeleton();
     // vertexes
     // ...
 
-
     QVector<QVector2D> Vertexes2D = From3DTo2D(bindMesh->vertexes, view, perspective);
+    QVector<QVector2D> Vertexes2DBend;
+    if (bendedMesh != NULL)Vertexes2DBend = From3DTo2D(bendedMesh->vertexes, view, perspective);
+
     for (int curPoint = 0; curPoint < Vertexes2D.length(); curPoint++)
     {
         int x,y;
-        painter->setPen(ChangeQPainter(Qt::red, 3));
+        painter->setPen(ChangeQPainter(Qt::green, 3));
         if (ApplyScreen(x,y, Vertexes2D[curPoint], width, hei))
             painter->drawPoint(x,y);
+        // draw bend
+        // ...
+        // bended mods
+        if (bendedMesh != NULL)
+        {
+            int xb,yb;
+            painter->setPen(ChangeQPainter(QColor(255,0,0,60), 5));
+            if (ApplyScreen(xb,yb, Vertexes2DBend[curPoint], width, hei))
+                painter->drawPoint(xb,yb);
+            //painter->setPen(ChangeQPainter(QColor(255,0,0,50), 1));
+            //painter->drawLine(xb,yb,x,y);
+        }
+        // ...
         // draw a attend
         QVector<QVector3D> attened3D = {};
         QVector<QVector2D> attened2D = {};
@@ -92,8 +146,12 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
         ApplyScreen(xc,yc,Vertexes2D[curPoint * 2], width, hei);
         ApplyScreen(xp,yp,Vertexes2D[curPoint * 2 + 1], width, hei);
         painter->drawLine(xc,yc,xp,yp);
-        painter->drawText(xc, yc,300,150,0, QString::number(Joints3D[curPoint*2].x()) +"\n"+ QString::number(Joints3D[curPoint*2].y()) +"\n"+ QString::number(Joints3D[curPoint*2].z()));
+        painter->drawText(xc, yc,300,150,0, QString::number(curPoint) +" <<  "+QString::number(skeleton->joints[curPoint]->currentRotation.x()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.y()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.z()));
+
+        //painter->drawText(xc, yc,300,150,0, QString::number(Joints3D[curPoint*2].x()) +"\n"+ QString::number(Joints3D[curPoint*2].y()) +"\n"+ QString::number(Joints3D[curPoint*2].z()));
     }
+
+
 
     //painter->end();
     return QString();

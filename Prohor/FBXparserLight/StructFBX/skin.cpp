@@ -28,10 +28,12 @@ void Skin::GenerateAttends(const QVector<QVector3D> vertexes, QVector<QVector3D>
         }
     for (int v = 0; v < vertexes.length(); v++)
         vertAttends << vts[v];
-//  for (int v = 0; v < vertCount; v++)
-//    {
-//        QString res = QString::number(v) + ". ";
-//        for (int j = 0; j < vts[v].jointIndexs.length(); j++)
-//            res += " " + QString::number(vts[v].jointIndexs[j]) + "==" + QString::number(vts[v].weights[j]);
-//    }
+
+      for (int v = 0; v < vertexes.length(); v++)
+        {
+            QString res = QString::number(v) + ". ";
+            for (int j = 0; j < vts[v].jointIndexs.length(); j++)
+                res += " " + QString::number(vts[v].jointIndexs[j]) + "==" + QString::number(vts[v].weights[j]);
+            qDebug() << res;
+        }
 }

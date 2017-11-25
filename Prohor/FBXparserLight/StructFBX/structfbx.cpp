@@ -36,3 +36,17 @@ AttendedVertex::AttendedVertex()
     weights = {};
     localJointCoords = {};
 }
+
+QVector3D CommonFuncs::AddDirect(const QVector3D to, const QVector3D Transform, const QVector3D Rotation)
+{
+    QMatrix4x4 rotateMatrix;
+
+    rotateMatrix.rotate(Rotation.x(), 1.0, 0, 0);
+    rotateMatrix.rotate(Rotation.y(), 0, 1.0, 0);
+    rotateMatrix.rotate(Rotation.z(), 0, 0, 1.0);
+
+    QVector4D temp = QVector4D(Transform, 1.0) * rotateMatrix;
+
+    return QVector3D(to.x() + temp.x(), to.y() + temp.y(), to.z() + temp.z());
+
+}

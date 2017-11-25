@@ -11,11 +11,13 @@ public:
     Mesh* bindMesh;
     Skeleton* skeleton;
     Skin* skin;
+    Mesh* bendedMesh;
 
     Rig();
     Rig(Mesh *mesh, Skeleton *skel, Skin *sk);
 
-
+    // change a mesh w/t a skeleton n skin
+    void BendSkinToSkeleton ();
     // drawing to canvas
     QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                            const int width, const int hei) override;
