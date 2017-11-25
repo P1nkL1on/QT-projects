@@ -25,14 +25,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    structfbx.cpp \
-    loaderfbx.cpp
+        mainwindow.cpp
 
 HEADERS += \
-        mainwindow.h \
-    structfbx.h \
-    loaderfbx.h
+        mainwindow.h
 
 FORMS += \
         mainwindow.ui
+
+include (../Rasterizator2/ModelLoader/ModelLoader.pri)
+include (../Rasterizator2/Stereometry/Stereometry.pri)
+include (../Rasterizator2/TestViewer/TestViewer.pri)
+include (../MeshReader/SceneTools/SceneTools.pri)
+include (LoaderFBXlight/LoaderFBX.pri)
+include (StructFBX/StructFBX.pri)

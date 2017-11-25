@@ -102,12 +102,12 @@ QString ModelFBX::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, co
         if (limbs[i].pater != NULL)
             painter->drawLine((int)res[0],(int)res[1], (int)resPater[0], (int)resPater[1]);
 
-//        painter->drawText((int)res[0],(int)res[1],300,20,0, (limbs[i].name));
+        //painter->drawText((int)res[0],(int)res[1],300,20,0, (limbs[i].name));
 
-//        QString ff = QString::number(finalTranform.x()) + "\n"
-//                     + QString::number(finalTranform.y()) + "\n"
-//                     + QString::number(finalTranform.z());
-        //painter->drawText((int)res[0], (int)res[1] + 20, 300, 300, 0, (ff));
+        QString ff = QString::number(finalTranform.x()) + "\n"
+                     + QString::number(finalTranform.y()) + "\n"
+                     + QString::number(finalTranform.z());
+        painter->drawText((int)res[0], (int)res[1] + 20, 300, 300, 0, (ff));
         // cluster boys
 //        pen.setWidth(1);
 //        pen.setColor(QColor(0,0,255,10));
