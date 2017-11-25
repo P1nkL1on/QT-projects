@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <QTextStream>
-#include <structfbx.h>
+#include <rig.h>
 
 namespace loaderFBX
 {

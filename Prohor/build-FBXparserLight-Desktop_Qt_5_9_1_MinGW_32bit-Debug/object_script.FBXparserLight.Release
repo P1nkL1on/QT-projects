@@ -12,5 +12,9 @@ INPUT(
 ./release\scenetools.o
 ./release\loaderfbx.o
 ./release\structfbx.o
+./release\skin.o
+./release\skeleton.o
+./release\mesh.o
+./release\rig.o
 ./release\moc_mainwindow.o
 );

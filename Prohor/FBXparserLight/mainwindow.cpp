@@ -53,6 +53,9 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *m)
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
+    if (e->key() == Qt::Key_R)
+        this->repaint();
+
     if (e->key() == Qt::Key_Left){
         tv.SwapCurrentModelNext();
         this->repaint();
@@ -63,13 +66,14 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
     }
 
     if (tv.ModelCount() == 0 && e->key() == Qt::Key_Space){
-        names   << "!bboy 2 exported"
-                << "joints_only2"
-                << "joints_only2t"
-                << "!pucn export"
-                << "!Samba exported"
-                << "!guard yelling exported"
-                << "!bboy exported";
+        names   //<< "!bboy 2 exported"
+                //<< "joints_only2"
+                //<< "joints_only2t"
+                //<< "!pucn export"
+                //<< "!Samba exported"
+                //<< "!bboy exported"
+                << "!guard yelling exported";
+
         int loadedModel = 0;
         for (int currentModel = 0; currentModel < names.length(); currentModel++){
             Rig rg;
@@ -81,7 +85,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
                {
                    // add a loaded morel to test viewer
                    rgs << rg;
-                   //rgs[loadedModel].skeleton->DebugTree();
+                   rgs[loadedModel].skeleton->DebugTree();
                    loadedModel++;
                }
         }
@@ -96,4 +100,5 @@ void MainWindow::paintEvent(QPaintEvent *e)
     QPainter qp(this);
     if (tv.ModelCount() > 0)
         tv.drawOn(&qp, cam, (width() > height())? height() : width(), (width() > height())? height() : width(), false);
+    qp.end();
 }

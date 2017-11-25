@@ -49,7 +49,6 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
     // ..bones..
     QVector<Joint> loadedJoints;
     Joint lastJointCreated;
-    Skeleton* resSkeleton = new Skeleton();
     // ..clusters..
     QVector<QString> loadedClusterID;
     QVector<QVector<int>> loadedClusterVertIndexes;
@@ -303,7 +302,8 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
 
     // >.........................................................................
     // post work to apply bindmatrix data
-    resSkeleton->joints = loadedJoints;
+
+    Skeleton* resSkeleton = new Skeleton(loadedJoints);
     QVector<QVector3D> jointsGlobalCoords = {};
     QVector3D par;
     //
@@ -319,6 +319,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
         if (last->pater == NULL)
             temp = -last->bindTransform;
         loadedJoints[curJoint].currentTranslation = QVector3D(temp.x(), temp.y(), temp.z());
+        loadedJoints[curJoint].localTranslation = loadedJoints[curJoint].currentTranslation;
     }
     // >.........................................................................
 
@@ -330,7 +331,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
 
     // final skeleton update
     //for (int curJoint = 0; curJoint < loadedJoints.length(); curJoint++)
-    resSkeleton->joints = loadedJoints;
+    resSkeleton = new Skeleton(loadedJoints);
 
     // success
     Q_ASSERT(loadedClusterID.length() == loadedClusterVertIndexes.length() && loadedClusterVertIndexes.length() == loadedClusterVertWeightes.length());
@@ -339,6 +340,9 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
     qDebug() << "    V    " + QString::number(bindMatrixesGeted) + " bind matrixes connected to bones;";
 
     loadedRig = Rig(resMesh, resSkeleton, resSkin);
+
+
+    loadedRig.skin->GenerateAttends(loadedRig.bindMesh->vertexes, QVector<QVector3D>());
 
     return QString();
 }

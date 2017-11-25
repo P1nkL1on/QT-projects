@@ -12,5 +12,9 @@ INPUT(
 ./debug\scenetools.o
 ./debug\loaderfbx.o
 ./debug\structfbx.o
+./debug\skin.o
+./debug\skeleton.o
+./debug\mesh.o
+./debug\rig.o
 ./debug\moc_mainwindow.o
 );
