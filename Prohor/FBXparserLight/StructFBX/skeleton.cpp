@@ -46,7 +46,12 @@ void Skeleton::RecursiveApplyLocalRotations(Joint *joint, QVector3D currentRotat
 {
     transformesApplied ++ ;
     //qDebug() << "Applying rotation for " + joint->name << currentRotation;
-    QVector3D newRotation = QVector3D(joint->currentRotation.x() + currentRotation.x(), joint->currentRotation.y() + currentRotation.y(), joint->currentRotation.z() + currentRotation.z());
+    QVector3D newRotation;
+    if (joint->pater == NULL)
+        newRotation = joint->currentRotation + currentRotation;
+    else
+        newRotation = joint->pater->currentRotation + currentRotation;
+
     joint->currentTranslation = CommonFuncs::AddDirect(
                 (joint->pater == NULL)? joint->currentTranslation : joint->pater->currentTranslation,
                 joint->localTranslation, newRotation);

@@ -85,7 +85,7 @@ QPen ChangeQPainter (QColor clr, int width){
 float ang = 0;
 QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
 {
-    skeleton->SetRotation(QVector3D(0,-90,0), 21);
+    skeleton->SetRotation(QVector3D(0,0,(++ang)), 0);
     skeleton->CalculateGlobalCoordForEachJoint();
     BendSkinToSkeleton();
     // vertexes
@@ -98,7 +98,7 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
     for (int curPoint = 0; curPoint < Vertexes2D.length(); curPoint++)
     {
         int x,y;
-        painter->setPen(ChangeQPainter(Qt::green, 3));
+        painter->setPen(ChangeQPainter(QColor(0,255, 0,120), 4));
         if (ApplyScreen(x,y, Vertexes2D[curPoint], width, hei))
             painter->drawPoint(x,y);
         // draw bend
@@ -107,10 +107,10 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
         if (bendedMesh != NULL)
         {
             int xb,yb;
-            painter->setPen(ChangeQPainter(QColor(255,0,0,60), 5));
+            painter->setPen(ChangeQPainter(QColor(255,150,0,255), 2));
             if (ApplyScreen(xb,yb, Vertexes2DBend[curPoint], width, hei))
                 painter->drawPoint(xb,yb);
-            //painter->setPen(ChangeQPainter(QColor(255,0,0,50), 1));
+            //painter->setPen(ChangeQPainter(QColor(255,0,0,10), 1));
             //painter->drawLine(xb,yb,x,y);
         }
         // ...
@@ -146,7 +146,7 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
         ApplyScreen(xc,yc,Vertexes2D[curPoint * 2], width, hei);
         ApplyScreen(xp,yp,Vertexes2D[curPoint * 2 + 1], width, hei);
         painter->drawLine(xc,yc,xp,yp);
-        painter->drawText(xc, yc,300,150,0, QString::number(curPoint) +" <<  "+QString::number(skeleton->joints[curPoint]->currentRotation.x()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.y()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.z()));
+        painter->drawText(xc, yc,300,150,0, QString::number(curPoint));// +" <<  "+QString::number(skeleton->joints[curPoint]->currentRotation.x()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.y()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.z()));
 
         //painter->drawText(xc, yc,300,150,0, QString::number(Joints3D[curPoint*2].x()) +"\n"+ QString::number(Joints3D[curPoint*2].y()) +"\n"+ QString::number(Joints3D[curPoint*2].z()));
     }
