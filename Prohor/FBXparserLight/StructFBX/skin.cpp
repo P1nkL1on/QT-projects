@@ -22,8 +22,9 @@ void Skin::GenerateAttends(const QVector<QVector3D> vertexes, QVector<QVector3D>
 
     for (int curJoint = 0; curJoint < jointIndexes.length(); curJoint++)
         for (int vertInd = 0; vertInd < vertIndexes[curJoint].length(); vertInd ++){
-            vts[vertIndexes[curJoint][vertInd]].jointIndexs << curJoint;
+            vts[vertIndexes[curJoint][vertInd]].jointIndexs << jointIndexes[curJoint];
             vts[vertIndexes[curJoint][vertInd]].weights << vertWeightes[curJoint][vertInd];
+            vts[vertIndexes[curJoint][vertInd]].localJointCoords << globalJointCoords[jointIndexes[curJoint]] - vertexes[vertIndexes[curJoint][vertInd]];
         }
     for (int v = 0; v < vertexes.length(); v++)
         vertAttends << vts[v];

@@ -47,8 +47,8 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
     QVector<int> loadedPolygonStartIndexes;
     Mesh* resMesh = new Mesh();
     // ..bones..
-    QVector<Joint> loadedJoints;
-    Joint lastJointCreated;
+    QVector<Joint*> loadedJoints;
+    Joint* lastJointCreated;
     // ..clusters..
     QVector<QString> loadedClusterID;
     QVector<QVector<int>> loadedClusterVertIndexes;
@@ -182,7 +182,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
 
         // limb parse
         if (line.indexOf("LimbNode") >= 0)
-            lastJointCreated = Joint(currentID, line.mid(line.indexOf("::") + 2, line.indexOf("\",") - line.indexOf("::") - 2));
+            lastJointCreated = new Joint(currentID, line.mid(line.indexOf("::") + 2, line.indexOf("\",") - line.indexOf("::") - 2));
 
         if (parseType == 5 && line.indexOf("Lcl") >= 0){
                 currentParseSplited = line.split(',');
@@ -193,9 +193,9 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
                                            QStringToFloat(currentParseSplited[currentParseSplited.length() - 1]));
                 // redirect it to new limbs
                 if (line.indexOf("Translation") >= 0)
-                    lastJointCreated.currentTranslation = parsedVect;
+                    lastJointCreated->currentTranslation = parsedVect;
                 if (line.indexOf("Rotation") >= 0)
-                    lastJointCreated.currentRotation = parsedVect;
+                    lastJointCreated->currentRotation = parsedVect;
                 if (line.indexOf("Scaling") >= 0);
                     // IGNORE THIS
                 //qDebug() << lastJointCreated.ID << lastJointCreated.name;
@@ -208,7 +208,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
             QString jointID = line.remove(0,6);
             nextJointUseInd = -1;
             for (int curJoint = 0; curJoint < loadedJoints.length(); curJoint ++)
-                if (loadedJoints[curJoint].ID == jointID)
+                if (loadedJoints[curJoint]->ID == jointID)
                 { nextJointUseInd = curJoint; break; }
         }
 
@@ -240,7 +240,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
                       lastBindMatrix.column(1).toVector3D().length(),
                       lastBindMatrix.column(2).toVector3D().length());
             // out a scale
-            loadedJoints[nextJointUseInd].bindMatrix =
+            loadedJoints[nextJointUseInd]->bindMatrix =
                    QMatrix4x4(temp[0]/extractedScales[0],temp[1]/extractedScales[1],temp[2]/extractedScales[2],temp[3],
                               temp[4]/extractedScales[0],temp[5]/extractedScales[1],temp[6]/extractedScales[2],temp[7],
                               temp[8]/extractedScales[0],temp[9]/extractedScales[1],temp[10]/extractedScales[2],temp[11],
@@ -255,9 +255,9 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
             int childInd = -1, parentInd = -1;
             for (int jointInd = 0; jointInd < loadedJoints.length(); jointInd++)
             {
-                if (loadedJoints[jointInd].ID == currentParseSplited[currentParseSplited.length() - 1])
+                if (loadedJoints[jointInd]->ID == currentParseSplited[currentParseSplited.length() - 1])
                     parentInd = jointInd;
-                if (loadedJoints[jointInd].ID == currentParseSplited[currentParseSplited.length() - 2])
+                if (loadedJoints[jointInd]->ID == currentParseSplited[currentParseSplited.length() - 2])
                     childInd = jointInd;
             }
             if (childInd >= 0 && parentInd >= 0 && childInd != parentInd)  // we have a pair
@@ -265,8 +265,8 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
                 limbsConnected ++;
                 if (isMoreDebug == 'y')
                     qDebug () << ("    V    Limbs connected child->parent " + QString::number(childInd) + " -> " + QString::number(parentInd));
-                loadedJoints[childInd].pater = &(loadedJoints[parentInd]);
-                loadedJoints[parentInd].kids << &(loadedJoints[childInd]);
+                loadedJoints[childInd]->pater = (loadedJoints[parentInd]);
+                loadedJoints[parentInd]->kids << (loadedJoints[childInd]);
             }else{
                 if (isMoreDebug == 'y')
                     qDebug() << "    X    Limbs connection failed: " + line;
@@ -279,7 +279,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
                 currentParseSplited = line.split(',');
                 int boneInd = -1, clusterInd = -1;
                 for (int jointInd = 0; jointInd < loadedJoints.length(); jointInd++)
-                    if (loadedJoints[jointInd].ID == currentParseSplited[currentParseSplited.length() - 2])
+                    if (loadedJoints[jointInd]->ID == currentParseSplited[currentParseSplited.length() - 2])
                     { boneInd = jointInd; break; }
                 for (int clustInd = 0; clustInd < loadedClusterID.length(); clustInd ++)
                     if (loadedClusterID[clustInd] == currentParseSplited[currentParseSplited.length() - 1])
@@ -290,7 +290,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
                     limbToClusterConnected ++;
                     if (isMoreDebug == 'y')
                         qDebug () << ("    V    Limb connected with cluster " + QString::number(boneInd) + " <- " + QString::number(clusterInd));
-                    loadedJoints[boneInd].bindTransform = bindTransformFromClusters[clusterInd];
+                    loadedJoints[boneInd]->bindTransform = bindTransformFromClusters[clusterInd];
                     resSkin->addInfo(boneInd, loadedClusterVertIndexes[clusterInd], loadedClusterVertWeightes[clusterInd]);
                 }else{
                     if (isMoreDebug == 'y')
@@ -311,15 +311,15 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
         jointsGlobalCoords << resSkeleton->getJointCoordByIndex(curJoint, par);
     // binding
     for (int curJoint = 0; curJoint < loadedJoints.length(); curJoint++){
-        Joint* last = &(loadedJoints[curJoint]);
+        Joint* last = (loadedJoints[curJoint]);
         //
         QVector4D temp = QVector4D(last->currentTranslation.x(), last->currentTranslation.y(), last->currentTranslation.z(), 1.0)
                          * ((last->pater != NULL)? last->pater->bindMatrix.inverted() : QMatrix4x4());
         // kostil for djepa
         if (last->pater == NULL)
             temp = -last->bindTransform;
-        loadedJoints[curJoint].currentTranslation = QVector3D(temp.x(), temp.y(), temp.z());
-        loadedJoints[curJoint].localTranslation = loadedJoints[curJoint].currentTranslation;
+        loadedJoints[curJoint]->currentTranslation = QVector3D(temp.x(), temp.y(), temp.z());
+        loadedJoints[curJoint]->localTranslation = loadedJoints[curJoint]->currentTranslation;
     }
     // >.........................................................................
 
@@ -339,10 +339,11 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
     qDebug() << "    V    " + QString::number(limbToClusterConnected) +" from "+QString::number(loadedClusterID.length())+ " clusters are connected to bones;";
     qDebug() << "    V    " + QString::number(bindMatrixesGeted) + " bind matrixes connected to bones;";
 
+
+    resSkeleton->CalculateGlobalCoordForEachJoint();
+    resSkin->GenerateAttends(resMesh->vertexes, resSkeleton->getJointGlobalTranslations());
+
     loadedRig = Rig(resMesh, resSkeleton, resSkin);
-
-
-    loadedRig.skin->GenerateAttends(loadedRig.bindMesh->vertexes, QVector<QVector3D>());
 
     return QString();
 }

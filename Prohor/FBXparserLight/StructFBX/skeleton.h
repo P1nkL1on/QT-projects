@@ -8,14 +8,17 @@ class Skeleton
     void RecursiveApplyLocalRotations(Joint* joint, QVector3D currentRotation);
     int transformesApplied;
 public:
-    QVector<Joint> joints;
+    QVector<Joint*> joints;
     Skeleton();
-    Skeleton(QVector<Joint> j);
+    Skeleton(QVector<Joint*> j);
+
+    void SetNullRotations();
 
     void DebugTree () const;
     void CalculateGlobalCoordForEachJoint ();
 
     QVector<QVector3D> getJointLocalRotations () const;
+    QVector<QVector3D> getJointGlobalTranslations () const;
     QVector3D getJointCoordByIndex(int index, QVector3D &paterCoord);
     void SetRotation (QVector3D newRotation, int jointInd);
     void SetRotations (QVector<QVector3D> newRotations);
