@@ -82,77 +82,137 @@ QPen ChangeQPainter (QColor clr, int width){
     res.setColor(clr);
     return res;
 }
+
+QVector<int> GetSortedIndex (const QVector<float> dists){
+    QVector<int> res;
+    QVector<float> tempDists = dists;
+    //for (int i = tempDists.length() - 1; i >= 0 ; i--)
+    for (int i = 0; i < tempDists.length(); i++)
+        res << i;
+
+    for (int i = 0; i < tempDists.length(); i++){
+        int maxInd = -1; float maxValue = 0.0;
+        for (int j = i; j < tempDists.length(); j++)
+            if (tempDists[j] >= maxValue){maxInd = j; maxValue = tempDists[j];}
+        tempDists[maxInd] = tempDists[i];
+        tempDists[i] = maxValue;
+        // ...
+        int tempInd = res[i];
+        res[i] = res[maxInd];
+        res[maxInd] = tempInd;
+    }
+    return res;
+}
+
+
 float ang = 0;
 QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
 {
-    skeleton->SetRotation(QVector3D(0,0,(++ang)), 0);
-    skeleton->CalculateGlobalCoordForEachJoint();
-    BendSkinToSkeleton();
-    // vertexes
-    // ...
-
-    QVector<QVector2D> Vertexes2D = From3DTo2D(bindMesh->vertexes, view, perspective);
-    QVector<QVector2D> Vertexes2DBend;
-    if (bendedMesh != NULL)Vertexes2DBend = From3DTo2D(bendedMesh->vertexes, view, perspective);
-
-    for (int curPoint = 0; curPoint < Vertexes2D.length(); curPoint++)
-    {
-        int x,y;
-        painter->setPen(ChangeQPainter(QColor(0,255, 0,120), 4));
-        if (ApplyScreen(x,y, Vertexes2D[curPoint], width, hei))
-            painter->drawPoint(x,y);
-        // draw bend
+    skeleton->SetRotation(QVector3D(0,0,(++ang) * 2), 9);
+        skeleton->CalculateGlobalCoordForEachJoint();
+        BendSkinToSkeleton();
+        // vertexes
         // ...
-        // bended mods
-        if (bendedMesh != NULL)
+
+        QVector<QVector2D> Vertexes2D = From3DTo2D(bindMesh->vertexes, view, perspective);
+        QVector<QVector2D> Vertexes2DBend;
+        QVector<QPoint> appliedToScreenCoords;
+        QVector<QPoint> appliedToScreenCoordsBended;
+
+        if (bendedMesh != NULL)Vertexes2DBend = From3DTo2D(bendedMesh->vertexes, view, perspective);
+
+        for (int curPoint = 0; curPoint < Vertexes2D.length(); curPoint++)
         {
-            int xb,yb;
-            painter->setPen(ChangeQPainter(QColor(255,150,0,255), 2));
-            if (ApplyScreen(xb,yb, Vertexes2DBend[curPoint], width, hei))
-                painter->drawPoint(xb,yb);
-            //painter->setPen(ChangeQPainter(QColor(255,0,0,10), 1));
-            //painter->drawLine(xb,yb,x,y);
+            int x,y;
+            painter->setPen(ChangeQPainter(QColor(0,255, 0,120), 4));
+            if (ApplyScreen(x,y, Vertexes2D[curPoint], width, hei))
+                painter->drawPoint(x,y);
+            appliedToScreenCoords << QPoint(x,y);
+            // draw bend
+            // ...
+            // bended mods
+            if (bendedMesh != NULL)
+            {
+                int xb,yb;
+                painter->setPen(ChangeQPainter(QColor(255,150,0,255), 2));
+                if (ApplyScreen(xb,yb, Vertexes2DBend[curPoint], width, hei))
+                    painter->drawPoint(xb,yb);
+                appliedToScreenCoordsBended << QPoint(xb, yb);
+                //painter->setPen(ChangeQPainter(QColor(255,0,0,10), 1));
+                //painter->drawLine(xb,yb,x,y);
+            }
+            // ...
+            // draw a attend
+            QVector<QVector3D> attened3D = {};
+            QVector<QVector2D> attened2D = {};
+
+            for (int att = 0; att < skin->vertAttends[curPoint].localJointCoords.length(); att++)
+                attened3D << bindMesh->vertexes[curPoint] + skin->vertAttends[curPoint].localJointCoords[att];
+            attened2D = From3DTo2D(attened3D, view, perspective);
+            for (int att = 0; att < attened2D.length(); att++){
+                int xa, ya;
+                ApplyScreen(xa,ya, attened2D[att], width, hei);
+                painter->setPen(ChangeQPainter(QColor(255,0,0,5), 2));
+                painter->drawLine(x,y,xa,ya);
+            }
         }
+
+        // draw a mf polygons
+
+        QVector<QPainterPath> polygonDrawArray;
+        QVector<QColor> polygonColorArray;
+        QVector<float> distFromPolygonCentersToCamera;
+
+        for (int currentPolygon = 0; currentPolygon < bindMesh->polygonStartIndexes.length() - 1; currentPolygon++){
+            QPolygon poly;
+
+            QVector<int> selectedIndexes;
+            for (int selecInd = bindMesh->polygonStartIndexes[currentPolygon]; selecInd < bindMesh->polygonStartIndexes[currentPolygon + 1]; selecInd++){
+                selectedIndexes << bindMesh->polygonIndexes[selecInd];
+                poly << appliedToScreenCoords/*Bended*/[bindMesh->polygonIndexes[selecInd]];
+            }
+            //
+            int colorIntenese = (int)(((double)currentPolygon * 254.0)/(bindMesh->polygonStartIndexes.length() - 1));
+
+            QPainterPath newPolyg; newPolyg.addPolygon(poly);
+            polygonDrawArray << newPolyg;
+            polygonColorArray << (QColor(colorIntenese,colorIntenese,colorIntenese));
+
+            distFromPolygonCentersToCamera << bindMesh->vertexes[bindMesh->polygonIndexes[bindMesh->polygonStartIndexes[currentPolygon]]].distanceToPoint(*cameraCenter);
+        }
+        qDebug() << *cameraCenter;
+        QBrush brush;
+        QVector<int> needPolygonInds = GetSortedIndex(distFromPolygonCentersToCamera);
+        for (int cPath = 0; cPath < polygonDrawArray.length(); cPath ++){
+            brush = QBrush(polygonColorArray[needPolygonInds[cPath]]);
+            painter->fillPath(polygonDrawArray[needPolygonInds[cPath]], brush);
+
+        }
+
+        // joints
         // ...
-        // draw a attend
-        QVector<QVector3D> attened3D = {};
-        QVector<QVector2D> attened2D = {};
-
-        for (int att = 0; att < skin->vertAttends[curPoint].localJointCoords.length(); att++)
-            attened3D << bindMesh->vertexes[curPoint] + skin->vertAttends[curPoint].localJointCoords[att];
-        attened2D = From3DTo2D(attened3D, view, perspective);
-        for (int att = 0; att < attened2D.length(); att++){
-            int xa, ya;
-            ApplyScreen(xa,ya, attened2D[att], width, hei);
-            painter->setPen(ChangeQPainter(QColor(255,0,0,5), 2));
-            painter->drawLine(x,y,xa,ya);
+        QVector<QVector3D> Joints3D;
+        for (int curJoint = 0; curJoint < skeleton->joints.length(); curJoint++){
+            QVector3D parentVect = QVector3D(0,0,0),
+                      childVect = skeleton->getJointCoordByIndex(curJoint, parentVect);
+            Joints3D << childVect << parentVect;
         }
-    }
 
-    // joints
-    // ...
-    QVector<QVector3D> Joints3D;
-    for (int curJoint = 0; curJoint < skeleton->joints.length(); curJoint++){
-        QVector3D parentVect = QVector3D(0,0,0),
-                  childVect = skeleton->getJointCoordByIndex(curJoint, parentVect);
-        Joints3D << childVect << parentVect;
-    }
+        Vertexes2D = From3DTo2D(Joints3D, view,perspective);
+        painter->setPen(ChangeQPainter(Qt::blue, 2));
+        for (int curPoint = 0; curPoint < Vertexes2D.length() / 2; curPoint++)
+        {
+            int xc,yc,xp,yp;
+            ApplyScreen(xc,yc,Vertexes2D[curPoint * 2], width, hei);
+            ApplyScreen(xp,yp,Vertexes2D[curPoint * 2 + 1], width, hei);
+            painter->drawLine(xc,yc,xp,yp);
+            painter->drawText(xc, yc,300,150,0, QString::number(curPoint));// +" <<  "+QString::number(skeleton->joints[curPoint]->currentRotation.x()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.y()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.z()));
 
-    Vertexes2D = From3DTo2D(Joints3D, view,perspective);
-    painter->setPen(ChangeQPainter(Qt::blue, 2));
-    for (int curPoint = 0; curPoint < Vertexes2D.length() / 2; curPoint++)
-    {
-        int xc,yc,xp,yp;
-        ApplyScreen(xc,yc,Vertexes2D[curPoint * 2], width, hei);
-        ApplyScreen(xp,yp,Vertexes2D[curPoint * 2 + 1], width, hei);
-        painter->drawLine(xc,yc,xp,yp);
-        painter->drawText(xc, yc,300,150,0, QString::number(curPoint));// +" <<  "+QString::number(skeleton->joints[curPoint]->currentRotation.x()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.y()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.z()));
-
-        //painter->drawText(xc, yc,300,150,0, QString::number(Joints3D[curPoint*2].x()) +"\n"+ QString::number(Joints3D[curPoint*2].y()) +"\n"+ QString::number(Joints3D[curPoint*2].z()));
-    }
+            //painter->drawText(xc, yc,300,150,0, QString::number(Joints3D[curPoint*2].x()) +"\n"+ QString::number(Joints3D[curPoint*2].y()) +"\n"+ QString::number(Joints3D[curPoint*2].z()));
+        }
 
 
 
-    //painter->end();
-    return QString();
+        //painter->end();
+        return QString();
 }

@@ -96,7 +96,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
             // depend on parseType add a new struct from parsed data
 
             //...
-
+            char prevWasNegative  = 'y';
             switch (parseType){
                 case 0: // parse vertexes from giant array
                     currentParseSplited = currentParse.split(',');
@@ -108,11 +108,17 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
                     break;
                 case 1:
                     currentParseSplited = currentParse.split(',');
+                    prevWasNegative = 'y';
                     for (int parseIndex = 0; parseIndex < currentParseSplited.length(); parseIndex ++)
                     {
                         int parsedIndex = QStringToInt(currentParseSplited[parseIndex]);
-                        loadedVertexIndexes << ((parsedIndex < 0)? loadedVertexes.length() + parsedIndex : parsedIndex);
+                        if (prevWasNegative == 'y')
+                            loadedPolygonStartIndexes << parseIndex;
+                        prevWasNegative = (parsedIndex < 0)? 'y' : 'n';
+                        loadedVertexIndexes << ((parsedIndex < 0)? - parsedIndex - 1 : parsedIndex);
                     }
+                    loadedPolygonStartIndexes << currentParseSplited.length() - 1;
+
                     break;
                 case 5:
                     loadedJoints << lastJointCreated;

@@ -16,6 +16,8 @@ public:
     Rig();
     Rig(Mesh *mesh, Skeleton *skel, Skin *sk);
 
+    QVector3D* cameraCenter;
+
     // change a mesh w/t a skeleton n skin
     void BendSkinToSkeleton ();
     // drawing to canvas

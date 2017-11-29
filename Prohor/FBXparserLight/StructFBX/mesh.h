@@ -10,6 +10,8 @@ public:
     QVector<QVector3D> vertexes;
     QVector<int> polygonIndexes;
     QVector<int> polygonStartIndexes;
+
+    float CompareWithAnotherMesh (const Mesh* anotherMesh);
 };
 
 #endif // MESH_H
