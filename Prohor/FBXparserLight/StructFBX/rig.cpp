@@ -23,6 +23,10 @@ Rig::Rig(Mesh *mesh, Skeleton *skel, Skin *sk)
 void Rig::BendSkinToSkeleton()
 {
     Q_ASSERT(bindMesh->vertexes.length() == skin->vertAttends.length());
+
+    if (!skeleton->CalculateGlobalCoordForEachJoint())
+        return;
+
     Mesh* newMesh = new Mesh();
     newMesh->polygonIndexes = bindMesh->polygonIndexes;
     newMesh->polygonStartIndexes = bindMesh->polygonStartIndexes;
@@ -117,9 +121,10 @@ QVector<int> GetSortedIndex (const QVector<float> dists){
 float ang = 0;
 QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
 {
-    skeleton->SetRotation(/*QVector3D(ang,ang,(++ang) * 2)*/QVector3D(0,90,0), 8);
-    skeleton->CalculateGlobalCoordForEachJoint();
-    BendSkinToSkeleton();
+    if (skeleton != NULL && skin != NULL && bindMesh != NULL){
+        skeleton->SetRotation(QVector3D(++ang,0,0), 36);
+        BendSkinToSkeleton();
+    }
     // vertexes
     // ...
 
@@ -129,7 +134,6 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
     QVector<QPoint> appliedToScreenCoordsBended;
 
     if (bendedMesh != NULL)Vertexes2DBend = From3DTo2D(bendedMesh->vertexes, view, perspective);
-
     for (int curPoint = 0; curPoint < Vertexes2D.length(); curPoint++)
     {
         int x,y;
@@ -137,7 +141,6 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
         if (ApplyScreen(x,y, Vertexes2D[curPoint], width, hei))
             painter->drawPoint(x,y);
         appliedToScreenCoords << QPoint(x,y);
-        // draw bend
         // ...
         // bended mods
         if (bendedMesh != NULL)
@@ -152,23 +155,24 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
         }
         // ...
         // draw a attend
-        QVector<QVector3D> attened3D = {};
-        QVector<QVector2D> attened2D = {};
+        if (false && skin != NULL){
+            QVector<QVector3D> attened3D = {};
+            QVector<QVector2D> attened2D = {};
 
-        for (int att = 0; att < skin->vertAttends[curPoint].localJointCoords.length(); att++)
-            attened3D << bindMesh->vertexes[curPoint] + skin->vertAttends[curPoint].localJointCoords[att];
-        attened2D = From3DTo2D(attened3D, view, perspective);
-        for (int att = 0; att < attened2D.length(); att++){
-            int xa, ya;
-            ApplyScreen(xa,ya, attened2D[att], width, hei);
-            painter->setPen(ChangeQPainter(QColor(255,0,0,5), 2));
-            painter->drawLine(x,y,xa,ya);
+            for (int att = 0; att < skin->vertAttends[curPoint].localJointCoords.length(); att++)
+                attened3D << bindMesh->vertexes[curPoint] + skin->vertAttends[curPoint].localJointCoords[att];
+            attened2D = From3DTo2D(attened3D, view, perspective);
+            for (int att = 0; att < attened2D.length(); att++){
+                int xa, ya;
+                ApplyScreen(xa,ya, attened2D[att], width, hei);
+                painter->setPen(ChangeQPainter(QColor(255,0,0,5), 2));
+                painter->drawLine(x,y,xa,ya);
+            }
         }
     }
-
     // draw a mf polygons
     // ..................................................................................................................................
-    Mesh* drawMesh = bendedMesh;
+    Mesh* drawMesh = (bendedMesh == NULL)? bindMesh : bendedMesh;
 
     QVector<QPainterPath> polygonDrawArray;
     QVector<QColor> polygonColorArray;
@@ -208,7 +212,8 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
     }
     // ..................................................................................................................................
 
-
+    if (skeleton == NULL)
+        return QString("No skeleton detected");
     // joints
     // ...
     QVector<QVector3D> Joints3D;

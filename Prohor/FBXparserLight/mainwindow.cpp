@@ -21,6 +21,7 @@ MainWindow::~MainWindow()
 Camera cam = Camera (0, 0, 0);
 TestViewer tv = TestViewer();
 QVector<Rig> rgs;
+QVector<Mesh> mshs;
 QVector<QString> names;
 
 // constrols
@@ -95,14 +96,38 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
                 // add a loaded morel to test viewer
                 rg.cameraCenter = &camCenter;
                 rgs << rg;
-                rgs[loadedModel].skeleton->DebugTree();
-
+                //rgs[loadedModel].skeleton->DebugTree();
                 loadedModel++;
             }
+        }
+        // also load a OBJ poses
+        Mesh ms1, ms2;
+        QString errMs1 = loaderFBX::loadMeshOBJAdress("D:/QT-projects/Prohor/Models/GuardPosesOBJ/handforwardy90.OBJ", ms1),
+                errMs2 = loaderFBX::loadMeshOBJAdress("D:/QT-projects/Prohor/Models/GuardPosesOBJ/bind.OBJ", ms2);
+        if (errMs1.isEmpty() && errMs2.isEmpty())
+        {
+            mshs << ms1 << ms2;
+            Rig rgMs1 = Rig(&(mshs[0]), NULL, NULL),
+                rgMs2 = Rig(&(mshs[1]), NULL, NULL);
+            rgs << rgMs1 << rgMs2;
+            loadedModel +=2;
+        }else{
+            qDebug() << errMs1; qDebug() << errMs2;
         }
 
         for (int ldID = 0; ldID < loadedModel; ldID++)
             tv.addGraphicsObject(&(rgs[ldID]));
+
+
+        if (rgs.length() == 3){
+            rgs[0].skeleton->SetRotation(QVector3D(0,90,0), 20);
+            rgs[0].BendSkinToSkeleton();
+            // check an equal of mesh from FBX and mesh from OBJ
+            qDebug() << "Quad diff between bind poses is "
+                        + QString::number(rgs[2].bindMesh->CompareWithAnotherMesh(rgs[0].bindMesh));
+            qDebug() << "Quad diff between bended poses is "
+                        + QString::number(rgs[1].bindMesh->CompareWithAnotherMesh(rgs[0].bendedMesh));
+        }
     }
 }
 

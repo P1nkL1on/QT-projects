@@ -353,3 +353,42 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
 
     return QString();
 }
+
+QString loaderFBX::loadMeshOBJAdress(QString path, Mesh &loadedMesh)
+{
+    QString errMessage = "Can not load OBJ from \"" + path + "\"";
+
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly))
+        return errMessage;
+
+    QTextStream stream(&file);
+    QString err = loadMeshOBJ(stream, loadedMesh);
+    //return error with file adress | return emptystring == success
+    if (err.isEmpty())
+        qDebug() << "    @    " + path.remove(0,path.lastIndexOf('/') + 1) + " was loaded;";
+    return ((!err.isEmpty())? errMessage + ": " + err : QString());
+}
+
+QString loaderFBX::loadMeshOBJ(QTextStream &textStream, Mesh &loadedMesh)
+{
+    if (textStream.atEnd())
+        return "Empty file FBX loaded";
+
+    QString line;
+    QStringList currentParseSplited;
+    QVector<QVector3D> loadedVertexes;
+
+    while (!textStream.atEnd()){
+        line = textStream.readLine();
+        if (line.indexOf("v ") == 0){
+            currentParseSplited = line.remove(0, 2).split(' ');
+            Q_ASSERT(currentParseSplited.length() == 3);
+            loadedVertexes << QVector3D(QStringToFloat(currentParseSplited[0]),
+                                        QStringToFloat(currentParseSplited[1]),
+                                        QStringToFloat(currentParseSplited[2]));
+        }
+    }
+    loadedMesh.vertexes = loadedVertexes;
+    return QString("");
+}

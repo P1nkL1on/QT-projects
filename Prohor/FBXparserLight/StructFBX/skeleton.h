@@ -15,7 +15,7 @@ public:
     void SetNullRotations();
 
     void DebugTree () const;
-    void CalculateGlobalCoordForEachJoint ();
+    bool CalculateGlobalCoordForEachJoint ();
 
     QVector<QVector3D> getJointLocalRotations () const;
     QVector<QVector3D> getJointGlobalTranslationsForSkin () const;
