@@ -72,7 +72,12 @@ void Camera::rotate(const float angle, const QVector3D os)
 void Camera::scale(const double scale)
 {
     //cameraProps = Transforms::scaleVertexes(cameraProps, scale);
-    cameraProps = Transforms::scaleVertexesByCenter(cameraProps, scale, cameraProps[1]);
+    //cameraProps = Transforms::scaleVertexesByCenter(cameraProps, scale, cameraProps[1]);
+    QVector<QVector3D> camsGab = {cameraProps[2], cameraProps[3]};
+    camsGab = Transforms::scaleVertexesByCenter(camsGab, scale, cameraProps[0]);
+
+    cameraProps = {cameraProps[0], cameraProps[1], camsGab[0], camsGab[1]};
+
     calculateMatrixes(true, true);
 }
 

@@ -24,7 +24,10 @@ void Rig::BendSkinToSkeleton()
 {
     Q_ASSERT(bindMesh->vertexes.length() == skin->vertAttends.length());
     Mesh* newMesh = new Mesh();
+    newMesh->polygonIndexes = bindMesh->polygonIndexes;
+    newMesh->polygonStartIndexes = bindMesh->polygonStartIndexes;
     int vertexesTransformed = 0;
+    QVector<int> failedIndexes;
     for (int currentVertexInd = 0; currentVertexInd < skin->vertAttends.length(); currentVertexInd ++){
         QVector<QVector3D> bendedVariants;
         QVector<float> weightes;
@@ -44,15 +47,21 @@ void Rig::BendSkinToSkeleton()
         }
 
         QVector3D result = QVector3D();
-
-        for (int curPoint = 0; curPoint < bendedVariants.length(); curPoint++)
-            result = result +  weightes[curPoint] * bendedVariants[curPoint];
+        float bendedSumm = 0;
+        for (int curPoint = 0; curPoint < weightes.length(); curPoint++)
+            bendedSumm += weightes[curPoint];
+        if (bendedSumm == 0)
+            failedIndexes << currentVertexInd;
+        else
+            for (int curPoint = 0; curPoint < bendedVariants.length(); curPoint++)
+                result = result +  weightes[curPoint]/ bendedSumm * bendedVariants[curPoint] ;
 
         if (bendedVariants.length() > 0)
             vertexesTransformed ++;
         newMesh->vertexes << result;
     }
-    //qDebug() << QString::number(vertexesTransformed) + " / " + QString::number(skin->vertAttends.length()) + " / " + QString::number(bindMesh->vertexes.length()) +" vertexes transformed";
+
+    qDebug() << QString::number(vertexesTransformed) + " / " + QString::number(skin->vertAttends.length()) + " / " + QString::number(bindMesh->vertexes.length()) +" vertexes transformed ( "+QString::number(failedIndexes.length())+" failed)";
     //
     bendedMesh = newMesh;
 }
@@ -108,7 +117,7 @@ QVector<int> GetSortedIndex (const QVector<float> dists){
 float ang = 0;
 QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
 {
-    skeleton->SetRotation(QVector3D(0,0,(++ang) * 2), 9);
+    skeleton->SetRotation(QVector3D(ang,ang,(++ang) * 2), 8);
         skeleton->CalculateGlobalCoordForEachJoint();
         BendSkinToSkeleton();
         // vertexes
@@ -158,36 +167,47 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
         }
 
         // draw a mf polygons
+        // ..................................................................................................................................
+        Mesh* drawMesh = bendedMesh;
 
         QVector<QPainterPath> polygonDrawArray;
         QVector<QColor> polygonColorArray;
         QVector<float> distFromPolygonCentersToCamera;
 
-        for (int currentPolygon = 0; currentPolygon < bindMesh->polygonStartIndexes.length() - 1; currentPolygon++){
+        for (int currentPolygon = 0; currentPolygon < drawMesh->polygonStartIndexes.length() - 1; currentPolygon++){
             QPolygon poly;
 
             QVector<int> selectedIndexes;
-            for (int selecInd = bindMesh->polygonStartIndexes[currentPolygon]; selecInd < bindMesh->polygonStartIndexes[currentPolygon + 1]; selecInd++){
-                selectedIndexes << bindMesh->polygonIndexes[selecInd];
-                poly << appliedToScreenCoords/*Bended*/[bindMesh->polygonIndexes[selecInd]];
+            QVector3D VertexInPolygonSumm = QVector3D();
+            int totalVertexInPolygonCount = 0;
+            for (int selecInd = drawMesh->polygonStartIndexes[currentPolygon]; selecInd < drawMesh->polygonStartIndexes[currentPolygon + 1]; selecInd++){
+                totalVertexInPolygonCount ++;
+                VertexInPolygonSumm += drawMesh->vertexes[drawMesh->polygonIndexes[selecInd]];
+                selectedIndexes << drawMesh->polygonIndexes[selecInd];
+
+                poly << ((drawMesh == bindMesh)? appliedToScreenCoords/*Bended*/[drawMesh->polygonIndexes[selecInd]]
+                                               : appliedToScreenCoordsBended[drawMesh->polygonIndexes[selecInd]]);
             }
             //
-            int colorIntenese = (int)(((double)currentPolygon * 254.0)/(bindMesh->polygonStartIndexes.length() - 1));
+            //int colorIntenese = (int)(((double)currentPolygon * 254.0)/(bindMesh->polygonStartIndexes.length() - 1));
 
             QPainterPath newPolyg; newPolyg.addPolygon(poly);
             polygonDrawArray << newPolyg;
-            polygonColorArray << (QColor(colorIntenese,colorIntenese,colorIntenese));
+            polygonColorArray << Qt::gray;//(QColor(colorIntenese,colorIntenese,colorIntenese));
 
-            distFromPolygonCentersToCamera << bindMesh->vertexes[bindMesh->polygonIndexes[bindMesh->polygonStartIndexes[currentPolygon]]].distanceToPoint(*cameraCenter);
+            distFromPolygonCentersToCamera << (VertexInPolygonSumm * (1.0 / totalVertexInPolygonCount)).distanceToPoint(*cameraCenter);
         }
-        qDebug() << *cameraCenter;
         QBrush brush;
+        painter->setPen(QPen(Qt::darkGray));
+
         QVector<int> needPolygonInds = GetSortedIndex(distFromPolygonCentersToCamera);
         for (int cPath = 0; cPath < polygonDrawArray.length(); cPath ++){
             brush = QBrush(polygonColorArray[needPolygonInds[cPath]]);
             painter->fillPath(polygonDrawArray[needPolygonInds[cPath]], brush);
-
+            painter->drawPath(polygonDrawArray[needPolygonInds[cPath]]);
         }
+        // ..................................................................................................................................
+
 
         // joints
         // ...

@@ -100,8 +100,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 void MainWindow::paintEvent(QPaintEvent *e)
 {
     QPainter qp(this);
-    camCenter = cam.GetCamInfo()[0];
-    //camCenter = QVector3D(100.0 / camCenter.x(), 100.0 / camCenter.y(), 100.0 / camCenter.z());
+    camCenter = cam.GetCamInfo()[0] * 100.0;
     if (tv.ModelCount() > 0)
         tv.drawOn(&qp, cam, (width() > height())? height() : width(), (width() > height())? height() : width(), false);
     qp.end();
