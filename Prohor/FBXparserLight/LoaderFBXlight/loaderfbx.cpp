@@ -124,13 +124,13 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
                     loadedJoints << lastJointCreated;
                     break;
                 case 9: // parse vertexes from giant array int
-                    currentParseSplited = currentParse.split(',');
+                    currentParseSplited = currentParse.remove(0, currentParse.indexOf("{") + 1).split(',');
                     for (int parsedID = 0; parsedID < currentParseSplited.length(); parsedID ++)
                         parsedIDs0 << QStringToInt(currentParseSplited[parsedID]);
                     loadedClusterVertIndexes << parsedIDs0;
                     break;
                 case 10:
-                    currentParseSplited = currentParse.split(',');
+                    currentParseSplited = currentParse.remove(0, currentParse.indexOf("{") + 1).split(',');
                     for (int parsedWei = 0; parsedWei < currentParseSplited.length(); parsedWei ++)
                         parsedWeight0 << QStringToFloat(currentParseSplited[parsedWei]);
                     loadedClusterVertWeightes << parsedWeight0;

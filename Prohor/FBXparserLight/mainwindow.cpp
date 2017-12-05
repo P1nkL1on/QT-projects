@@ -66,30 +66,39 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
     }
 
     if (tv.ModelCount() == 0 && e->key() == Qt::Key_Space){
-        names   //<< "!bboy 2 exported"
-                //<< "joints_only2"
-                //<< "joints_only2t"
-                //<< "!pucn export"
-                //<< "!Samba exported"
-                //<< "!bboy exported"
-                << "!guard yelling exported";
+        //        names   //<< "!bboy 2 exported"
+        //<< "joints_only2"
+        //<< "joints_only2t"
+        //<< "!pucn export"
+        //<< "!Samba exported";
+        //<< "!bboy exported"
+        //                << "!guard yelling exported";
+        names = {
+            //"!bboy 2 exported",
+            //"joints_only2,"
+            //"joints_only2t",
+            //"!pucn export",
+//            "!Samba exported",
+//            "!bboy exported",
+            "!guard yelling exported",
+        };
 
         int loadedModel = 0;
         for (int currentModel = 0; currentModel < names.length(); currentModel++){
             Rig rg;
             QString err =
-            loaderFBX::loadModelFBXAdress("D:/QT-projects/QT-projects/Prohor/Models/FBX/"+names[currentModel]+".FBX", rg);
+                    loaderFBX::loadModelFBXAdress("D:/QT-projects/Prohor/Models/FBX/"+names[currentModel]+".FBX", rg);
             if (!err.isEmpty())
                 qDebug() << err;
             else
-               {
-                   // add a loaded morel to test viewer
-                   rg.cameraCenter = &camCenter;
-                   rgs << rg;
-                   rgs[loadedModel].skeleton->DebugTree();
+            {
+                // add a loaded morel to test viewer
+                rg.cameraCenter = &camCenter;
+                rgs << rg;
+                rgs[loadedModel].skeleton->DebugTree();
 
-                   loadedModel++;
-               }
+                loadedModel++;
+            }
         }
 
         for (int ldID = 0; ldID < loadedModel; ldID++)
