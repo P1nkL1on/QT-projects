@@ -119,7 +119,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
             tv.addGraphicsObject(&(rgs[ldID]));
 
 
-        if (rgs.length() == 3){
+        if (false && rgs.length() == 3){
             rgs[0].skeleton->SetRotation(QVector3D(0,90,0), 20);
             rgs[0].BendSkinToSkeleton();
             // check an equal of mesh from FBX and mesh from OBJ

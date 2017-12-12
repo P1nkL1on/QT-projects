@@ -121,10 +121,11 @@ QVector<int> GetSortedIndex (const QVector<float> dists){
 float ang = 0;
 QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
 {
-//    if (skeleton != NULL && skin != NULL && bindMesh != NULL){
-//        skeleton->SetRotation(QVector3D(++ang,0,0), 36);
-//        BendSkinToSkeleton();
-//    }
+    if (skeleton != NULL && skin != NULL && bindMesh != NULL){
+        skeleton->SetRotation(QVector3D(++ang, ++ang, ++ang * 2), 1);
+        skeleton->SetRotation(QVector3D(0, -60, 0), 20);
+        BendSkinToSkeleton();
+    }
     // vertexes
     // ...
 

@@ -33,6 +33,7 @@ public:
 
 namespace CommonFuncs {
     QVector3D AddDirect (const QVector3D to, const QVector3D Transform, const QVector3D Rotation);
+    QVector3D AddDirectWtParent (const QVector3D to, const QVector3D Transform, const QVector3D wasRotation, const QVector3D addRotation );
 }
 
 

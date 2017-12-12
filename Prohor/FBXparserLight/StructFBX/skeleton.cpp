@@ -45,16 +45,16 @@ void Skeleton::DebugTree() const
 void Skeleton::RecursiveApplyLocalRotations(Joint *joint, QVector3D currentRotation)
 {
     transformesApplied ++ ;
-    //qDebug() << "Applying rotation for " + joint->name << currentRotation;
-    QVector3D newRotation;
-    if (joint->pater == NULL)
-        newRotation = joint->currentRotation + currentRotation;
-    else
-        newRotation = joint->pater->currentRotation + currentRotation;
+    QVector3D wasRotation = (joint->pater == NULL)? joint->currentRotation : joint->pater->currentRotation,
+              newRotation = wasRotation + currentRotation,
+              cTranslation = (joint->pater == NULL)? joint->currentTranslation : joint->pater->currentTranslation;
 
-    joint->currentTranslation = CommonFuncs::AddDirect(
-                (joint->pater == NULL)? joint->currentTranslation : joint->pater->currentTranslation,
-                joint->localTranslation, newRotation);
+    qDebug() << joint->name << wasRotation << currentRotation << " ----  " << newRotation<< " ----  " << joint->localTranslation;
+    joint->currentTranslation =
+            //CommonFuncs::AddDirectWtParent(cTranslation, joint->localTranslation, wasRotation, currentRotation);
+            CommonFuncs::AddDirect(cTranslation, joint->localTranslation, newRotation);
+    //joint->currentRotation = newRotation;
+
     for (int childId = 0; childId < joint->kids.length(); childId++)
         RecursiveApplyLocalRotations(joint->kids[childId], newRotation);
 
