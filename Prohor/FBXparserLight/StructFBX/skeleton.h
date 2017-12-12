@@ -12,17 +12,22 @@ public:
     Skeleton();
     Skeleton(QVector<Joint*> j);
 
+    // local
     void SetNullRotations();
 
     void DebugTree () const;
     bool CalculateGlobalCoordForEachJoint ();
+    bool CalculateGlobalCoordForEachJointMatrix();
+
 
     QVector<QVector3D> getJointLocalRotations () const;
     QVector<QVector3D> getJointGlobalTranslationsForSkin () const;
     QVector3D getJointCoordByIndex(int index, QVector3D &paterCoord);
+    // local!
     void SetRotation (QVector3D newRotation, int jointInd);
     void SetRotations (QVector<QVector3D> newRotations);
 
+    // return local!
     bool getJointTranslationAndRotation (const int jointIndex, QVector3D& translation, QVector3D& rotation) const;
 };
 

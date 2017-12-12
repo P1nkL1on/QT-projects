@@ -346,7 +346,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
     qDebug() << "    V    " + QString::number(bindMatrixesGeted) + " bind matrixes connected to bones;";
 
 
-    resSkeleton->CalculateGlobalCoordForEachJoint();
+    resSkeleton->CalculateGlobalCoordForEachJointMatrix();
     resSkin->GenerateAttends(resMesh->vertexes, resSkeleton->getJointGlobalTranslationsForSkin());
 
     loadedRig = Rig(resMesh, resSkeleton, resSkin);

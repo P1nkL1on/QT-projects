@@ -51,9 +51,9 @@ void Skeleton::RecursiveApplyLocalRotations(Joint *joint, QVector3D currentRotat
 
     qDebug() << joint->name << wasRotation << currentRotation << " ----  " << newRotation<< " ----  " << joint->localTranslation;
     joint->currentTranslation =
-            //CommonFuncs::AddDirectWtParent(cTranslation, joint->localTranslation, wasRotation, currentRotation);
-            CommonFuncs::AddDirect(cTranslation, joint->localTranslation, newRotation);
-    //joint->currentRotation = newRotation;
+            CommonFuncs::AddDirectWtParent(cTranslation, joint->localTranslation, wasRotation, currentRotation);
+            //CommonFuncs::AddDirect(cTranslation, joint->localTranslation, newRotation);
+    joint->currentRotation = newRotation;
 
     for (int childId = 0; childId < joint->kids.length(); childId++)
         RecursiveApplyLocalRotations(joint->kids[childId], newRotation);
@@ -67,6 +67,7 @@ bool EqualSkeletonRotations (QVector<QVector3D> a, QVector<QVector3D> b){
             return false;
     return true;
 }
+
 
 bool Skeleton::CalculateGlobalCoordForEachJoint()
 {
@@ -89,6 +90,43 @@ bool Skeleton::CalculateGlobalCoordForEachJoint()
     }
     qDebug() << "Applied rotation changes for " + QString::number(transformesApplied) + " joints;";
     return true;
+}
+
+void RecursiveGlobalCalculateCall (Joint* joint){
+    joint->CalculateGlobalTransformMatrix();
+    if (joint->name == "RightArm"){
+        int x = 10;
+    }
+    joint->currentTranslation = CommonFuncs::AddDirectMatrx(/*joint->localTranslation*/QVector3D(1,1,1), joint->globalTransformMatrix);
+
+    qDebug() << joint->name << joint->currentTranslation;
+
+    for (int childId = 0; childId < joint->kids.length(); childId++)
+        RecursiveGlobalCalculateCall(joint->kids[childId]);
+}
+
+bool Skeleton::CalculateGlobalCoordForEachJointMatrix()
+{
+    transformesApplied = 0;
+    if (EqualSkeletonRotations(getJointLocalRotations(), localRotations))
+        return false;
+
+    for (int jointInd = 0; jointInd < joints.length(); jointInd++)
+        joints[jointInd]->RecaulculateLocalTransformMatrix();
+    //
+    QVector<int> rootInds = {};
+
+    for (int curJoint = 0; curJoint < joints.length(); curJoint++){
+        joints[curJoint]->currentTranslation = QVector3D();              // reset XYZ to calculate them further
+        joints[curJoint]->currentRotation = localRotations[curJoint];    // now each joint have info about it need angles
+        if (joints[curJoint]->pater == NULL) rootInds << curJoint;
+    }
+    // apply for roots and go further
+    Q_ASSERT(rootInds.length() > 0);
+    for (int curRootInd = 0; curRootInd < rootInds.length(); curRootInd ++){
+        Joint* root = (joints[rootInds[curRootInd]]);
+        RecursiveGlobalCalculateCall(root);
+    }
 }
 
 QVector<QVector3D> Skeleton::getJointLocalRotations() const
@@ -118,7 +156,7 @@ void Skeleton::SetRotation(QVector3D newRotation, int jointInd)
 void Skeleton::SetRotations(QVector<QVector3D> newRotations){
     Q_ASSERT(newRotations.length() == localRotations.length());
     for (int curJ = 0; curJ < localRotations.length(); curJ++)
-        localRotations[curJ] = -newRotations[curJ]; //! change -
+        SetRotation(newRotations[curJ], curJ);
 }
 
 bool Skeleton::getJointTranslationAndRotation(const int jointIndex, QVector3D &translation, QVector3D &rotation) const

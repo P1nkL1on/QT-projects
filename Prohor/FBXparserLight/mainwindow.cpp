@@ -88,7 +88,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         for (int currentModel = 0; currentModel < names.length(); currentModel++){
             Rig rg;
             QString err =
-                    loaderFBX::loadModelFBXAdress("D:/QT-projects/Prohor/Models/FBX/"+names[currentModel]+".FBX", rg);
+                    loaderFBX::loadModelFBXAdress("D:/QT-projects/QT-projects/Prohor/Models/FBX/"+names[currentModel]+".FBX", rg);
             if (!err.isEmpty())
                 qDebug() << err;
             else
@@ -102,8 +102,8 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         }
         // also load a OBJ poses
         Mesh ms1, ms2;
-        QString errMs1 = loaderFBX::loadMeshOBJAdress("D:/QT-projects/Prohor/Models/GuardPosesOBJ/handforwardy90.OBJ", ms1),
-                errMs2 = loaderFBX::loadMeshOBJAdress("D:/QT-projects/Prohor/Models/GuardPosesOBJ/bind.OBJ", ms2);
+        QString errMs1 = loaderFBX::loadMeshOBJAdress("D:/QT-projects/QT-projects/Prohor/Models/GuardPosesOBJ/handforwardy90.OBJ", ms1),
+                errMs2 = loaderFBX::loadMeshOBJAdress("D:/QT-projects/QT-projects/Prohor/Models/GuardPosesOBJ/bind.OBJ", ms2);
         if (errMs1.isEmpty() && errMs2.isEmpty())
         {
             mshs << ms1 << ms2;

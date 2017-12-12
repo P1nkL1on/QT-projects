@@ -29,6 +29,33 @@ Joint::Joint(QString ID0, QString name0)
     bindTransform = QVector3D();
 }
 
+void Joint::RecaulculateLocalTransformMatrix()
+{
+    localTransformMatrix = QMatrix4x4();
+
+    localTransformMatrix.rotate(currentRotation.x(), 1.0, 0, 0);
+    localTransformMatrix.rotate(currentRotation.y(), 0, 1.0, 0);
+    localTransformMatrix.rotate(currentRotation.z(), 0, 0, 1.0);
+
+    localTransformMatrix.translate(localTranslation);
+
+    ResetGlobalTransformMatrix();
+}
+
+void Joint::ResetGlobalTransformMatrix()
+{
+    globalTransformMatrix = QMatrix4x4();
+}
+
+void Joint::CalculateGlobalTransformMatrix()
+{
+    Joint* now = this;
+    do{
+        globalTransformMatrix = now->localTransformMatrix * globalTransformMatrix;
+        now = now->pater;
+    } while ( now != NULL );
+}
+
 
 AttendedVertex::AttendedVertex()
 {
@@ -71,4 +98,11 @@ QVector3D CommonFuncs::AddDirectWtParent(const QVector3D to, const QVector3D Tra
     QVector4D temp = addRotateMatrix * wasRotateMatrix * QVector4D(Transform, 1.0);
 
     return QVector3D(to.x() + temp.x(), to.y() + temp.y(), to.z() + temp.z());
+}
+
+QVector3D CommonFuncs::AddDirectMatrx(const QVector3D localTransform, const QMatrix4x4 transform)
+{
+    QVector4D temp = transform * QVector4D(localTransform, 1.0);
+
+    return QVector3D( temp.x(), temp.y(),  temp.z());
 }
