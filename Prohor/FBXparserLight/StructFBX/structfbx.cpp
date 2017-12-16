@@ -39,6 +39,7 @@ void Joint::RecaulculateLocalTransformMatrix()
 
     localTransformMatrix.translate(localTranslation);
 
+    //qDebug() << "bone local transform cvalculated" << currentRotation;
     ResetGlobalTransformMatrix();
 }
 

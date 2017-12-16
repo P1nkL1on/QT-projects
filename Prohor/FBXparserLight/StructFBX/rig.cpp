@@ -124,8 +124,11 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
 
 
     if (skeleton != NULL && skin != NULL && bindMesh != NULL){
-        skeleton->SetRotation(QVector3D(0,0,0), 1);
-        skeleton->SetRotation(QVector3D(0, -60, 0), 20);
+        //skeleton->SetRotation(QVector3D(++ang,++ang,++ang), 0);
+        //for (int i = 2; i <= 20; i++)
+            //skeleton->SetRotation(QVector3D(i *5, i*5, i*5), i);
+        skeleton->SetRotation(QVector3D(++ang,0,0), 0);
+        skeleton->SetRotation(QVector3D(0,-80,0), 20);
         BendSkinToSkeleton();
     }
     // vertexes
