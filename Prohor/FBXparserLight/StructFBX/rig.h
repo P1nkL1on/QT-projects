@@ -23,6 +23,7 @@ public:
     // drawing to canvas
     QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
                            const int width, const int hei) override;
+    float CompareWithMeshOnRotates (QVector<QVector3D> newRotations, Mesh* with);
 };
 
 #endif // RIG_H

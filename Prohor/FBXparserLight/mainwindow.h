@@ -18,6 +18,9 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+    QString modelsAdress = "D:/QT-projects/Prohor/Models/";
+
     void keyPressEvent(QKeyEvent *e);
 
  // controls

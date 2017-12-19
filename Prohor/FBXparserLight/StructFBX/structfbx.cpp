@@ -33,9 +33,11 @@ void Joint::RecaulculateLocalTransformMatrix()
 {
     localTransformMatrix = QMatrix4x4();
 
-    localTransformMatrix.rotate(currentRotation.x(), 1.0, 0, 0);
-    localTransformMatrix.rotate(currentRotation.y(), 0, 1.0, 0);
-    localTransformMatrix.rotate(currentRotation.z(), 0, 0, 1.0);
+    QVector3D currentRotation2 = (pater != NULL)?pater->currentRotation : QVector3D(0,0,0);
+
+    localTransformMatrix.rotate(currentRotation2.x(), 1.0, 0, 0);
+    localTransformMatrix.rotate(currentRotation2.y(), 0, 1.0, 0);
+    localTransformMatrix.rotate(currentRotation2.z(), 0, 0, 1.0);
 
     localTransformMatrix.translate(localTranslation);
 

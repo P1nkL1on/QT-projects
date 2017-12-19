@@ -1,6 +1,7 @@
 INPUT(
 ./debug\main.o
 ./debug\mainwindow.o
+./debug\testautorig.o
 ./debug\modelloader.o
 ./debug\model.o
 ./debug\stereometry.o

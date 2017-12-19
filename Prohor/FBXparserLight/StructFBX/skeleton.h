@@ -20,8 +20,8 @@ public:
     bool CalculateGlobalCoordForEachJointMatrix();
 
 
-    QVector<QVector3D> getJointLocalRotations () const;
-    QVector<QVector3D> getJointGlobalTranslationsForSkin () const;
+    QVector<QVector3D> getJointsLocalRotations () const;
+    QVector<QVector3D> getJointsGlobalTranslationsForSkin () const;
     QVector3D getJointCoordByIndex(int index, QVector3D &paterCoord);
     // local!
     void SetRotation (QVector3D newRotation, int jointInd);

@@ -108,7 +108,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
         for (int i = 0, model_found = 0 ; i<names.length() ; i++){
             Model newmodel;
-            QString err = LoadModel("D:/QT-projects/QT-projects/Prohor/Models/dodecaedr.txt", newmodel);//+QString(names[i]), newmodel);
+            QString err = LoadModel("D:/QT-projects/Prohor/Models/dodecaedr.txt", newmodel);//+QString(names[i]), newmodel);
             if (!err.isEmpty())
                 qDebug() << err;
             else

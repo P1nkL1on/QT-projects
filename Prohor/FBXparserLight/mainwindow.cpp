@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "LoaderFBXlight/loaderfbx.h"
-#include "StructFBX/structfbx.h"
+#include "testautorig.h"
 
 #include "testviewer.h"
 
@@ -23,6 +23,7 @@ TestViewer tv = TestViewer();
 QVector<Rig> rgs;
 QVector<Mesh> mshs;
 QVector<QString> names;
+TestAutoRig tar;
 
 // constrols
 bool mouseStillPressed = false;
@@ -65,7 +66,10 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         tv.SwapCurrentModelPrev();
         this->repaint();
     }
-
+    if (e->key() == Qt::Key_E){
+        tar.ApplyRotations();
+        this->repaint();
+    }
     if (tv.ModelCount() == 0 && e->key() == Qt::Key_Space){
         //        names   //<< "!bboy 2 exported"
         //<< "joints_only2"
@@ -88,7 +92,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         for (int currentModel = 0; currentModel < names.length(); currentModel++){
             Rig rg;
             QString err =
-                    loaderFBX::loadModelFBXAdress("D:/QT-projects/QT-projects/Prohor/Models/FBX/"+names[currentModel]+".FBX", rg);
+                    loaderFBX::loadModelFBXAdress(modelsAdress + "FBX/"+names[currentModel]+".FBX", rg);
             if (!err.isEmpty())
                 qDebug() << err;
             else
@@ -102,8 +106,8 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         }
         // also load a OBJ poses
         Mesh ms1, ms2;
-        QString errMs1 = loaderFBX::loadMeshOBJAdress("D:/QT-projects/QT-projects/Prohor/Models/GuardPosesOBJ/handforwardy90.OBJ", ms1),
-                errMs2 = loaderFBX::loadMeshOBJAdress("D:/QT-projects/QT-projects/Prohor/Models/GuardPosesOBJ/bind.OBJ", ms2);
+        QString errMs1 = loaderFBX::loadMeshOBJAdress(modelsAdress + "GuardPosesOBJ/handforwardy90.OBJ", ms1),
+                errMs2 = loaderFBX::loadMeshOBJAdress(modelsAdress + "GuardPosesOBJ/bind.OBJ", ms2);
         if (errMs1.isEmpty() && errMs2.isEmpty())
         {
             mshs << ms1 << ms2;
@@ -117,17 +121,8 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
         for (int ldID = 0; ldID < loadedModel; ldID++)
             tv.addGraphicsObject(&(rgs[ldID]));
-
-
-        if (false && rgs.length() == 3){
-            rgs[0].skeleton->SetRotation(QVector3D(0,90,0), 20);
-            rgs[0].BendSkinToSkeleton();
-            // check an equal of mesh from FBX and mesh from OBJ
-            qDebug() << "Quad diff between bind poses is "
-                        + QString::number(rgs[2].bindMesh->CompareWithAnotherMesh(rgs[0].bindMesh));
-            qDebug() << "Quad diff between bended poses is "
-                        + QString::number(rgs[1].bindMesh->CompareWithAnotherMesh(rgs[0].bendedMesh));
-        }
+        // create a autorig
+        tar = TestAutoRig(&(rgs[0]), &(mshs[0]));
     }
 }
 
