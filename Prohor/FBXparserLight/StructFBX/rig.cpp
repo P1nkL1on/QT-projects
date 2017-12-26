@@ -46,9 +46,7 @@ void Rig::BendSkinToSkeleton()
             //qDebug() << currentVertexInd<< jointBendInd<< originalOffset << jointBendTranslation << jointBendRotation;
 
 
-            bendedVariants << //CommonFuncs::AddDirectMatrx
-                    //(QVector3D(1,1,1), skeleton->joints[jointBendInd]->globalTransformMatrix);//
-
+            bendedVariants <<
             CommonFuncs::AddDirect(jointBendTranslation, -originalOffset, jointBendRotation);
 
             weightes << skin->vertAttends[currentVertexInd].weights[jointInd];
