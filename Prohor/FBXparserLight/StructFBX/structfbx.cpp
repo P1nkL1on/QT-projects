@@ -109,3 +109,14 @@ QVector3D CommonFuncs::AddDirectMatrx(const QVector3D localTransform, const QMat
 
     return QVector3D( temp.x(), temp.y(),  temp.z());
 }
+
+QMatrix4x4 CommonFuncs::GetNormalRotateMatrix(const QVector3D rotatXYZ)
+{
+    QMatrix4x4 localTransformMatrix = QMatrix4x4();
+
+    localTransformMatrix.rotate(rotatXYZ.x(), 1.0, 0, 0);
+    localTransformMatrix.rotate(rotatXYZ.y(), 0, 1.0, 0);
+    localTransformMatrix.rotate(rotatXYZ.z(), 0, 0, 1.0);
+
+    return localTransformMatrix;
+}

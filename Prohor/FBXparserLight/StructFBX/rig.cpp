@@ -44,10 +44,21 @@ void Rig::BendSkinToSkeleton()
             skeleton->getJointTranslationAndRotation(jointBendInd, jointBendTranslation, jointBendRotation);
 
             //qDebug() << currentVertexInd<< jointBendInd<< originalOffset << jointBendTranslation << jointBendRotation;
+            ///bendedVariants <<
+            ///CommonFuncs::AddDirect(jointBendTranslation, -originalOffset, jointBendRotation);
+            QMatrix4x4 localAttendTransformMatrix = QMatrix4x4(),
+                       localRotateMatrix = CommonFuncs::GetNormalRotateMatrix(skeleton->joints[jointBendInd]->currentRotation);
 
+            localAttendTransformMatrix.translate(- skin->vertAttends[currentVertexInd].localJointCoords[jointInd]);
 
             bendedVariants <<
-            CommonFuncs::AddDirect(jointBendTranslation, -originalOffset, jointBendRotation);
+            CommonFuncs::AddDirectMatrx(QVector3D(1,1,1),
+                                        //skin->vertAttends[currentVertexInd].localJointCoords
+                                        skeleton->joints[jointBendInd]->globalTransformMatrix
+                                        * localRotateMatrix
+                                        * localAttendTransformMatrix
+                                        );
+
 
             weightes << skin->vertAttends[currentVertexInd].weights[jointInd];
         }
@@ -232,7 +243,7 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
     }
 
     Vertexes2D = From3DTo2D(Joints3D, view,perspective);
-    painter->setPen(ChangeQPainter(QColor(255,200,0), 1));
+    painter->setPen(ChangeQPainter(QColor(255,130,0), 1));
     for (int curPoint = 0; curPoint < Vertexes2D.length() / 2; curPoint++)
     {
         int xc,yc,xp,yp;
@@ -245,6 +256,14 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
     }
 
 
+    QString logs = "";
+    QVector<QVector3D> jointLocalRots = skeleton->getJointsLocalRotations();
+    for (int curJointInd = 0; curJointInd < skeleton->joints.length(); curJointInd++)
+        logs += ("#" + QString::number(curJointInd) + " : ")
+                + QString::number(jointLocalRots[curJointInd].x()) + ", "
+                + QString::number(jointLocalRots[curJointInd].y()) + ", "
+                + QString::number(jointLocalRots[curJointInd].z()) + "\n";
+    painter->drawText(width, 40, 200, hei - 40,0, logs);//+" " +skeleton->joints[curPoint]->name);// +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.y()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.z()));
 
     //painter->end();
     return QString();

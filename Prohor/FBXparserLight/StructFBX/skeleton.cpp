@@ -130,6 +130,7 @@ bool Skeleton::CalculateGlobalCoordForEachJointMatrix()
     }
 }
 
+
 QVector<QVector3D> Skeleton::getJointsLocalRotations() const
 {
     QVector<QVector3D> res;

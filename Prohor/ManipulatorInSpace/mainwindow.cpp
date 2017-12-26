@@ -69,7 +69,17 @@ void MainWindow::paintEvent(QPaintEvent *e){
 
 void MainWindow::keyPressEvent(QKeyEvent *e){
     if (e->key() == Qt::Key_Space){
+        for (int i = 0; i < 25; i++)
         hs3d->Step();
+        this->repaint();
+    }
+    if (e->key() == Qt::Key_R){
+        man = new Manipulator3D(stPoint, dists);
+        vects = {QPair<int, QVector3D>(dists.length() / 2, QVector3D(20 + qrand() % 40 - 20,qrand()%30,50 + qrand() % 40 - 20)),
+                 QPair<int, QVector3D>(dists.length() -1, QVector3D(20 + qrand() % 40 - 20,30 + qrand()%30, 80 + qrand() % 40 - 20))};
+        hs3d = new HandSolver3D(man, vects);
+        tv.ClearGraphicsObjectsList();
+        tv.addGraphicsObject(hs3d);
         this->repaint();
     }
 }

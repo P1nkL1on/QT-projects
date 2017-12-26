@@ -78,3 +78,9 @@ void TestViewer::SwapCurrentModelPrev()
     qDebug() << "Prev model" << modelIndex;
 }
 
+void TestViewer::ClearGraphicsObjectsList()
+{
+    objectsInScene = {};
+    qDebug() << "Scene cleared!";
+}
+

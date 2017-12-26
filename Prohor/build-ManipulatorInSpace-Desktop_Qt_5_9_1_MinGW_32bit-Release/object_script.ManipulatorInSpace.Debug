@@ -1,0 +1,14 @@
+INPUT(
+./debug\stereometry.o
+./debug\transforms.o
+./debug\camera.o
+./debug\lightsourse.o
+./debug\testviewer.o
+./debug\graphicsobject.o
+./debug\derivable.o
+./debug\main.o
+./debug\mainwindow.o
+./debug\manipulator3d.o
+./debug\handsolver3d.o
+./debug\moc_mainwindow.o
+);

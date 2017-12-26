@@ -29,6 +29,7 @@ public:
     int ModelCount () const;
     void SwapCurrentModelNext ();
     void SwapCurrentModelPrev ();
+    void ClearGraphicsObjectsList ();
 };
 
 #endif // TESTVIEWER_H

@@ -39,6 +39,7 @@ public:
 };
 
 namespace CommonFuncs {
+    QMatrix4x4 GetNormalRotateMatrix (const QVector3D rotatXYZ);
     QVector3D AddDirectMatrx (const QVector3D localTransform, const QMatrix4x4 transform);
     QVector3D AddDirect (const QVector3D to, const QVector3D Transform, const QVector3D Rotation);
     QVector3D AddDirectWtParent (const QVector3D to, const QVector3D Transform, const QVector3D wasRotation, const QVector3D addRotation );
