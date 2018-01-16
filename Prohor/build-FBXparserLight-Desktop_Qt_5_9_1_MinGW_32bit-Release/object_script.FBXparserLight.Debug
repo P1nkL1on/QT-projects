@@ -1,6 +1,4 @@
 INPUT(
-./debug\main.o
-./debug\mainwindow.o
 ./debug\modelloader.o
 ./debug\model.o
 ./debug\stereometry.o
@@ -16,5 +14,8 @@ INPUT(
 ./debug\skeleton.o
 ./debug\mesh.o
 ./debug\rig.o
+./debug\main.o
+./debug\mainwindow.o
+./debug\testautorig.o
 ./debug\moc_mainwindow.o
 );

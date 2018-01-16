@@ -2,8 +2,6 @@
 #include "ui_mainwindow.h"
 
 #include "LoaderFBXlight/loaderfbx.h"
-#include "testautorig.h"
-
 #include "testviewer.h"
 
 MainWindow::MainWindow(QWidget *parent) :

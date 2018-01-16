@@ -1,6 +1,4 @@
 INPUT(
-./release\main.o
-./release\mainwindow.o
 ./release\modelloader.o
 ./release\model.o
 ./release\stereometry.o
@@ -16,5 +14,8 @@ INPUT(
 ./release\skeleton.o
 ./release\mesh.o
 ./release\rig.o
+./release\main.o
+./release\mainwindow.o
+./release\testautorig.o
 ./release\moc_mainwindow.o
 );
