@@ -22,13 +22,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+include(../GradientDescent/Derivable/Derivable.pri)
+include(../GradientDescent/Eigen/Eigen.pri)
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        matrixop.cpp \
+    dmatrix4x4.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+        matrixop.h \
+    dmatrix4x4.h
 
 FORMS += \
         mainwindow.ui
