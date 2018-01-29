@@ -28,8 +28,7 @@ include(../GradientDescent/Eigen/Eigen.pri)
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-        matrixop.cpp \
-    dmatrix4x4.cpp
+        matrixop.cpp
 
 HEADERS += \
         mainwindow.h \

@@ -3,7 +3,7 @@
 
 
 #include "matrixop.h"
-
+using namespace DerivableVectorMatrixes;
 
 int main(int argc, char *argv[])
 {
@@ -12,8 +12,7 @@ int main(int argc, char *argv[])
     w.show();
 
     //test
-    MatrixOp m = MatrixOp();
-    m.TestTrace();
+    TestTrace();
     //~test
 
     return a.exec();
