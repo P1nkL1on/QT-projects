@@ -189,22 +189,22 @@ void DerivableVectorMatrixes::TestTrace()
 
 
 
-Matrix<Derivable, 1, 4> MakeVector4From3(const Matrix<Derivable, 1, 3> vec, const Derivable add)
+Matrix<Derivable, 1, 4> DerivableVectorMatrixes::MakeVector4From3(const Matrix<Derivable, 1, 3> vec, const Derivable add)
 {
     return Matrix<Derivable, 1, 4>(vec(0,0), vec(0,1), vec(0,2), add);
 }
 
-Matrix<Derivable, 1, 3> Summ3and4(const Matrix<Derivable, 1, 3> v3, const Matrix<Derivable, 1, 4> v4)
+Matrix<Derivable, 1, 3> DerivableVectorMatrixes::Summ3and4(const Matrix<Derivable, 1, 3> v3, const Matrix<Derivable, 1, 4> v4)
 {
     return Matrix<Derivable, 1, 3>(v3(0,0) + v4(0,0), v3(0,1) + v4(0,1), v3(0,2) + v4(0,2));
 }
 
-Derivable SquaredLength(Matrix<Derivable, 1, 3> vect)
+Derivable DerivableVectorMatrixes::SquaredLength(Matrix<Derivable, 1, 3> vect)
 {
     return  DerOperations::pow(vect(0,0),2) + DerOperations::pow(vect(0,1),2) + DerOperations::pow(vect(0,2),2);
 }
 
-QVector3D QfromDer3(const Matrix<Derivable, 1, 3> orig)
+QVector3D DerivableVectorMatrixes::QfromDer3(const Matrix<Derivable, 1, 3> orig)
 {
     return QVector3D(orig(0,0).getValue(), orig(0,1).getValue(), orig(0,2).getValue());
 }

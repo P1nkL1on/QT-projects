@@ -4,13 +4,16 @@
 #include "StructFBX/rig.h"
 #include "QVector"
 
+#include "Eigen/Core"
+#include "Derivable/dermatops.h"
+
 class TestAutoRig
 {
 private:
     QVector<Mesh*> targetMeshes;
     Rig* bendingRig;
-    QVector<QVector3D> nowRotations;
-    QVector3D nowRootPose;
+    QVector<Matrix<Derivable,1,3>> nowRotations;
+    Matrix<Derivable,1,3> nowRootPose;
 public:
     TestAutoRig();
     TestAutoRig(Rig* rig, Mesh* mesh);

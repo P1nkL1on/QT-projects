@@ -1,7 +1,4 @@
 INPUT(
-./debug\main.o
-./debug\mainwindow.o
-./debug\testautorig.o
 ./debug\modelloader.o
 ./debug\model.o
 ./debug\stereometry.o
@@ -17,5 +14,10 @@ INPUT(
 ./debug\skeleton.o
 ./debug\mesh.o
 ./debug\rig.o
+./debug\derivable.o
+./debug\dermatops.o
+./debug\main.o
+./debug\mainwindow.o
+./debug\testautorig.o
 ./debug\moc_mainwindow.o
 );
