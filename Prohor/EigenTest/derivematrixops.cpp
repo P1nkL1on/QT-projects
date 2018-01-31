@@ -1,5 +1,5 @@
-#include "matrixop.h"
-
+#include "derivematrixops.h"
+#include "iostream"
 
 
 
@@ -7,6 +7,7 @@ using Eigen::Matrix;
 using namespace DerOperations;
 
 using namespace DerivableVectorMatrixes;
+using namespace  std;
 
 Matrix<Derivable, 1, 4> DerivableVectorMatrixes::SetDerive4DVector (QVector4D vec){
     Matrix<Derivable, 1, 4> M = Matrix<Derivable, 1, 4>();
@@ -118,6 +119,12 @@ void DerivableVectorMatrixes::RotateDeriveMatrix (Matrix<Derivable, 4, 4>& origi
 }
 void DerivableVectorMatrixes::TestTrace()
 {
+    Matrix<Derivable,1,3> v = Matrix<Derivable,1,3>(1,2,3);
+    //v << 1,2,3;
+    cout << "wow" << endl;
+    cout << v(0,1).getValue() << endl;
+    return;
+
     QMatrix4x4 Qmat = QMatrix4x4(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16), translateMatrix = Qmat, rotateMatrix = Qmat;
 
     QVector<Derivable> a = QVector<Derivable>();
@@ -164,6 +171,8 @@ void DerivableVectorMatrixes::TestTrace()
     qDebug() << "Vector4D * Matrix4x4";
     qDebug() << q4d * rotateMatrix;
     TraceVector(d4d * M3);
+
+
 
 }
 

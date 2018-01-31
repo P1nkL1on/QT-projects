@@ -46,22 +46,22 @@ OBJECTS_DIR   = release
 ####### Files
 
 SOURCES       = ..\Prohor\GradientDescent\Derivable\derivable.cpp \
+		..\Prohor\GradientDescent\Derivable\dermatops.cpp \
 		..\Prohor\EigenTest\main.cpp \
-		..\Prohor\EigenTest\mainwindow.cpp \
-		..\Prohor\EigenTest\matrixop.cpp release\moc_mainwindow.cpp
+		..\Prohor\EigenTest\mainwindow.cpp release\moc_mainwindow.cpp
 OBJECTS       = release/derivable.o \
+		release/dermatops.o \
 		release/main.o \
 		release/mainwindow.o \
-		release/matrixop.o \
 		release/moc_mainwindow.o
 
 DIST          =  ..\Prohor\GradientDescent\Derivable\derivable.h \
+		..\Prohor\GradientDescent\Derivable\dermatops.h \
 		..\Prohor\EigenTest\mainwindow.h \
-		..\Prohor\EigenTest\matrixop.h \
 		..\Prohor\EigenTest\dmatrix4x4.h ..\Prohor\GradientDescent\Derivable\derivable.cpp \
+		..\Prohor\GradientDescent\Derivable\dermatops.cpp \
 		..\Prohor\EigenTest\main.cpp \
-		..\Prohor\EigenTest\mainwindow.cpp \
-		..\Prohor\EigenTest\matrixop.cpp
+		..\Prohor\EigenTest\mainwindow.cpp
 QMAKE_TARGET  = EigenTest
 DESTDIR        = release\ #avoid trailing-slash linebreak
 TARGET         = EigenTest.exe
@@ -81,10 +81,10 @@ qmake: FORCE
 qmake_all: FORCE
 
 dist:
-	$(ZIP) EigenTest.zip $(SOURCES) $(DIST) ..\Prohor\Prohor\EigenTest\EigenTest.pro ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\spec_pre.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\qdevice.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\device_config.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\common\g++-base.conf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\common\angle.conf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\common\sanitize.conf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\common\gcc-base.conf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\qconfig.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3danimation.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3danimation_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dcore.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dcore_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dextras.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dextras_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dinput.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dinput_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dlogic.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dlogic_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquick.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquick_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickanimation.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickanimation_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickextras.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickextras_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickinput.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickinput_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickrender.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickrender_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickscene2d.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickscene2d_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3drender.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3drender_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_accessibility_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axbase.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axbase_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axcontainer.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axcontainer_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axserver.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axserver_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_bluetooth.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_bluetooth_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_bootstrap_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_charts.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_charts_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_concurrent.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_concurrent_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_core.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_core_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_datavisualization.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_datavisualization_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_dbus.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_dbus_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_designer.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_designer_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_designercomponents_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_devicediscovery_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_egl_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_fb_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_fontdatabase_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_gamepad.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_gamepad_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_gui.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_gui_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_help.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_help_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_location.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_location_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_multimedia.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_multimedia_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_multimediawidgets.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_multimediawidgets_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_network.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_network_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_networkauth.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_networkauth_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_nfc.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_nfc_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_opengl.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_opengl_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_openglextensions.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_openglextensions_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_packetprotocol_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_platformcompositor_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_positioning.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_positioning_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_printsupport.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_printsupport_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_purchasing.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_purchasing_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qml.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qml_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qmldebug_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qmldevtools_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qmltest.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qmltest_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quick.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quick_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quickcontrols2.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quickcontrols2_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quickparticles_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quicktemplates2_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quickwidgets.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quickwidgets_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_remoteobjects.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_remoteobjects_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_repparser.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_repparser_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_script.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_script_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_scripttools.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_scripttools_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_scxml.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_scxml_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_sensors.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_sensors_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_serialbus.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_serialbus_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_serialport.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_serialport_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_sql.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_sql_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_svg.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_svg_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_testlib.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_testlib_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_texttospeech.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_texttospeech_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_theme_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_uiplugin.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_uitools.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_uitools_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_webchannel.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_webchannel_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_websockets.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_websockets_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_widgets.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_widgets_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_winextras.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_winextras_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_xml.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_xml_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_xmlpatterns.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_xmlpatterns_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\qt_functions.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\qt_config.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\win32-g++\qmake.conf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\spec_post.prf .qmake.stash ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\exclusive_builds.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\toolchain.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\default_pre.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\win32\default_pre.prf ..\Prohor\GradientDescent\Derivable\Derivable.pri ..\Prohor\GradientDescent\Eigen\Eigen.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\resolve_config.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\exclusive_builds_post.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\default_post.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\build_pass.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\precompile_header.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\warn_on.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\qt.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\resources.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\moc.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\win32\opengl.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\uic.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\qmake_use.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\file_copies.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\win32\windows.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\testcase_targets.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\exceptions.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\yacc.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\lex.prf ..\Prohor\EigenTest\EigenTest.pro ..\..\..\progs\QT_creator\5.9.1\mingw53_32\lib\qtmain.prl ..\..\..\progs\QT_creator\5.9.1\mingw53_32\lib\Qt5Widgets.prl ..\..\..\progs\QT_creator\5.9.1\mingw53_32\lib\Qt5Gui.prl ..\..\..\progs\QT_creator\5.9.1\mingw53_32\lib\Qt5Core.prl    ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\data\dummy.cpp ..\Prohor\GradientDescent\Derivable\derivable.h ..\Prohor\EigenTest\mainwindow.h ..\Prohor\EigenTest\matrixop.h ..\Prohor\EigenTest\dmatrix4x4.h ..\Prohor\GradientDescent\Derivable\derivable.cpp ..\Prohor\EigenTest\main.cpp ..\Prohor\EigenTest\mainwindow.cpp ..\Prohor\EigenTest\matrixop.cpp ..\Prohor\EigenTest\mainwindow.ui    
+	$(ZIP) EigenTest.zip $(SOURCES) $(DIST) ..\Prohor\Prohor\EigenTest\EigenTest.pro ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\spec_pre.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\qdevice.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\device_config.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\common\g++-base.conf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\common\angle.conf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\common\sanitize.conf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\common\gcc-base.conf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\qconfig.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3danimation.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3danimation_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dcore.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dcore_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dextras.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dextras_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dinput.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dinput_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dlogic.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dlogic_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquick.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquick_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickanimation.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickanimation_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickextras.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickextras_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickinput.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickinput_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickrender.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickrender_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickscene2d.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3dquickscene2d_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3drender.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_3drender_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_accessibility_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axbase.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axbase_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axcontainer.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axcontainer_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axserver.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_axserver_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_bluetooth.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_bluetooth_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_bootstrap_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_charts.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_charts_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_concurrent.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_concurrent_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_core.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_core_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_datavisualization.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_datavisualization_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_dbus.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_dbus_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_designer.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_designer_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_designercomponents_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_devicediscovery_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_egl_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_fb_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_fontdatabase_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_gamepad.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_gamepad_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_gui.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_gui_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_help.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_help_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_location.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_location_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_multimedia.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_multimedia_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_multimediawidgets.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_multimediawidgets_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_network.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_network_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_networkauth.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_networkauth_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_nfc.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_nfc_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_opengl.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_opengl_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_openglextensions.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_openglextensions_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_packetprotocol_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_platformcompositor_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_positioning.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_positioning_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_printsupport.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_printsupport_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_purchasing.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_purchasing_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qml.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qml_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qmldebug_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qmldevtools_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qmltest.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qmltest_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quick.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quick_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quickcontrols2.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quickcontrols2_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quickparticles_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quicktemplates2_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quickwidgets.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_quickwidgets_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_remoteobjects.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_remoteobjects_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_repparser.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_repparser_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_script.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_script_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_scripttools.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_scripttools_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_scxml.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_scxml_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_sensors.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_sensors_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_serialbus.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_serialbus_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_serialport.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_serialport_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_sql.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_sql_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_svg.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_svg_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_testlib.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_testlib_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_texttospeech.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_texttospeech_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_theme_support_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_uiplugin.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_uitools.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_uitools_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_webchannel.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_webchannel_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_websockets.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_websockets_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_widgets.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_widgets_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_winextras.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_winextras_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_xml.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_xml_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_xmlpatterns.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\modules\qt_lib_xmlpatterns_private.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\qt_functions.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\qt_config.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\win32-g++\qmake.conf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\spec_post.prf .qmake.stash ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\exclusive_builds.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\toolchain.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\default_pre.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\win32\default_pre.prf ..\Prohor\GradientDescent\Derivable\Derivable.pri ..\Prohor\GradientDescent\Eigen\Eigen.pri ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\resolve_config.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\exclusive_builds_post.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\default_post.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\build_pass.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\precompile_header.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\warn_on.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\qt.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\resources.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\moc.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\win32\opengl.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\uic.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\qmake_use.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\file_copies.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\win32\windows.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\testcase_targets.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\exceptions.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\yacc.prf ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\lex.prf ..\Prohor\EigenTest\EigenTest.pro ..\..\..\progs\QT_creator\5.9.1\mingw53_32\lib\qtmain.prl ..\..\..\progs\QT_creator\5.9.1\mingw53_32\lib\Qt5Widgets.prl ..\..\..\progs\QT_creator\5.9.1\mingw53_32\lib\Qt5Gui.prl ..\..\..\progs\QT_creator\5.9.1\mingw53_32\lib\Qt5Core.prl    ..\..\..\progs\QT_creator\5.9.1\mingw53_32\mkspecs\features\data\dummy.cpp ..\Prohor\GradientDescent\Derivable\derivable.h ..\Prohor\GradientDescent\Derivable\dermatops.h ..\Prohor\EigenTest\mainwindow.h ..\Prohor\EigenTest\dmatrix4x4.h ..\Prohor\GradientDescent\Derivable\derivable.cpp ..\Prohor\GradientDescent\Derivable\dermatops.cpp ..\Prohor\EigenTest\main.cpp ..\Prohor\EigenTest\mainwindow.cpp ..\Prohor\EigenTest\mainwindow.ui    
 
 clean: compiler_clean 
-	-$(DEL_FILE) release\derivable.o release\main.o release\mainwindow.o release\matrixop.o release\moc_mainwindow.o
+	-$(DEL_FILE) release\derivable.o release\dermatops.o release\main.o release\mainwindow.o release\moc_mainwindow.o
 
 distclean: clean 
 	-$(DEL_FILE) .qmake.stash
@@ -293,6 +293,226 @@ release/derivable.o: ../Prohor/GradientDescent/Derivable/derivable.cpp ../Prohor
 		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qstringmatcher.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\derivable.o ..\Prohor\GradientDescent\Derivable\derivable.cpp
 
+release/dermatops.o: ../Prohor/GradientDescent/Derivable/dermatops.cpp ../Prohor/GradientDescent/Derivable/dermatops.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/QMatrix4x4 \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qmatrix4x4.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qtguiglobal.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qglobal.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qconfig-bootstrapped.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qconfig.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qtcore-config.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qsystemdetection.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qprocessordetection.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qcompilerdetection.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qtypeinfo.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qsysinfo.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qlogging.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qflags.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qatomic.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qbasicatomic.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qatomic_bootstrap.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qgenericatomic.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qatomic_cxx11.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qatomic_msvc.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qglobalstatic.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qmutex.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qnumeric.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qversiontagging.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qtgui-config.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qvector3d.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qpoint.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qnamespace.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qmetatype.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qbytearray.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qrefcount.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qarraydata.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qstring.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qchar.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qstringbuilder.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qvarlengtharray.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qcontainerfwd.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qalgorithms.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qobjectdefs.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qobjectdefs_impl.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qvector4d.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qquaternion.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qgenericmatrix.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qdebug.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qhash.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qiterator.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qlist.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qhashfunctions.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qpair.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qbytearraylist.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qstringlist.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qregexp.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qstringmatcher.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qmap.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qtextstream.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qiodevice.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qobject.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qcoreevent.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qscopedpointer.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qobject_impl.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qlocale.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qvariant.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qshareddata.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qvector.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qset.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qcontiguouscache.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qsharedpointer.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qsharedpointer_impl.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qdatastream.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qrect.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qmargins.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qsize.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/QDebug \
+		../Prohor/GradientDescent/Eigen/Core \
+		../Prohor/GradientDescent/Eigen/src/Core/util/DisableStupidWarnings.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/Macros.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/MKL_support.h \
+		../Prohor/GradientDescent/Eigen/src/misc/blas.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/Constants.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/Meta.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/ForwardDeclarations.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/StaticAssert.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/XprHelper.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/Memory.h \
+		../Prohor/GradientDescent/Eigen/src/Core/NumTraits.h \
+		../Prohor/GradientDescent/Eigen/src/Core/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/GenericPacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/MathFunctionsImpl.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/SSE/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX512/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX512/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/SSE/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/SSE/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX/TypeCasting.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/SSE/TypeCasting.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AltiVec/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AltiVec/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AltiVec/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/NEON/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/NEON/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/NEON/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/ZVector/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/ZVector/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/ZVector/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/Half.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/PacketMathHalf.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/TypeCasting.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/Default/Settings.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/TernaryFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/BinaryFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/UnaryFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/NullaryFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/StlFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/AssignmentFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/IO.h \
+		../Prohor/GradientDescent/Eigen/src/Core/DenseCoeffsBase.h \
+		../Prohor/GradientDescent/Eigen/src/Core/DenseBase.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/BlockMethods.h \
+		../Prohor/GradientDescent/Eigen/src/Core/MatrixBase.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/CommonCwiseUnaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/CommonCwiseBinaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/MatrixCwiseUnaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/MatrixCwiseBinaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/Core/EigenBase.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Product.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CoreEvaluators.h \
+		../Prohor/GradientDescent/Eigen/src/Core/AssignEvaluator.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Assign.h \
+		../Prohor/GradientDescent/Eigen/src/Core/ArrayBase.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/ArrayCwiseUnaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/ArrayCwiseBinaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/BlasUtil.h \
+		../Prohor/GradientDescent/Eigen/src/Core/DenseStorage.h \
+		../Prohor/GradientDescent/Eigen/src/Core/NestByValue.h \
+		../Prohor/GradientDescent/Eigen/src/Core/ReturnByValue.h \
+		../Prohor/GradientDescent/Eigen/src/Core/NoAlias.h \
+		../Prohor/GradientDescent/Eigen/src/Core/PlainObjectBase.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Matrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Array.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CwiseTernaryOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CwiseBinaryOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CwiseUnaryOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CwiseNullaryOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CwiseUnaryView.h \
+		../Prohor/GradientDescent/Eigen/src/Core/SelfCwiseBinaryOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Dot.h \
+		../Prohor/GradientDescent/Eigen/src/Core/StableNorm.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Stride.h \
+		../Prohor/GradientDescent/Eigen/src/Core/MapBase.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Map.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Ref.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Block.h \
+		../Prohor/GradientDescent/Eigen/src/Core/VectorBlock.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Transpose.h \
+		../Prohor/GradientDescent/Eigen/src/Core/DiagonalMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Diagonal.h \
+		../Prohor/GradientDescent/Eigen/src/Core/DiagonalProduct.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Redux.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Visitor.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Fuzzy.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Swap.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CommaInitializer.h \
+		../Prohor/GradientDescent/Eigen/src/Core/GeneralProduct.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Solve.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Inverse.h \
+		../Prohor/GradientDescent/Eigen/src/Core/SolverBase.h \
+		../Prohor/GradientDescent/Eigen/src/Core/PermutationMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Transpositions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/TriangularMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/SelfAdjointView.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/Parallelizer.h \
+		../Prohor/GradientDescent/Eigen/src/Core/ProductEvaluators.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixVector.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/SolveTriangular.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointProduct.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointRank2Update.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularMatrixVector.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularSolverMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularSolverVector.h \
+		../Prohor/GradientDescent/Eigen/src/Core/BandMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CoreIterators.h \
+		../Prohor/GradientDescent/Eigen/src/Core/ConditionEstimator.h \
+		../Prohor/GradientDescent/Eigen/src/Core/BooleanRedux.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Select.h \
+		../Prohor/GradientDescent/Eigen/src/Core/VectorwiseOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Random.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Replicate.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Reverse.h \
+		../Prohor/GradientDescent/Eigen/src/Core/ArrayWrapper.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Assign_MKL.h \
+		../Prohor/GradientDescent/Eigen/src/Core/GlobalFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/ReenableStupidWarnings.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/QVector \
+		../Prohor/GradientDescent/Derivable/derivable.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qmath.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/QVector3D \
+		../Prohor/EigenTest/derivematrixops.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\dermatops.o ..\Prohor\GradientDescent\Derivable\dermatops.cpp
+
 release/main.o: ../Prohor/EigenTest/main.cpp ../Prohor/EigenTest/mainwindow.h \
 		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtWidgets/QMainWindow \
 		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtWidgets/qmainwindow.h \
@@ -404,7 +624,157 @@ release/main.o: ../Prohor/EigenTest/main.cpp ../Prohor/EigenTest/mainwindow.h \
 		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtWidgets/qdesktopwidget.h \
 		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qguiapplication.h \
 		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qinputmethod.h \
-		../Prohor/EigenTest/matrixop.h
+		../Prohor/EigenTest/derivematrixops.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/QMatrix4x4 \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qmatrix4x4.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qvector3d.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qvector4d.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qquaternion.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/qgenericmatrix.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/QDebug \
+		../Prohor/GradientDescent/Eigen/Core \
+		../Prohor/GradientDescent/Eigen/src/Core/util/DisableStupidWarnings.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/Macros.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/MKL_support.h \
+		../Prohor/GradientDescent/Eigen/src/misc/blas.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/Constants.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/Meta.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/ForwardDeclarations.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/StaticAssert.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/XprHelper.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/Memory.h \
+		../Prohor/GradientDescent/Eigen/src/Core/NumTraits.h \
+		../Prohor/GradientDescent/Eigen/src/Core/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/GenericPacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/MathFunctionsImpl.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/SSE/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX512/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX512/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/SSE/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/SSE/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AVX/TypeCasting.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/SSE/TypeCasting.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AltiVec/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AltiVec/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/AltiVec/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/NEON/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/NEON/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/NEON/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/ZVector/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/ZVector/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/ZVector/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/Half.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/PacketMathHalf.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/TypeCasting.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/PacketMath.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/MathFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/Default/Settings.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/TernaryFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/BinaryFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/UnaryFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/NullaryFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/StlFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/functors/AssignmentFunctors.h \
+		../Prohor/GradientDescent/Eigen/src/Core/arch/CUDA/Complex.h \
+		../Prohor/GradientDescent/Eigen/src/Core/IO.h \
+		../Prohor/GradientDescent/Eigen/src/Core/DenseCoeffsBase.h \
+		../Prohor/GradientDescent/Eigen/src/Core/DenseBase.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/BlockMethods.h \
+		../Prohor/GradientDescent/Eigen/src/Core/MatrixBase.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/CommonCwiseUnaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/CommonCwiseBinaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/MatrixCwiseUnaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/MatrixCwiseBinaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/Core/EigenBase.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Product.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CoreEvaluators.h \
+		../Prohor/GradientDescent/Eigen/src/Core/AssignEvaluator.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Assign.h \
+		../Prohor/GradientDescent/Eigen/src/Core/ArrayBase.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/ArrayCwiseUnaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/plugins/ArrayCwiseBinaryOps.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/BlasUtil.h \
+		../Prohor/GradientDescent/Eigen/src/Core/DenseStorage.h \
+		../Prohor/GradientDescent/Eigen/src/Core/NestByValue.h \
+		../Prohor/GradientDescent/Eigen/src/Core/ReturnByValue.h \
+		../Prohor/GradientDescent/Eigen/src/Core/NoAlias.h \
+		../Prohor/GradientDescent/Eigen/src/Core/PlainObjectBase.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Matrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Array.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CwiseTernaryOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CwiseBinaryOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CwiseUnaryOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CwiseNullaryOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CwiseUnaryView.h \
+		../Prohor/GradientDescent/Eigen/src/Core/SelfCwiseBinaryOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Dot.h \
+		../Prohor/GradientDescent/Eigen/src/Core/StableNorm.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Stride.h \
+		../Prohor/GradientDescent/Eigen/src/Core/MapBase.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Map.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Ref.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Block.h \
+		../Prohor/GradientDescent/Eigen/src/Core/VectorBlock.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Transpose.h \
+		../Prohor/GradientDescent/Eigen/src/Core/DiagonalMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Diagonal.h \
+		../Prohor/GradientDescent/Eigen/src/Core/DiagonalProduct.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Redux.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Visitor.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Fuzzy.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Swap.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CommaInitializer.h \
+		../Prohor/GradientDescent/Eigen/src/Core/GeneralProduct.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Solve.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Inverse.h \
+		../Prohor/GradientDescent/Eigen/src/Core/SolverBase.h \
+		../Prohor/GradientDescent/Eigen/src/Core/PermutationMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Transpositions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/TriangularMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/SelfAdjointView.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/Parallelizer.h \
+		../Prohor/GradientDescent/Eigen/src/Core/ProductEvaluators.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixVector.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/SolveTriangular.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointProduct.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointRank2Update.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularMatrixVector.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularSolverMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularSolverVector.h \
+		../Prohor/GradientDescent/Eigen/src/Core/BandMatrix.h \
+		../Prohor/GradientDescent/Eigen/src/Core/CoreIterators.h \
+		../Prohor/GradientDescent/Eigen/src/Core/ConditionEstimator.h \
+		../Prohor/GradientDescent/Eigen/src/Core/BooleanRedux.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Select.h \
+		../Prohor/GradientDescent/Eigen/src/Core/VectorwiseOp.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Random.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Replicate.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Reverse.h \
+		../Prohor/GradientDescent/Eigen/src/Core/ArrayWrapper.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h \
+		../Prohor/GradientDescent/Eigen/src/Core/Assign_MKL.h \
+		../Prohor/GradientDescent/Eigen/src/Core/GlobalFunctions.h \
+		../Prohor/GradientDescent/Eigen/src/Core/util/ReenableStupidWarnings.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/QVector \
+		../Prohor/GradientDescent/Derivable/derivable.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtCore/qmath.h \
+		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtGui/QVector3D
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\main.o ..\Prohor\EigenTest\main.cpp
 
 release/mainwindow.o: ../Prohor/EigenTest/mainwindow.cpp ../Prohor/EigenTest/mainwindow.h \
@@ -551,9 +921,6 @@ release/mainwindow.o: ../Prohor/EigenTest/mainwindow.cpp ../Prohor/EigenTest/mai
 		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtWidgets/qtoolbar.h \
 		../../../progs/QT_creator/5.9.1/mingw53_32/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\mainwindow.o ..\Prohor\EigenTest\mainwindow.cpp
-
-release/matrixop.o: ../Prohor/EigenTest/matrixop.cpp ../Prohor/EigenTest/matrixop.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\matrixop.o ..\Prohor\EigenTest\matrixop.cpp
 
 release/moc_mainwindow.o: release/moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\moc_mainwindow.o release\moc_mainwindow.cpp

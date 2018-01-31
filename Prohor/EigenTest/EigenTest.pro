@@ -27,13 +27,11 @@ include(../GradientDescent/Eigen/Eigen.pri)
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-        matrixop.cpp
+        mainwindow.cpp
 
 HEADERS += \
         mainwindow.h \
-        matrixop.h \
-    dmatrix4x4.h
+        dmatrix4x4.h
 
 FORMS += \
         mainwindow.ui

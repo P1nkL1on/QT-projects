@@ -11,3 +11,9 @@ SOURCES += \
     $$PWD/derivable.cpp
 }
 
+HEADERS += \
+    $$PWD/dermatops.h
+
+SOURCES += \
+    $$PWD/dermatops.cpp
+

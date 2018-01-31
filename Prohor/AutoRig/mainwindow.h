@@ -3,7 +3,8 @@
 
 #include <QMainWindow>
 #include "QKeyEvent"
-#include "QMouseEvent"
+
+#include "testautorig.h"
 
 namespace Ui {
 class MainWindow;
@@ -19,10 +20,16 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+    QString modelsAdress = "D:/QT-projects/QT-projects/Prohor/Models/";
+
     void keyPressEvent(QKeyEvent *e);
+
+ // controls
     void mouseMoveEvent(QMouseEvent *m);
     void mousePressEvent(QMouseEvent *m);
     void mouseReleaseEvent(QMouseEvent *m);
+
 
 protected:
     void paintEvent(QPaintEvent *e);

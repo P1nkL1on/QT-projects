@@ -14,6 +14,8 @@ INPUT(
 ./release\skeleton.o
 ./release\mesh.o
 ./release\rig.o
+./release\derivable.o
+./release\dermatops.o
 ./release\main.o
 ./release\mainwindow.o
 ./release\testautorig.o

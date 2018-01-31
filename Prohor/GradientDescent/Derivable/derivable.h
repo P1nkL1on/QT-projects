@@ -25,11 +25,20 @@ public:
         pr_value = val;
     }
 
+    bool operator == (const Derivable a) const{
+        return (a.value == value && a.pr_value == pr_value);
+    }
+    bool operator != (const Derivable a) const{
+        return (a.value != value || a.pr_value != pr_value);
+    }
     Derivable operator+ (const Derivable a) const{
         return Derivable(value + a.value, pr_value + a.pr_value);
     }
     Derivable operator- (const Derivable a) const{
         return Derivable(value - a.value, pr_value - a.pr_value);
+    }
+    Derivable operator- () const{
+        return Derivable(-value, -pr_value);
     }
     Derivable operator* (const Derivable a) const{
         return Derivable(value * a.value, a.value * pr_value + value * a.pr_value);

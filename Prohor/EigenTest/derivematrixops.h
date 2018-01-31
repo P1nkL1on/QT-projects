@@ -1,5 +1,5 @@
-#ifndef MATRIXOP_H
-#define MATRIXOP_H
+#ifndef DERIVEMATRIXOPS_H
+#define DERIVEMATRIXOPS_H
 
 #include "QMatrix4x4"
 #include "QDebug"
@@ -38,4 +38,4 @@ namespace DerivableVectorMatrixes {
     void RotateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const QVector3D rot);
 }
 
-#endif // MATRIXOP_H
+#endif // DERIVEMATRIXOPS_H

@@ -2,7 +2,7 @@
 #include <QApplication>
 
 
-#include "matrixop.h"
+#include "derivematrixops.h"
 using namespace DerivableVectorMatrixes;
 
 int main(int argc, char *argv[])

@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-09-21T20:58:45
+# Project created by QtCreator 2017-11-21T16:54:41
 #
 #-------------------------------------------------
 
@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = FBXparser
+TARGET = FBXparserLight
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -22,24 +22,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-
-SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    fbxloader.cpp \
-    modelfbx.cpp \
-    structsFBX.cpp
-
-HEADERS += \
-        mainwindow.h \
-    fbxloader.h \
-    modelfbx.h \
-    structsFBX.h
-
-FORMS += \
-        mainwindow.ui
-
 include (../Rasterizator2/ModelLoader/ModelLoader.pri)
 include (../Rasterizator2/Stereometry/Stereometry.pri)
 include (../Rasterizator2/TestViewer/TestViewer.pri)
 include (../MeshReader/SceneTools/SceneTools.pri)
+include (LoaderFBXlight/LoaderFBX.pri)
+include (StructFBX/StructFBX.pri)
+include(../GradientDescent/Eigen/Eigen.pri)
+include(../GradientDescent/Derivable/Derivable.pri)
+
+SOURCES += \
+        main.cpp \
+        mainwindow.cpp \
+    testautorig.cpp
+
+HEADERS += \
+        mainwindow.h \
+    testautorig.h
+
+FORMS += \
+        mainwindow.ui
+
+
