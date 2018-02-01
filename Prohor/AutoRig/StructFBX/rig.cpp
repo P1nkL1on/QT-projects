@@ -29,7 +29,6 @@ void Rig::BendSkinToSkeleton()
 
     if (!skeleton->CalculateGlobalCoordForEachJointMatrix())
         return;
-    qDebug() << "Bending";
 
     Mesh* newMesh = new Mesh();
     newMesh->polygonIndexes = bindMesh->polygonIndexes;
@@ -88,7 +87,7 @@ void Rig::BendSkinToSkeleton()
         newMesh->vertexes << result;
     }
 
-    qDebug() << QString::number(vertexesTransformed) + " / " + QString::number(skin->vertAttends.length()) + " / " + QString::number(bindMesh->vertexes.length()) +" vertexes transformed ( "+QString::number(failedIndexes.length())+" failed)";
+    //qDebug() << QString::number(vertexesTransformed) + " / " + QString::number(skin->vertAttends.length()) + " / " + QString::number(bindMesh->vertexes.length()) +" vertexes transformed ( "+QString::number(failedIndexes.length())+" failed)";
     //
     bendedMesh = newMesh;
     return;
@@ -263,9 +262,7 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
     QVector<Matrix<Derivable,1,3>> jointLocalRots = skeleton->getJointsLocalRotations();
     for (int curJointInd = 0; curJointInd < skeleton->joints.length(); curJointInd++)
         logs += ("#" + QString::number(curJointInd) + " : ")
-                + QString::number(jointLocalRots[curJointInd](0, 0).getValue()) + ", "
-                + QString::number(jointLocalRots[curJointInd](0, 1).getValue()) + ", "
-                + QString::number(jointLocalRots[curJointInd](0, 2).getValue()) + "\n";
+                 + ToString(jointLocalRots[curJointInd]) + "\n";
     painter->drawText(width, 40, 200, hei - 40,0, logs);//+" " +skeleton->joints[curPoint]->name);// +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.y()) +", "+ QString::number(skeleton->joints[curPoint]->currentRotation.z()));
 
     //painter->end();

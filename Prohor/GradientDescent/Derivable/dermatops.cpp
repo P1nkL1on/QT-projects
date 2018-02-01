@@ -186,3 +186,15 @@ QVector3D DerivableVectorMatrixes::QfromDer3(const Matrix<Derivable, 1, 3> orig)
 //    Rigging = !Rigging;
 //    qDebug() << "!!!!!! " << Rigging;
 //}
+
+QString DerivableVectorMatrixes::ToString(const Matrix<Derivable, 1, 3> vec)
+{
+    QString res = "", respr = "     pr:(";
+    for (int i = 0; i < 3; i ++)
+    {
+        res += QString::number(vec(0,i).getValue());
+        respr += QString::number(vec(0,i).getProiz());
+        if (i < 2){res += ", "; respr += ", ";}
+    }
+    return res + respr + ")";
+}

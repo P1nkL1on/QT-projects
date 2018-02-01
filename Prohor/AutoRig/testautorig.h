@@ -3,6 +3,7 @@
 
 #include "StructFBX/rig.h"
 #include "QVector"
+#include "qpainter.h"
 
 #include "Eigen/Core"
 #include "Derivable/dermatops.h"
@@ -14,6 +15,7 @@ private:
     Rig* bendingRig;
     QVector<Matrix<Derivable,1,3>> nowRotations;
     Matrix<Derivable,1,3> nowRootPose;
+    QVector<QVector3D> angleAdds;
 public:
     TestAutoRig();
     TestAutoRig(Rig* rig, Mesh* mesh);

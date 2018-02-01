@@ -7,6 +7,7 @@
 #include "Eigen/Core"
 #include "QVector"
 #include "derivable.h"
+#include "QString"
 
 using Eigen::Matrix;
 using namespace DerOperations;
@@ -41,6 +42,8 @@ namespace DerivableVectorMatrixes {
     Matrix<Derivable,1,3> Summ3and4 (const Matrix<Derivable, 1,3> v3, const Matrix<Derivable, 1,4> v4);
     Derivable SquaredLength (const Matrix<Derivable, 1, 3> vect);
     QVector3D QfromDer3 (const Matrix<Derivable, 1, 3> orig);
+
+    QString ToString (const Matrix<Derivable,1,3> vec);
 
     void TranslateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec);
     //void TranslateRigDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec);

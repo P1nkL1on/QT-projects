@@ -100,7 +100,7 @@ bool Skeleton::CalculateGlobalCoordForEachJointMatrix()
     // apply for roots and go further
     Q_ASSERT(rootInds.length() > 0);
     for (int curRootInd = 0; curRootInd < rootInds.length(); curRootInd ++){
-        qDebug() << "Root from " << curRootInd;
+        //qDebug() << "Root from " << curRootInd;
         Joint* root = (joints[rootInds[curRootInd]]);
         RecursiveGlobalCalculateCall(root);
     }
