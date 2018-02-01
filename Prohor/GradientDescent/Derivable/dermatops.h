@@ -19,6 +19,7 @@ namespace DerivableVectorMatrixes {
     Matrix<Derivable, 1, 4> SetDerive4DVector ();
     Matrix<Derivable, 1, 4> SetDerive4DVector (float x, float y, float z, float w);
     Matrix<Derivable, 1, 4> SetDerive4DVector (QVector3D qv3, float w);
+    Matrix<Derivable, 1, 3> SetDerive3DVector (const QVector3D qv3);
 
     void TraceVector (const Matrix<Derivable, 1, 4> Vec);
     void TraceVector (const Matrix<Derivable, 1, 3> Vec);

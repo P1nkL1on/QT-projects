@@ -198,3 +198,8 @@ QString DerivableVectorMatrixes::ToString(const Matrix<Derivable, 1, 3> vec)
     }
     return res + respr + ")";
 }
+
+Matrix<Derivable, 1, 3> DerivableVectorMatrixes::SetDerive3DVector(const QVector3D qv3)
+{
+    return Matrix<Derivable,1,3>(qv3.x(), qv3.y(), qv3.z());
+}

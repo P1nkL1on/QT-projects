@@ -16,11 +16,12 @@ private:
     QVector<Matrix<Derivable,1,3>> nowRotations;
     Matrix<Derivable,1,3> nowRootPose;
     QVector<QVector3D> angleAdds;
+    float step, prevdist;
 public:
     TestAutoRig();
     TestAutoRig(Rig* rig, Mesh* mesh);
 
-    void ApplyRotations ();
+    float ApplyRotations();
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
