@@ -41,7 +41,7 @@ int QStringToInt (QString str){
 QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
 
     char isMoreDebug = 'n'; // if (isMoreDebug == 'y')
-
+    Rigging = true;
     //check empty file
     if (textStream.atEnd())
         return "Empty file FBX loaded";
@@ -331,8 +331,8 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
         //
         Matrix<Derivable,4,4> usemat = SetDeriveMatrix();
         if (last->pater != NULL){
-            usemat.reverse();
             usemat = last->pater->bindMatrix/*.inverted()*/;
+            usemat = usemat.reverse();
         }
 
         Matrix<Derivable,1,4> temp =
@@ -366,7 +366,6 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
     resSkin->GenerateAttends(resMesh->vertexes, resSkeleton->getJointsGlobalTranslationsForSkin());
 
     loadedRig = Rig(resMesh, resSkeleton, resSkin);
-
     return QString();
 }
 

@@ -14,8 +14,6 @@ INPUT(
 ./debug\skeleton.o
 ./debug\mesh.o
 ./debug\rig.o
-./debug\derivable.o
-./debug\dermatops.o
 ./debug\main.o
 ./debug\mainwindow.o
 ./debug\testautorig.o

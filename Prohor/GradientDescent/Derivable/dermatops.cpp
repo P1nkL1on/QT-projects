@@ -25,19 +25,25 @@ Matrix<Derivable, 1, 4> DerivableVectorMatrixes::SetDerive4DVector (QVector3D qv
     return SetDerive4DVector(QVector4D(qv3.x(),qv3.y(),qv3.z(),w));
 }
 
-void DerivableVectorMatrixes::TraceVector (Matrix<Derivable, 1, 4> Vec){
+void DerivableVectorMatrixes::TraceVector (const Matrix<Derivable, 1, 4> Vec){
  QString lin = "Derivable4D (";
  for (int j = 0; j < 4; j++)
      lin += (QString::number( Vec(0, j).getValue()) + " (" + QString::number( Vec(0, j).getProiz()) + ")").rightJustified(19, ' ') + " ";
  qDebug() << lin + ")";
 }
+void DerivableVectorMatrixes::TraceVector (const Matrix<Derivable, 1, 3> Vec){
+ QString lin = "Derivable3D (";
+ for (int j = 0; j < 3; j++)
+     lin += (QString::number( Vec(0, j).getValue()) + " (" + QString::number( Vec(0, j).getProiz()) + ")").rightJustified(19, ' ') + " ";
+ qDebug() << lin + ")";
+}
 
-void DerivableVectorMatrixes::TraceMatrix (Matrix<Derivable, 4, 4> Mat){
+void DerivableVectorMatrixes::TraceMatrix (const Matrix<Derivable, 4, 4> Mat){
     qDebug() << "Matrix4x4 Derivable (type:Custom";
     for (int i = 0; i < 4; i++){
         QString lin = "";
         for (int j = 0; j < 4; j++)
-            lin += (QString::number( Mat(i,j).getValue()) + " (" + QString::number( Mat(i,j).getProiz()) + ")").rightJustified(19, ' ') + " ";
+            lin += (QString::number( Mat(i,j).getValue())).rightJustified(12, ' ');// + " (" + QString::number( Mat(i,j).getProiz()) + ")").rightJustified(19, ' ') + " ";
         qDebug() << lin;
     }
     qDebug() << ")";
@@ -78,14 +84,17 @@ Matrix<Derivable, 4, 4> DerivableVectorMatrixes::SetDeriveMatrix (const QMatrix4
     return M;
 }
 
-Matrix<Derivable, 4, 4> DerivableVectorMatrixes::MakeDeriveTranslationMatrix (const Matrix<Derivable,1,3> vec){
+Matrix<Derivable, 4, 4> DerivableVectorMatrixes::MakeDeriveTranslationMatrix (const Matrix<Derivable,1,3> vec, const bool Reverse){
     Matrix<Derivable, 4, 4> M = SetDeriveMatrix();
-//    M(0,3) = vec.x();
-//    M(1,3) = vec.y();
-//    M(2,3) = vec.z();
-    M(3, 0) = vec.x();
-    M(3, 1) = vec.y();
-    M(3, 2) = vec.z();
+        if (!Reverse){
+            M(0,3) = vec.x();
+            M(1,3) = vec.y();
+            M(2,3) = vec.z();
+        }else{
+            M(3, 0) = vec(0,0);
+            M(3, 1) = vec(0,1);
+            M(3, 2) = vec(0,2);
+        }
     return M;
 }
 
@@ -115,79 +124,35 @@ Matrix<Derivable, 4, 4> DerivableVectorMatrixes::MakeDeriveRotationMatrix (const
 }
 
 void DerivableVectorMatrixes::TranslateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec){
-    originalMatrix = originalMatrix * MakeDeriveTranslationMatrix(vec);
+    originalMatrix = originalMatrix * MakeDeriveTranslationMatrix(vec, Rigging);
+}
+void DerivableVectorMatrixes::TranslateRigDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec){
+    originalMatrix = originalMatrix * MakeDeriveTranslationMatrix(vec, false);
 }
 void DerivableVectorMatrixes::RotateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> rot){
     originalMatrix = originalMatrix * MakeDeriveRotationMatrix(rot);
 }
 void DerivableVectorMatrixes::TestTrace()
 {
-    Matrix<Derivable,4,4> m = SetDeriveMatrix();
-    Matrix<Derivable,1,4> v = SetDerive4DVector();
-//    Matrix<int,1,3> v1(3,4,5);
-//    Matrix<int,1,4> v2 (v1(0,0),v1(0,1),v1(0,2),8);
-    v = v * m * m;
-    //cout << v1 << endl;
-    //cout << v2 << endl;
+    QVector4D vt = QVector4D(10,11,12,1);
+    QMatrix4x4 mat = QMatrix4x4();
+    qDebug() << mat;
+    mat.rotate(14500, 1, 0, 0);
+    qDebug() << mat;
+    mat.translate(13,14,-15);
+    qDebug() << mat;
+    qDebug() << vt * mat;
+
+    Matrix<Derivable,1,4> vd =Matrix<Derivable,1,4>(10,11,12,1);
+    Matrix<Derivable,4,4> dat = SetDeriveMatrix();
+    TraceMatrix(dat);
+    RotateDeriveMatrix(dat, Matrix<Derivable,1,3>(14500,0,0));
+    TraceMatrix(dat);
+    TranslateDeriveMatrix(dat, Matrix<Derivable,1,3>(13,14,-15));
+    TraceMatrix(dat);
+    vd = vd * dat;
+    TraceVector(vd);
     return;
-    //Matrix<Derivable,4,4>();
-    //cout << m(0,0).getValue() << m(1,1).getValue()  << m(2,2).getValue() <<m(3,3).getValue() << endl;
-//    TraceMatrix(m);
-//    Matrix<Derivable,1,3> v = Matrix<Derivable,1,3>(1,2,3);
-//    //v << 1,2,3;
-//    cout << "wow" << endl;
-//    cout << v(0,1).getValue() << endl;
-//    return;
-
-//    QMatrix4x4 Qmat = QMatrix4x4(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16), translateMatrix = Qmat, rotateMatrix = Qmat;
-
-//    QVector<Derivable> a = QVector<Derivable>();
-//    for (int i = 1; i <= 16; i++)
-//        a << Derivable(i);
-//    Matrix<Derivable, 4, 4> M = SetDeriveMatrix(Qmat), M2 = M, M3 = M;
-
-//    M(0,0) = 1.0;
-//    qDebug() << Qmat; qDebug() << "*"; qDebug() << Qmat; qDebug() << "="; qDebug() << Qmat * Qmat;  qDebug() << " ";
-
-
-//    TraceMatrix(M);
-//    qDebug() << "*";
-//    TraceMatrix(M2);
-//    qDebug() << "=";
-//    TraceMatrix(M * M2);
-
-
-//    translateMatrix.translate(3,4,5);
-//    qDebug() << "";qDebug() << "Translations:";qDebug() << "";
-//    qDebug() << translateMatrix;
-
-//    TranslateDeriveMatrix(M2, QVector3D(3,4,5));
-//    TraceMatrix(M2);
-
-//    QVector3D rotat = QVector3D(12,22,32);//22,32);
-//    qDebug() << "";qDebug() << "Rotations:";qDebug() << "";
-
-//    rotateMatrix.rotate(rotat.x(), 1, 0, 0);
-//    rotateMatrix.rotate(rotat.y(), 0, 1, 0);
-//    rotateMatrix.rotate(rotat.z(), 0, 0, 1);
-//    qDebug() << rotateMatrix;
-
-//    //M3 = MakeDeriveRotationMatrix(rotat);
-//    RotateDeriveMatrix(M3, rotat);
-//    TraceMatrix(M3);
-
-//    qDebug() << "";qDebug() << "Vector4D:";qDebug() << "";
-//    QVector4D q4d= QVector4D(15,16,13,1);
-//    qDebug() << q4d;
-//    Matrix<Derivable,1,4> d4d = SetDerive4DVector(15,16,13,1);
-//    TraceVector(d4d);
-
-//    qDebug() << "Vector4D * Matrix4x4";
-//    qDebug() << q4d * rotateMatrix;
-//    TraceVector(d4d * M3);
-
-
-
 }
 
 
@@ -211,3 +176,10 @@ QVector3D DerivableVectorMatrixes::QfromDer3(const Matrix<Derivable, 1, 3> orig)
 {
     return QVector3D(orig(0,0).getValue(), orig(0,1).getValue(), orig(0,2).getValue());
 }
+
+//void DerivableVectorMatrixes::TurnRig()
+//{
+//    qDebug() << "!!!!!SWAPPED!!!!!!!!";
+//    Rigging = !Rigging;
+//    qDebug() << "!!!!!! " << Rigging;
+//}

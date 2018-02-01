@@ -18,9 +18,8 @@ TestAutoRig::TestAutoRig(Rig *rig, Mesh *mesh)
 
 void TestAutoRig::ApplyRotations()
 {
-    nowRotations[1] += QVector3D(1,2,3);
-    for (int i = 20; i < 22; i++)
-        nowRotations[i] = QVector3D(0, 90, 0);
+
+    nowRotations[22] = nowRotations[22] + QVector3D(0, 10, 0);
     float res = bendingRig->CompareWithMeshOnRotates(nowRotations, targetMeshes[0]);
     qDebug() << "Difference in bended rig and current mesh is : " + QString::number(res);
 }

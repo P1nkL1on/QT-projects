@@ -68,30 +68,6 @@ bool EqualSkeletonRotations (QVector<Matrix<Derivable,1,3>> a, QVector<Matrix<De
     return true;
 }
 
-
-//bool Skeleton::CalculateGlobalCoordForEachJoint()
-//{
-//    transformesApplied = 0;
-//    if (EqualSkeletonRotations(getJointLocalRotations(), localRotations))
-//        return false;
-
-//    QVector<int> rootInds = {};
-
-//    for (int curJoint = 0; curJoint < joints.length(); curJoint++){
-//        joints[curJoint]->currentTranslation = Matrix<Derivable,1,3>();              // reset XYZ to calculate them further
-//        joints[curJoint]->currentRotation = localRotations[curJoint];    // now each joint have info about it need angles
-//        if (joints[curJoint]->pater == NULL) rootInds << curJoint;
-//    }
-//    // apply for roots and go further
-//    Q_ASSERT(rootInds.length() > 0);
-//    for (int curRootInd = 0; curRootInd < rootInds.length(); curRootInd ++){
-//        Joint* root = (joints[rootInds[curRootInd]]);
-//        RecursiveApplyLocalRotations(root, Matrix<Derivable,1,3>());
-//    }
-//    qDebug() << "Applied rotation changes for " + QString::number(transformesApplied) + " joints;";
-//    return true;
-//}
-
 void RecursiveGlobalCalculateCall (Joint* joint){
     joint->CalculateGlobalTransformMatrix();
 

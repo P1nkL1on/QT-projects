@@ -12,15 +12,17 @@ using Eigen::Matrix;
 using namespace DerOperations;
 
 namespace DerivableVectorMatrixes {
+    static bool Rigging = true;
     void TestTrace();
     Matrix<Derivable, 1, 4> SetDerive4DVector (QVector4D vec);
     Matrix<Derivable, 1, 4> SetDerive4DVector ();
     Matrix<Derivable, 1, 4> SetDerive4DVector (float x, float y, float z, float w);
     Matrix<Derivable, 1, 4> SetDerive4DVector (QVector3D qv3, float w);
 
-    void TraceVector (Matrix<Derivable, 1, 4> Vec);
+    void TraceVector (const Matrix<Derivable, 1, 4> Vec);
+    void TraceVector (const Matrix<Derivable, 1, 3> Vec);
 
-    void TraceMatrix (Matrix<Derivable, 4, 4> Mat);
+    void TraceMatrix (const Matrix<Derivable, 4, 4> Mat);
 
     Matrix<Derivable, 4, 4> SetDeriveMatrix ();
 
@@ -28,7 +30,7 @@ namespace DerivableVectorMatrixes {
 
     Matrix<Derivable, 4, 4> SetDeriveMatrix (const QMatrix4x4 original);
 
-    Matrix<Derivable, 4, 4> MakeDeriveTranslationMatrix (const Matrix<Derivable, 1,3> vec);
+    Matrix<Derivable, 4, 4> MakeDeriveTranslationMatrix (const Matrix<Derivable, 1,3> vec, const bool Reverse);
 
     Matrix<Derivable, 4, 4> MakeDeriveRotationXMatrix (const Derivable angle0);
     Matrix<Derivable, 4, 4> MakeDeriveRotationZMatrix (const Derivable angle0);
@@ -41,7 +43,9 @@ namespace DerivableVectorMatrixes {
     QVector3D QfromDer3 (const Matrix<Derivable, 1, 3> orig);
 
     void TranslateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec);
+    void TranslateRigDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec);
     void RotateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1, 3> rot);
+    //void TurnRig();
 }
 
 #endif // DERMATOPS_H

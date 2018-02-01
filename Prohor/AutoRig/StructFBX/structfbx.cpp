@@ -31,6 +31,7 @@ Joint::Joint(QString ID0, QString name0)
 
 void Joint::RecaulculateLocalTransformMatrix()
 {
+    bool isChecked = ((pater != NULL) && (pater->currentRotation(0,1).getValue() != 0 || pater->currentRotation(0,2).getValue() != 0 | pater->currentRotation(0,0).getValue() != 0));
     localTransformMatrix = SetDeriveMatrix();
 
     Matrix<Derivable,1,3> currentRotation2 = (pater != NULL)?pater->currentRotation : Matrix<Derivable,1,3>(0,0,0);
@@ -39,10 +40,10 @@ void Joint::RecaulculateLocalTransformMatrix()
 //    localTransformMatrix.rotate(currentRotation2.y(), 0, 1.0, 0);
 //    localTransformMatrix.rotate(currentRotation2.z(), 0, 0, 1.0);
 //    localTransformMatrix.translate(localTranslation);
-    //qDebug() << "bone local transform cvalculated" << currentRotation;
 
     RotateDeriveMatrix(localTransformMatrix, currentRotation2);
     TranslateDeriveMatrix(localTransformMatrix, localTranslation);
+
 
     ResetGlobalTransformMatrix();
 }
