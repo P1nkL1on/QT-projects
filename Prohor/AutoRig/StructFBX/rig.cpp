@@ -58,10 +58,10 @@ void Rig::BendSkinToSkeleton()
 
             bendedVariants <<
             CommonFuncs::AddDirectMatrx(Matrix<Derivable,1,3>(1,1,1),
-                                        //skin->vertAttends[currentVertexInd].localJointCoords
-                                        skeleton->joints[jointBendInd]->globalTransformMatrix
+
+                                         localAttendTransformMatrix
                                         * localRotateMatrix
-                                        * localAttendTransformMatrix
+                                        * skeleton->joints[jointBendInd]->globalTransformMatrix
                                         );
 
 
@@ -75,8 +75,13 @@ void Rig::BendSkinToSkeleton()
         if (bendedSumm == 0)
             failedIndexes << currentVertexInd;
         else
+        {
+            // select the middle, based on wighthres
             for (int curPoint = 0; curPoint < bendedVariants.length(); curPoint++)
-                result = result +  weightes[curPoint]/ bendedSumm * bendedVariants[curPoint] ;
+                result = result +  Derivable(weightes[curPoint]/ bendedSumm) * bendedVariants[curPoint] ;
+            //result = bendedVariants[0];
+        }
+
 
         if (bendedVariants.length() > 0)
             vertexesTransformed ++;
