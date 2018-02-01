@@ -214,12 +214,12 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
 
         QPainterPath newPolyg; newPolyg.addPolygon(poly);
         polygonDrawArray << newPolyg;
-        polygonColorArray << QColor(200,200,200,200);//(QColor(colorIntenese,colorIntenese,colorIntenese));
+        polygonColorArray << QColor(200,200,200,100);//(QColor(colorIntenese,colorIntenese,colorIntenese));
 
         distFromPolygonCentersToCamera << (QfromDer3( VertexInPolygonSumm )* (1.0 / totalVertexInPolygonCount)).distanceToPoint(*cameraCenter);
     }
     QBrush brush;
-    painter->setPen(QPen(Qt::darkGray));
+    painter->setPen(QPen(QColor(100,150,150,255)));
 
     QVector<int> needPolygonInds = GetSortedIndex(distFromPolygonCentersToCamera);
     for (int cPath = 0; cPath < polygonDrawArray.length(); cPath ++){

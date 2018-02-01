@@ -40,11 +40,8 @@ void Joint::RecaulculateLocalTransformMatrix()
 //    localTransformMatrix.rotate(currentRotation2.y(), 0, 1.0, 0);
 //    localTransformMatrix.rotate(currentRotation2.z(), 0, 0, 1.0);
 //    localTransformMatrix.translate(localTranslation);
-
-    RotateDeriveMatrix(localTransformMatrix, currentRotation2);
     TranslateDeriveMatrix(localTransformMatrix, localTranslation);
-
-
+    RotateDeriveMatrix(localTransformMatrix, currentRotation2);
     ResetGlobalTransformMatrix();
 }
 
@@ -57,7 +54,7 @@ void Joint::CalculateGlobalTransformMatrix()
 {
     Joint* now = this;
     do{
-        globalTransformMatrix = now->localTransformMatrix * globalTransformMatrix;
+        globalTransformMatrix = globalTransformMatrix * now->localTransformMatrix;
         now = now->pater;
     } while ( now != NULL );
 }

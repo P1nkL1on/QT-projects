@@ -43,7 +43,7 @@ namespace DerivableVectorMatrixes {
     QVector3D QfromDer3 (const Matrix<Derivable, 1, 3> orig);
 
     void TranslateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec);
-    void TranslateRigDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec);
+    //void TranslateRigDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec);
     void RotateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1, 3> rot);
     //void TurnRig();
 }

@@ -19,9 +19,10 @@ TestAutoRig::TestAutoRig(Rig *rig, Mesh *mesh)
 void TestAutoRig::ApplyRotations()
 {
     //nowRotations[1] = nowRotations[1] + Matrix<Derivable,1,3>(Derivable(1),Derivable(2),Derivable(3));
+    //nowRotations[20] = Matrix<Derivable,1,3>(0, 0, -70);
     //for (int i = 20; i < 22; i++)
     //    nowRotations[i] = Matrix<Derivable,1,3>(0, 90, 0);
-    nowRotations[22] = nowRotations[22] + Matrix<Derivable,1,3>(0, 0, 5);
+    nowRotations[21] = nowRotations[21] + Matrix<Derivable,1,3>(0,0, -5);
     Derivable res = bendingRig->CompareWithMeshOnRotates(nowRotations, targetMeshes[0]);
     qDebug() << "Difference in bended rig and current mesh is : " + QString::number(res.getValue()) + " (" + QString::number(res.getValue()) + ")";
 }

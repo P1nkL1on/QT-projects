@@ -43,7 +43,7 @@ void DerivableVectorMatrixes::TraceMatrix (const Matrix<Derivable, 4, 4> Mat){
     for (int i = 0; i < 4; i++){
         QString lin = "";
         for (int j = 0; j < 4; j++)
-            lin += (QString::number( Mat(i,j).getValue())).rightJustified(12, ' ');// + " (" + QString::number( Mat(i,j).getProiz()) + ")").rightJustified(19, ' ') + " ";
+            lin += (QString::number( Mat(j,i).getValue())).rightJustified(12, ' ');// + " (" + QString::number( Mat(i,j).getProiz()) + ")").rightJustified(19, ' ') + " ";
         qDebug() << lin;
     }
     qDebug() << ")";
@@ -101,34 +101,34 @@ Matrix<Derivable, 4, 4> DerivableVectorMatrixes::MakeDeriveTranslationMatrix (co
 Matrix<Derivable, 4, 4> DerivableVectorMatrixes::MakeDeriveRotationXMatrix (const Derivable angle0){
     Derivable angle = angle0 / 180.0 * M_PI;
     Matrix<Derivable, 4, 4> M = SetDeriveMatrix();
-    M(1,1) = DerOperations::cos(angle); M(1,2) = Derivable(-1)* DerOperations::sin(angle);
-    M(2,1) = DerOperations::sin(angle); M(2,2) = DerOperations::cos(angle);
+    M(1,1) = DerOperations::cos(angle); M(2,1) = Derivable(-1)* DerOperations::sin(angle);
+    M(1,2) = DerOperations::sin(angle); M(2,2) = DerOperations::cos(angle);
     return M;
 }
 Matrix<Derivable, 4, 4> DerivableVectorMatrixes::MakeDeriveRotationZMatrix (const Derivable angle0){
     Derivable angle = angle0 / 180.0 * M_PI;
     Matrix<Derivable, 4, 4> M = SetDeriveMatrix();
-    M(0,0) = DerOperations::cos(angle); M(0,1) = Derivable(-1)*  DerOperations::sin(angle);
-    M(1,0) = DerOperations::sin(angle); M(1,1) = DerOperations::cos(angle);
+    M(0,0) = DerOperations::cos(angle); M(1,0) = Derivable(-1)*  DerOperations::sin(angle);
+    M(0,1) = DerOperations::sin(angle); M(1,1) = DerOperations::cos(angle);
     return M;
 }
 Matrix<Derivable, 4, 4> DerivableVectorMatrixes::MakeDeriveRotationYMatrix (const Derivable angle0){
     Derivable angle = angle0 / 180.0 * M_PI;
     Matrix<Derivable, 4, 4> M = SetDeriveMatrix();
-    M(0,0) = DerOperations::cos(angle); M(0,2) = DerOperations::sin(angle);
-    M(2,0) =  Derivable(-1)*  DerOperations::sin(angle); M(2,2) = DerOperations::cos(angle);
+    M(0,0) = DerOperations::cos(angle); M(2,0) = DerOperations::sin(angle);
+    M(0,2) =  Derivable(-1)*  DerOperations::sin(angle); M(2,2) = DerOperations::cos(angle);
     return M;
 }
 Matrix<Derivable, 4, 4> DerivableVectorMatrixes::MakeDeriveRotationMatrix (const Matrix<Derivable, 1,3> ang){
-    return MakeDeriveRotationXMatrix(ang(0,0)) * MakeDeriveRotationYMatrix(ang(0,1)) * MakeDeriveRotationZMatrix(ang(0,2));
+    return MakeDeriveRotationZMatrix(ang(0,2)) * MakeDeriveRotationYMatrix(ang(0,1)) * MakeDeriveRotationXMatrix(ang(0,0));
 }
 
 void DerivableVectorMatrixes::TranslateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec){
-    originalMatrix = originalMatrix * MakeDeriveTranslationMatrix(vec, Rigging);
+    originalMatrix = originalMatrix * MakeDeriveTranslationMatrix(vec, true);
 }
-void DerivableVectorMatrixes::TranslateRigDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec){
-    originalMatrix = originalMatrix * MakeDeriveTranslationMatrix(vec, false);
-}
+//void DerivableVectorMatrixes::TranslateRigDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec){
+//    originalMatrix = originalMatrix * MakeDeriveTranslationMatrix(vec, false);
+//}
 void DerivableVectorMatrixes::RotateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> rot){
     originalMatrix = originalMatrix * MakeDeriveRotationMatrix(rot);
 }
@@ -138,17 +138,20 @@ void DerivableVectorMatrixes::TestTrace()
     QMatrix4x4 mat = QMatrix4x4();
     qDebug() << mat;
     mat.rotate(14500, 1, 0, 0);
+    mat.rotate(8, 0, 1, 0);
+    mat.rotate(12, 0, 0, 1);
     qDebug() << mat;
     mat.translate(13,14,-15);
     qDebug() << mat;
-    qDebug() << vt * mat;
+    qDebug() << mat * vt;
 
     Matrix<Derivable,1,4> vd =Matrix<Derivable,1,4>(10,11,12,1);
     Matrix<Derivable,4,4> dat = SetDeriveMatrix();
     TraceMatrix(dat);
-    RotateDeriveMatrix(dat, Matrix<Derivable,1,3>(14500,0,0));
-    TraceMatrix(dat);
     TranslateDeriveMatrix(dat, Matrix<Derivable,1,3>(13,14,-15));
+    TraceMatrix(dat);
+    RotateDeriveMatrix(dat, Matrix<Derivable,1,3>(14500,8,12));
+
     TraceMatrix(dat);
     vd = vd * dat;
     TraceVector(vd);
