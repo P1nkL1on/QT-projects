@@ -24,9 +24,9 @@ namespace DerivableVectorMatrixes {
 
     Matrix<Derivable, 4, 4> SetDeriveMatrix ();
 
-    Matrix<Derivable, 4, 4> SetDeriveMatrix (QVector<Derivable> values);
+    Matrix<Derivable, 4, 4> SetDeriveMatrix (const QVector<Derivable> values);
 
-    Matrix<Derivable, 4, 4> SetDeriveMatrix (QMatrix4x4 original);
+    Matrix<Derivable, 4, 4> SetDeriveMatrix (const QMatrix4x4 original);
 
     Matrix<Derivable, 4, 4> MakeDeriveTranslationMatrix (const Matrix<Derivable, 1,3> vec);
 
@@ -37,7 +37,7 @@ namespace DerivableVectorMatrixes {
 
     Matrix<Derivable,1,4> MakeVector4From3 (const Matrix<Derivable, 1,3> vec, const Derivable add);
     Matrix<Derivable,1,3> Summ3and4 (const Matrix<Derivable, 1,3> v3, const Matrix<Derivable, 1,4> v4);
-    Derivable SquaredLength (Matrix<Derivable,1,3> vect);
+    Derivable SquaredLength (const Matrix<Derivable, 1, 3> vect);
     QVector3D QfromDer3 (const Matrix<Derivable, 1, 3> orig);
 
     void TranslateDeriveMatrix (Matrix<Derivable, 4, 4>& originalMatrix, const Matrix<Derivable, 1,3> vec);

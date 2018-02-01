@@ -16,6 +16,7 @@ public:
     QVector<int> polygonStartIndexes;
 
     Derivable CompareWithAnotherMesh (const Mesh* anotherMesh);
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 #endif // MESH_H

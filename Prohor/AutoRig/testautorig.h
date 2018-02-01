@@ -19,6 +19,7 @@ public:
     TestAutoRig(Rig* rig, Mesh* mesh);
 
     void ApplyRotations ();
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 #endif // TESTAUTORIG_H

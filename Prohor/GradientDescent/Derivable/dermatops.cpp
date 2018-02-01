@@ -9,7 +9,7 @@ using namespace DerOperations;
 using namespace DerivableVectorMatrixes;
 using namespace  std;
 
-Matrix<Derivable, 1, 4> DerivableVectorMatrixes::SetDerive4DVector (QVector4D vec){
+Matrix<Derivable, 1, 4> DerivableVectorMatrixes::SetDerive4DVector (QVector4D vec) {
     Matrix<Derivable, 1, 4> M = Matrix<Derivable, 1, 4>();
     for (int i = 0; i < 4; i++)
         M(0,i) = Derivable(vec[i]);
@@ -50,7 +50,7 @@ Matrix<Derivable, 4, 4> DerivableVectorMatrixes::SetDeriveMatrix (){
     return M;
 }
 
-Matrix<Derivable, 4, 4> DerivableVectorMatrixes::SetDeriveMatrix (QVector<Derivable> values){
+Matrix<Derivable, 4, 4> DerivableVectorMatrixes::SetDeriveMatrix (const QVector<Derivable> values){
     Q_ASSERT(values.length() == 16);
     Matrix<Derivable, 4, 4> M = Matrix<Derivable, 4, 4>();
     M(0,0) = values[0];
@@ -72,7 +72,7 @@ Matrix<Derivable, 4, 4> DerivableVectorMatrixes::SetDeriveMatrix (QVector<Deriva
     return M;
 }
 
-Matrix<Derivable, 4, 4> DerivableVectorMatrixes::SetDeriveMatrix (QMatrix4x4 original){
+Matrix<Derivable, 4, 4> DerivableVectorMatrixes::SetDeriveMatrix (const QMatrix4x4 original){
     Matrix<Derivable, 4, 4> M = Matrix<Derivable, 4, 4>();
     for (int i = 0; i < 4; i++) for (int j = 0; j < 4; j++)M(i,j) = Derivable(original(i,j));
     return M;
@@ -80,9 +80,12 @@ Matrix<Derivable, 4, 4> DerivableVectorMatrixes::SetDeriveMatrix (QMatrix4x4 ori
 
 Matrix<Derivable, 4, 4> DerivableVectorMatrixes::MakeDeriveTranslationMatrix (const Matrix<Derivable,1,3> vec){
     Matrix<Derivable, 4, 4> M = SetDeriveMatrix();
-    M(0,3) = vec.x();
-    M(1,3) = vec.y();
-    M(2,3) = vec.z();
+//    M(0,3) = vec.x();
+//    M(1,3) = vec.y();
+//    M(2,3) = vec.z();
+    M(3, 0) = vec.x();
+    M(3, 1) = vec.y();
+    M(3, 2) = vec.z();
     return M;
 }
 
@@ -199,7 +202,7 @@ Matrix<Derivable, 1, 3> DerivableVectorMatrixes::Summ3and4(const Matrix<Derivabl
     return Matrix<Derivable, 1, 3>(v3(0,0) + v4(0,0), v3(0,1) + v4(0,1), v3(0,2) + v4(0,2));
 }
 
-Derivable DerivableVectorMatrixes::SquaredLength(Matrix<Derivable, 1, 3> vect)
+Derivable DerivableVectorMatrixes::SquaredLength(const Matrix<Derivable, 1, 3> vect)
 {
     return  DerOperations::pow(vect(0,0),2) + DerOperations::pow(vect(0,1),2) + DerOperations::pow(vect(0,2),2);
 }

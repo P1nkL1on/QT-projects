@@ -23,11 +23,13 @@ public:
     QVector<Matrix<Derivable,1,3>> getJointsGlobalTranslationsForSkin () const;
     Matrix<Derivable,1,3> getJointCoordByIndex(int index, Matrix<Derivable,1,3> &paterCoord);
     // local!
-    void SetRotation (Matrix<Derivable,1,3> newRotation, int jointInd);
-    void SetRotations (QVector<Matrix<Derivable,1,3>> newRotations);
+    void SetRotation (const Matrix<Derivable,1,3> newRotation, int jointInd);
+    void SetRotations (const QVector<Matrix<Derivable,1,3>> newRotations);
 
     // return local!
     bool getJointTranslationAndRotation (const int jointIndex, Matrix<Derivable,1,3>& translation, Matrix<Derivable,1,3>& rotation) const;
+
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 #endif // SKELETON_H

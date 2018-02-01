@@ -108,9 +108,12 @@ Matrix<Derivable,1,3> CommonFuncs::AddDirectWtParent(const Matrix<Derivable,1,3>
 
 Matrix<Derivable,1,3> CommonFuncs::AddDirectMatrx(const Matrix<Derivable,1,3> localTransform, const Matrix<Derivable,4,4> transform)
 {
+    //TraceVector(MakeVector4From3(localTransform, Derivable(1)));
+    //TraceMatrix(transform);
     Matrix<Derivable,1,4> temp = MakeVector4From3(localTransform, Derivable(1)) * transform;
 
-    return Matrix<Derivable,1,3>( temp(0,0), temp(0,1),  temp(0,2));
+    Matrix<Derivable,1,3> fin = Matrix<Derivable,1,3>( temp(0,0), temp(0,1),  temp(0,2));
+    return fin;
 }
 
 Matrix<Derivable,4,4> CommonFuncs::GetNormalRotateMatrix(const Matrix<Derivable,1,3> rotatXYZ)

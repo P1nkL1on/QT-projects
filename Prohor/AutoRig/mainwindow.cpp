@@ -69,6 +69,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         this->repaint();
     }
     if (tv.ModelCount() == 0 && e->key() == Qt::Key_Space){
+        qDebug() << "DERIVABLE SHIT INCOMING";
         //        names   //<< "!bboy 2 exported"
         //<< "joints_only2"
         //<< "joints_only2t"
@@ -117,10 +118,11 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
             qDebug() << errMs1; qDebug() << errMs2;
         }
 
+        tar = TestAutoRig(&(rgs[0]), &(mshs[0]));
+
         for (int ldID = 0; ldID < loadedModel; ldID++)
             tv.addGraphicsObject(&(rgs[ldID]));
         // create a autorig
-        tar = TestAutoRig(&(rgs[0]), &(mshs[0]));
     }
 }
 

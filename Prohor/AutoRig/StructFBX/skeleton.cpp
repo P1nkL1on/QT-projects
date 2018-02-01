@@ -128,6 +128,7 @@ bool Skeleton::CalculateGlobalCoordForEachJointMatrix()
         Joint* root = (joints[rootInds[curRootInd]]);
         RecursiveGlobalCalculateCall(root);
     }
+    return true;
 }
 
 
@@ -150,12 +151,12 @@ Matrix<Derivable,1,3> Skeleton::getJointCoordByIndex(int index, Matrix<Derivable
     return joints[index]->currentTranslation;
 }
 
-void Skeleton::SetRotation(Matrix<Derivable,1,3> newRotation, int jointInd)
+void Skeleton::SetRotation(const Matrix<Derivable,1,3> newRotation, int jointInd)
 {
     localRotations[jointInd] = newRotation; //! change -
 }
 
-void Skeleton::SetRotations(QVector<Matrix<Derivable,1,3>> newRotations){
+void Skeleton::SetRotations(const QVector<Matrix<Derivable, 1, 3> > newRotations){
     Q_ASSERT(newRotations.length() == localRotations.length());
     for (int curJ = 0; curJ < localRotations.length(); curJ++)
         SetRotation(newRotations[curJ], curJ);

@@ -30,6 +30,7 @@ public:
     void RecaulculateLocalTransformMatrix ();
     void ResetGlobalTransformMatrix();
     void CalculateGlobalTransformMatrix();
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 
@@ -39,6 +40,7 @@ public:
     QVector<float> weights;
     QVector<Matrix<Derivable,1,3>> localJointCoords;
     AttendedVertex();
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 namespace CommonFuncs {

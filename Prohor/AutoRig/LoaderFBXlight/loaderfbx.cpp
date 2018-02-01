@@ -99,7 +99,6 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
         // ...
         // remoobing a directory
         if (line.lastIndexOf('}') >= 0){
-            qDebug() << prevLine;
             QVector<int> parsedIDs0;
             QVector<float> parsedWeight0;
             currentDirectory = currentDirectory.mid(0, currentDirectory.lastIndexOf('/'));
@@ -107,7 +106,6 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
 
             //...
             char prevWasNegative  = 'y';
-            if (parseType >= 0)qDebug() << parseType;
 
             switch (parseType){
                 case 0: // parse vertexes from giant array
@@ -356,7 +354,7 @@ QString loaderFBX::loadModelFBX (QTextStream &textStream, Rig &loadedRig){
     // final skeleton update
     //for (int curJoint = 0; curJoint < loadedJoints.length(); curJoint++)
     resSkeleton = new Skeleton(loadedJoints);
-
+    // here is everything gut
     // success
     Q_ASSERT(loadedClusterID.length() == loadedClusterVertIndexes.length() && loadedClusterVertIndexes.length() == loadedClusterVertWeightes.length());
     qDebug() << "    V    " + QString::number(limbsConnected) + " from " + QString::number(loadedJoints.length())+" joints are connected;";
