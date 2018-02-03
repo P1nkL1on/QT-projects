@@ -113,7 +113,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         }
         // also load a OBJ poses
         Mesh ms1, ms2;
-        QString errMs1 = loaderFBX::loadMeshOBJAdress(modelsAdress + "GuardPosesOBJ/handforwardy90.OBJ", ms1),
+        QString errMs1 = loaderFBX::loadMeshOBJAdress(modelsAdress + "GuardPosesOBJ/handforwardy90.OBJ", ms1),  //handforwardy90
                 errMs2 = loaderFBX::loadMeshOBJAdress(modelsAdress + "GuardPosesOBJ/bind.OBJ", ms2);
         if (errMs1.isEmpty() && errMs2.isEmpty())
         {
