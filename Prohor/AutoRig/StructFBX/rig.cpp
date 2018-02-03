@@ -269,10 +269,18 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
     return QString();
 }
 
-Derivable Rig::CompareWithMeshOnRotates(const QVector<Matrix<Derivable,1,3>> newRotations, Mesh *with)
+Derivable Rig::CompareWithMeshOnRotates(const QVector<Matrix<Derivable,1,3>> newRotations, const Mesh *with)
 {
     Q_ASSERT(newRotations.length() == skeleton->joints.length());
     skeleton->SetRotations(newRotations);
     BendSkinToSkeleton();
     return bendedMesh->CompareWithAnotherMesh(with);
+}
+//CompareWithMeshOnRotatesCoord
+QVector<Derivable> Rig::CompareWithMeshOnRotatesCoord(const QVector<Matrix<Derivable,1,3>> newRotations, const Mesh *with)
+{
+    Q_ASSERT(newRotations.length() == skeleton->joints.length());
+    skeleton->SetRotations(newRotations);
+    BendSkinToSkeleton();
+    return bendedMesh->CompareWithAnotherMeshCoords(with);
 }

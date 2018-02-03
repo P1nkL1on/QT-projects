@@ -1,5 +1,6 @@
 #include "testautorig.h"
 #include "Derivable/dermatops.h"
+#include "Eigen/Dense"
 
 using namespace DerivableVectorMatrixes;
 
@@ -75,4 +76,43 @@ float TestAutoRig::ApplyRotations()
     }
 
     return dist;
+}
+
+float TestAutoRig::JacobianStep()
+{
+    const unsigned int angCount = nowRotations.length() * 3;
+    const unsigned int vertCount = bendingRig->bindMesh->vertexes.length() * 3;
+    Matrix<float, -1, -1>
+            jacobMatrix = Matrix<float, -1, -1>(vertCount, angCount),
+            jacobTrans = Matrix<float, -1, -1>(vertCount, angCount),
+            F = Matrix<float,-1,-1>(vertCount, 1),
+            step = Matrix<float,-1,-1>(1, angCount);
+
+
+    QVector<Derivable> jacobColomn = QVector<Derivable>();
+    for (int curJoint = 0; curJoint < nowRotations.length(); curJoint++){
+        for (int coord = 0; coord < 3; coord++){
+            if (coord > 0)nowRotations[curJoint](0,coord - 1).setPrValue(0); else {if (curJoint > 0)nowRotations[curJoint - 1](0,2).setPrValue(0);}
+            nowRotations[curJoint](0,coord).setPrValue(1);
+            jacobColomn = bendingRig->CompareWithMeshOnRotatesCoord(nowRotations, targetMeshes[0]);
+            for (int i = 0; i < jacobColomn.length(); i++){
+                jacobMatrix(i, curJoint * 3 + coord) = jacobColomn[i].getProiz();
+                F(i,0) = jacobColomn[i].getValue();
+            }
+        }
+    }
+    nowRotations[nowRotations.length() - 1](0,2).setPrValue(0);
+    qDebug() << "Jacobian formed";
+    jacobTrans = jacobMatrix.transpose();
+    qDebug() << "Jacobian transpopsed formed";
+     // solve a step
+    step = (jacobTrans * jacobMatrix).colPivHouseholderQr().solve(-jacobTrans * F);
+    qDebug() << "All done";
+
+    for (int i = 0; i < angCount / 3; i++){
+        //qDebug() << "Joint " << i << " coord " << i % 3 << " angle add is " << step(i, 0);
+        nowRotations[i] = nowRotations[i] + SetDerive3DVector(.5 * QVector3D(step(i * 3, 0),step(i * 3 + 1, 0),step(i * 3 + 2, 0)));
+    }
+    Derivable res = bendingRig->CompareWithMeshOnRotates(nowRotations, targetMeshes[0]);
+    return res.getValue();
 }

@@ -68,14 +68,18 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         tar.ApplyRotations();
         this->repaint();
     }
-    if (e->key() == Qt::Key_R){
-        float res = 10;
-        for (int iters = 0; iters < 10; iters ++){
-            res = tar.ApplyRotations(); this->repaint();
-            if ((iters + 1) % 10 == 0)qDebug() << QString::number(iters + 1) + " iterations done";
-        }
+    if (e->key() == Qt::Key_J){
+        qDebug() << "Distance is " << tar.JacobianStep();
         this->repaint();
     }
+//    if (e->key() == Qt::Key_R){
+//        float res = 10;
+//        for (int iters = 0; iters < 10; iters ++){
+//            res = tar.ApplyRotations(); this->repaint();
+//            if ((iters + 1) % 10 == 0)qDebug() << QString::number(iters + 1) + " iterations done";
+//        }
+//        this->repaint();
+//    }
     if (tv.ModelCount() == 0 && e->key() == Qt::Key_Space){
         qDebug() << "DERIVABLE SHIT INCOMING";
         //        names   //<< "!bboy 2 exported"

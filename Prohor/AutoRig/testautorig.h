@@ -22,6 +22,7 @@ public:
     TestAutoRig(Rig* rig, Mesh* mesh);
 
     float ApplyRotations();
+    float JacobianStep ();
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
