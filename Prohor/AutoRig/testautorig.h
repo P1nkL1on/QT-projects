@@ -17,9 +17,13 @@ private:
     Matrix<Derivable,1,3> nowRootPose;
     QVector<QVector3D> angleAdds;
     float step, prevdist;
+    int targMeshInd;
 public:
+    void ChangeTargetMeshInd (int count);
+    void ResetTransofrms ();
+
     TestAutoRig();
-    TestAutoRig(Rig* rig, Mesh* mesh);
+    TestAutoRig(Rig* rig, QVector<Mesh*> mesh);
 
     float ApplyRotations();
     float JacobianStep ();

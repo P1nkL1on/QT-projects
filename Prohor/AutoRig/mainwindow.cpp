@@ -19,7 +19,7 @@ MainWindow::~MainWindow()
 Camera cam = Camera (0, 0, 0);
 TestViewer tv = TestViewer();
 QVector<Rig> rgs;
-QVector<Mesh> mshs;
+QVector<Mesh*> mshs;
 QVector<QString> names;
 TestAutoRig tar;
 
@@ -50,12 +50,24 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *m)
 }
 // !constrols
 
-QVector3D camCenter;
+QVector3D camCenter; int iteration = 0;
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
-    if (e->key() == Qt::Key_R)
+    if (e->key() == Qt::Key_R){
+        iteration = 0;
+        tar.ResetTransofrms();
         this->repaint();
-
+    }
+    if (e->key() == Qt::Key_Up){
+        iteration = 0;
+        tar.ChangeTargetMeshInd(1);
+        this->repaint();
+    }
+    if (e->key() == Qt::Key_Down){
+        iteration = 0;
+        tar.ChangeTargetMeshInd(-1);
+        this->repaint();
+    }
     if (e->key() == Qt::Key_Left){
         tv.SwapCurrentModelNext();
         this->repaint();
@@ -69,17 +81,11 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         this->repaint();
     }
     if (e->key() == Qt::Key_J){
-        qDebug() << "Distance is " << tar.JacobianStep();
+        qDebug() << "Distance is " << tar.JacobianStep() << " on iteration " << ++iteration;
         this->repaint();
     }
-//    if (e->key() == Qt::Key_R){
-//        float res = 10;
-//        for (int iters = 0; iters < 10; iters ++){
-//            res = tar.ApplyRotations(); this->repaint();
-//            if ((iters + 1) % 10 == 0)qDebug() << QString::number(iters + 1) + " iterations done";
-//        }
-//        this->repaint();
-//    }
+
+
     if (tv.ModelCount() == 0 && e->key() == Qt::Key_Space){
         qDebug() << "DERIVABLE SHIT INCOMING";
         //        names   //<< "!bboy 2 exported"
@@ -116,25 +122,22 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
             }
         }
         // also load a OBJ poses
-        Mesh ms1, ms2;
-        QString errMs1 = loaderFBX::loadMeshOBJAdress(modelsAdress + "GuardPosesOBJ/handforwardy90.OBJ", ms1),  //handforwardy90
-                errMs2 = loaderFBX::loadMeshOBJAdress(modelsAdress + "GuardPosesOBJ/bind.OBJ", ms2);
-        if (errMs1.isEmpty() && errMs2.isEmpty())
-        {
-            mshs << ms1 << ms2;
-            Rig rgMs1 = Rig(&(mshs[0]), NULL, NULL),
-                rgMs2 = Rig(&(mshs[1]), NULL, NULL);
-            rgs << rgMs1 << rgMs2;
-            loadedModel +=2;
-        }else{
-            qDebug() << errMs1; qDebug() << errMs2;
+        QVector<QString> meshNames = {"handforwardy90","head-left","fabulos", "fabulos-zad","liying", "bind"};
+        for (int i = 0; i < meshNames.length(); i++){
+            Mesh* loadMesh = new Mesh();
+            QString errMes = loaderFBX::loadMeshOBJAdress(modelsAdress + "GuardPosesOBJ/" + meshNames[i]+".OBJ", *loadMesh);
+            if (errMes.isEmpty()){
+                mshs << loadMesh;
+                Rig rgMs = Rig(mshs[i], NULL, NULL);
+                rgs << rgMs;
+                loadedModel ++;
+            }else
+                qDebug() << errMes;
         }
-
-        tar = TestAutoRig(&(rgs[0]), &(mshs[0]));
-
+        tar = TestAutoRig(&(rgs[0]), mshs);
         for (int ldID = 0; ldID < loadedModel; ldID++)
             tv.addGraphicsObject(&(rgs[ldID]));
-        // create a autorig
+
     }
 }
 
