@@ -1,6 +1,9 @@
 #include "skeleton.h"
 #include "qdebug.h"
 
+using namespace DerOperations;
+using Eigen::Matrix;
+
 
 Skeleton::Skeleton()
 {

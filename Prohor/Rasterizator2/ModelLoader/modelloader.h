@@ -8,13 +8,12 @@
 #include "QImage"
 #include <model.h>
 #include "QImageReader"
-using namespace ModelStructs;
 
 namespace ModelLoader
 {
 
-    QString loadModel(QTextStream& textStream, Model& loadedModel);
-    QString loadModelByAdress (QString path, Model& ls);
+    QString loadModel(QTextStream& textStream, ModelStructs::Model& loadedModel);
+    QString loadModelByAdress (QString path, ModelStructs::Model& ls);
 
 }
 

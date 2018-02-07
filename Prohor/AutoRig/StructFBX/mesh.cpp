@@ -1,6 +1,9 @@
 #include "mesh.h"
 #include "Derivable/dermatops.h"
+
 using namespace DerivableVectorMatrixes;
+using Eigen::Matrix;
+using namespace DerOperations;
 
 Mesh::Mesh()
 {

@@ -2,6 +2,8 @@
 #include "Derivable/dermatops.h"
 
 using namespace DerivableVectorMatrixes;
+using namespace DerOperations;
+using Eigen::Matrix;
 
 Joint::Joint()
 {

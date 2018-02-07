@@ -130,7 +130,7 @@ float TestAutoRig::JacobianStep()
             jacobColomn = bendingRig->CompareWithMeshOnRotatesCoord(nowRotations, targetMeshes[targMeshInd]->bindMesh);
             for (int i = 0; i < jacobColomn.length(); i++){
                 jacobMatrix(i, curJoint * 3 + coord) = jacobColomn[i].getProiz();
-                F(i,0) = jacobColomn[i].getValue();
+                F(i,0) = .5 * jacobColomn[i].getValue();
             }
             nowRotations[curJoint](0,coord).setPrValue(0);
         }
@@ -141,9 +141,14 @@ float TestAutoRig::JacobianStep()
     step = (jacobTrans * jacobMatrix).colPivHouseholderQr().solve(-jacobTrans * F);
     _timecheck("System solved", t);
     for (int i = 0; i < angCount / 3; i++){
-        nowRotations[i] = nowRotations[i] + SetDerive3DVector(.5 * QVector3D(step(i * 3, 0),step(i * 3 + 1, 0),step(i * 3 + 2, 0)));
+        nowRotations[i] = nowRotations[i] + SetDerive3DVector(QVector3D(step(i * 3, 0),step(i * 3 + 1, 0),step(i * 3 + 2, 0)));
     }
     Derivable res = bendingRig->CompareWithMeshOnRotates(nowRotations, targetMeshes[targMeshInd]->bindMesh);
     _timecheck("Total", t);
     return res.getValue();
+}
+
+bool TestAutoRig::Uber()
+{
+
 }

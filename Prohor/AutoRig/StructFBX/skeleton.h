@@ -4,8 +4,8 @@
 
 class Skeleton
 {  
-    QVector<Matrix<Derivable,1,3>> localRotations;
-    void RecursiveApplyLocalRotations(Joint* joint, Matrix<Derivable,1,3> currentRotation);
+    QVector<Eigen::Matrix<DerOperations::Derivable,1,3>> localRotations;
+    void RecursiveApplyLocalRotations(Joint* joint, Eigen::Matrix<DerOperations::Derivable,1,3> currentRotation);
     int transformesApplied;
 public:
     QVector<Joint*> joints;
@@ -19,15 +19,15 @@ public:
     bool CalculateGlobalCoordForEachJoint ();
     bool CalculateGlobalCoordForEachJointMatrix();
 
-    QVector<Matrix<Derivable,1,3>> getJointsLocalRotations () const;
-    QVector<Matrix<Derivable,1,3>> getJointsGlobalTranslationsForSkin () const;
-    Matrix<Derivable,1,3> getJointCoordByIndex(int index, Matrix<Derivable,1,3> &paterCoord);
+    QVector<Eigen::Matrix<DerOperations::Derivable,1,3>> getJointsLocalRotations () const;
+    QVector<Eigen::Matrix<DerOperations::Derivable,1,3>> getJointsGlobalTranslationsForSkin () const;
+    Eigen::Matrix<DerOperations::Derivable,1,3> getJointCoordByIndex(int index, Eigen::Matrix<DerOperations::Derivable,1,3> &paterCoord);
     // local!
-    void SetRotation (const Matrix<Derivable,1,3> newRotation, int jointInd);
-    void SetRotations (const QVector<Matrix<Derivable,1,3>> newRotations);
+    void SetRotation (const Eigen::Matrix<DerOperations::Derivable,1,3> newRotation, int jointInd);
+    void SetRotations (const QVector<Eigen::Matrix<DerOperations::Derivable,1,3>> newRotations);
 
     // return local!
-    bool getJointTranslationAndRotation (const int jointIndex, Matrix<Derivable,1,3>& translation, Matrix<Derivable,1,3>& rotation) const;
+    bool getJointTranslationAndRotation (const int jointIndex, Eigen::Matrix<DerOperations::Derivable,1,3>& translation, Eigen::Matrix<DerOperations::Derivable,1,3>& rotation) const;
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
