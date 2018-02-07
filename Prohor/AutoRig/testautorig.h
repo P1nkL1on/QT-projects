@@ -8,10 +8,10 @@
 #include "Eigen/Core"
 #include "Derivable/dermatops.h"
 
-class TestAutoRig
+class TestAutoRig : public GraphicsObjectStruct::GraphicsObject
 {
 private:
-    QVector<Mesh*> targetMeshes;
+    QVector<Rig*> targetMeshes;
     Rig* bendingRig;
     QVector<Matrix<Derivable,1,3>> nowRotations;
     Matrix<Derivable,1,3> nowRootPose;
@@ -22,8 +22,13 @@ public:
     void ChangeTargetMeshInd (int count);
     void ResetTransofrms ();
 
+    // drawing to canvas
+    QString ApplyDrawToCanvas(QPainter* painter,const QMatrix4x4 view, const QMatrix4x4 perspective,
+                           const int width, const int hei) override;
+
+
     TestAutoRig();
-    TestAutoRig(Rig* rig, QVector<Mesh*> mesh);
+    TestAutoRig(Rig* rig, QVector<Rig*> mesh);
 
     float ApplyRotations();
     float JacobianStep ();

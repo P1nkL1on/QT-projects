@@ -12,6 +12,8 @@ Rig::Rig()
     skin = NULL;
 
     bendedMesh = NULL;
+    modelColor = QColor(220,220,220,150);
+    conturColor = QColor(100,100,100,50);
 }
 
 Rig::Rig(Mesh *mesh, Skeleton *skel, Skin *sk)
@@ -21,6 +23,8 @@ Rig::Rig(Mesh *mesh, Skeleton *skel, Skin *sk)
     skin = sk;
 
     bendedMesh = NULL;
+    modelColor = QColor(220,220,220,150);
+    conturColor = QColor(100,100,100,50);
 }
 
 void Rig::BendSkinToSkeleton()
@@ -160,7 +164,8 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
         int x,y;
         painter->setPen(ChangeQPainter(QColor(0,255, 0,120), 4));
         if (ApplyScreen(x,y, Vertexes2D[curPoint], width, hei))
-            painter->drawPoint(x,y);
+            if (false)
+                painter->drawPoint(x,y);
         appliedToScreenCoords << QPoint(x,y);
         // ...
         // bended mods
@@ -218,12 +223,12 @@ QString Rig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const Q
 
         QPainterPath newPolyg; newPolyg.addPolygon(poly);
         polygonDrawArray << newPolyg;
-        polygonColorArray << QColor(200,200,200,100);//(QColor(colorIntenese,colorIntenese,colorIntenese));
+        polygonColorArray << modelColor;//(QColor(colorIntenese,colorIntenese,colorIntenese));
 
         distFromPolygonCentersToCamera << (QfromDer3( VertexInPolygonSumm )* (1.0 / totalVertexInPolygonCount)).distanceToPoint(*cameraCenter);
     }
     QBrush brush;
-    painter->setPen(QPen(QColor(100,150,150,255)));
+    painter->setPen(QPen(conturColor));
 
     QVector<int> needPolygonInds = GetSortedIndex(distFromPolygonCentersToCamera);
     for (int cPath = 0; cPath < polygonDrawArray.length(); cPath ++){

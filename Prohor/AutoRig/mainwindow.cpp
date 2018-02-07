@@ -18,8 +18,8 @@ MainWindow::~MainWindow()
 
 Camera cam = Camera (0, 0, 0);
 TestViewer tv = TestViewer();
-QVector<Rig> rgs;
-QVector<Mesh*> mshs;
+QVector<Rig*> rgs;
+//QVector<Mesh*> mshs;
 QVector<QString> names;
 TestAutoRig tar;
 
@@ -107,17 +107,16 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
         int loadedModel = 0;
         for (int currentModel = 0; currentModel < names.length(); currentModel++){
-            Rig rg;
+            Rig* rg = new Rig();
             QString err =
-                    loaderFBX::loadModelFBXAdress(modelsAdress + "FBX/"+names[currentModel]+".FBX", rg);
+                    loaderFBX::loadModelFBXAdress(modelsAdress + "FBX/"+names[currentModel]+".FBX", *rg);
             if (!err.isEmpty())
                 qDebug() << err;
             else
             {
                 // add a loaded morel to test viewer
-                rg.cameraCenter = &camCenter;
+                rg->cameraCenter = &camCenter;
                 rgs << rg;
-                //rgs[loadedModel].skeleton->DebugTree();
                 loadedModel++;
             }
         }
@@ -127,17 +126,17 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
             Mesh* loadMesh = new Mesh();
             QString errMes = loaderFBX::loadMeshOBJAdress(modelsAdress + "GuardPosesOBJ/" + meshNames[i]+".OBJ", *loadMesh);
             if (errMes.isEmpty()){
-                mshs << loadMesh;
-                Rig rgMs = Rig(mshs[i], NULL, NULL);
+                Rig* rgMs = new Rig(loadMesh, NULL, NULL);
+                rgMs->cameraCenter = &camCenter;
+                rgMs->modelColor = QColor(0, 200, 0, 20);
+                rgMs->conturColor = QColor(0,0,0,0);
                 rgs << rgMs;
                 loadedModel ++;
             }else
                 qDebug() << errMes;
         }
-        tar = TestAutoRig(&(rgs[0]), mshs);
-        for (int ldID = 0; ldID < loadedModel; ldID++)
-            tv.addGraphicsObject(&(rgs[ldID]));
-
+        tar = TestAutoRig((rgs[0]), rgs);
+        tv.addGraphicsObject(&tar);
     }
 }
 

@@ -17,6 +17,8 @@ public:
     Rig(Mesh *mesh, Skeleton *skel, Skin *sk);
 
     QVector3D* cameraCenter;
+    QColor modelColor;
+    QColor conturColor;
 
     // change a mesh w/t a skeleton n skin
     void BendSkinToSkeleton ();

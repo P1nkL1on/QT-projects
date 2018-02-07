@@ -393,6 +393,8 @@ QString loaderFBX::loadMeshOBJ(QTextStream &textStream, Mesh &loadedMesh)
     QString line;
     QStringList currentParseSplited;
     QVector<Matrix<Derivable,1,3>> loadedVertexes;
+    QVector<int> loadedPolygonIndexes;
+    QVector<int> loadedPolygonStartIndexes;
 
     while (!textStream.atEnd()){
         line = textStream.readLine();
@@ -403,10 +405,21 @@ QString loaderFBX::loadMeshOBJ(QTextStream &textStream, Mesh &loadedMesh)
                                         QStringToFloat(currentParseSplited[1]),
                                         QStringToFloat(currentParseSplited[2]));
         }
+        if (line.indexOf("f ") == 0){
+            currentParseSplited = line.remove(0, 2).split(' ');
+            for (int curInd = 0; curInd < currentParseSplited.length(); curInd++){
+                int polygonInd = QStringToInt(currentParseSplited[curInd].split('/')[0]) - 1;
+                loadedPolygonIndexes << polygonInd;
+                if (curInd == 0)
+                    loadedPolygonStartIndexes << loadedPolygonIndexes.length() - 1;
+            }
+        }
     }
     QVector<Matrix<Derivable,1,3>> loadedDerV3s = QVector<Matrix<Derivable,1,3>>();
     for (int i = 0; i < loadedVertexes.length(); i++)
         loadedDerV3s << Matrix<Derivable,1,3>(Derivable(loadedVertexes[i].x()),Derivable(loadedVertexes[i].y()),Derivable(loadedVertexes[i].z()));
     loadedMesh.vertexes = loadedDerV3s;
+    loadedMesh.polygonIndexes = loadedPolygonIndexes;
+    loadedMesh.polygonStartIndexes = loadedPolygonStartIndexes;
     return QString("");
 }

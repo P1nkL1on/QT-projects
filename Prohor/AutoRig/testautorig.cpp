@@ -8,7 +8,7 @@ using namespace DerivableVectorMatrixes;
 void TestAutoRig::ChangeTargetMeshInd(int count)
 {
     targMeshInd += count;
-    if (targMeshInd < 0) targMeshInd = targetMeshes.length();
+    if (targMeshInd < 0) targMeshInd = targetMeshes.length() - 1;
     if (targMeshInd > targetMeshes.length() - 1) targMeshInd = 0;
     qDebug() << "Now applying to pose number " << targMeshInd;
 }
@@ -18,13 +18,14 @@ void TestAutoRig::ResetTransofrms()
     for (int curJoint = 0; curJoint < nowRotations.length(); curJoint++)
         for (int coord = 0; coord < 3; coord++)
             nowRotations[curJoint](0,coord) = Derivable(0,0);
-    Derivable res = bendingRig->CompareWithMeshOnRotates(nowRotations, targetMeshes[targMeshInd]);
+    Derivable res = bendingRig->CompareWithMeshOnRotates(nowRotations, targetMeshes[targMeshInd]->bindMesh);
     qDebug() << "Model rotations reset";
 }
 
+
 TestAutoRig::TestAutoRig()
 {
-    targetMeshes = QVector<Mesh*>();
+    targetMeshes = QVector<Rig*>();
     targetMeshes << NULL;
     bendingRig = NULL;
     angleAdds = QVector<QVector3D>();
@@ -32,7 +33,7 @@ TestAutoRig::TestAutoRig()
     targMeshInd = 0;
 }
 
-TestAutoRig::TestAutoRig(Rig *rig, QVector<Mesh *> mesh)
+TestAutoRig::TestAutoRig(Rig *rig, QVector<Rig *> mesh)
 {
     targetMeshes = mesh;
     bendingRig = rig;
@@ -44,10 +45,17 @@ TestAutoRig::TestAutoRig(Rig *rig, QVector<Mesh *> mesh)
 }
 
 
+QString TestAutoRig::ApplyDrawToCanvas(QPainter *painter, const QMatrix4x4 view, const QMatrix4x4 perspective, const int width, const int hei)
+{
+    bendingRig->ApplyDrawToCanvas(painter, view, perspective, width, hei);
+    targetMeshes[targMeshInd]->ApplyDrawToCanvas(painter, view, perspective, width, hei);
+    return QString();
+}
+
+
 float TestAutoRig::ApplyRotations()
 {
     float dist = -1;
-
     QVector<QVector3D> addAngles = QVector<QVector3D>();
     for (int curJoint = 0; curJoint < nowRotations.length(); curJoint++){
         QVector3D addAngle = QVector3D(0,0,0);
@@ -55,7 +63,7 @@ float TestAutoRig::ApplyRotations()
         for (int coord = 0; coord < 3; coord++){
             if (coord > 0)nowRotations[curJoint](0,coord - 1).setPrValue(0); else {if (curJoint > 0)nowRotations[curJoint - 1](0,2).setPrValue(0);}
             nowRotations[curJoint](0,coord).setPrValue(1);
-            Derivable res = bendingRig->CompareWithMeshOnRotates(nowRotations, targetMeshes[0]);
+            Derivable res = bendingRig->CompareWithMeshOnRotates(nowRotations, targetMeshes[0]->bindMesh);
             if (dist < 0) dist = res.getValue();
             addAngle[coord] = res.getProiz();
         }
@@ -75,7 +83,7 @@ float TestAutoRig::ApplyRotations()
         QVector<Matrix<Derivable,1,3>> willBeRotations = QVector<Matrix<Derivable,1,3>>();
         for (int curJoint = 0; curJoint < nowRotations.length(); curJoint++)
             willBeRotations << nowRotations[curJoint] - SetDerive3DVector(addAngles[curJoint] * step);
-        approximateDist = bendingRig->CompareWithMeshOnRotates(willBeRotations, targetMeshes[0]).getValue();
+        approximateDist = bendingRig->CompareWithMeshOnRotates(willBeRotations, targetMeshes[0]->bindMesh).getValue();
         if (approximateDist > dist){ step *= .8; qDebug() << "Approximate citical dist increase! (" << approximateDist << "). Descrease step to " << step;}
     }while(approximateDist > dist);
 
@@ -119,7 +127,7 @@ float TestAutoRig::JacobianStep()
     for (int curJoint = 0; curJoint < nowRotations.length(); curJoint++){
         for (int coord = 0; coord < 3; coord++){     
             nowRotations[curJoint](0,coord).setPrValue(1);
-            jacobColomn = bendingRig->CompareWithMeshOnRotatesCoord(nowRotations, targetMeshes[targMeshInd]);
+            jacobColomn = bendingRig->CompareWithMeshOnRotatesCoord(nowRotations, targetMeshes[targMeshInd]->bindMesh);
             for (int i = 0; i < jacobColomn.length(); i++){
                 jacobMatrix(i, curJoint * 3 + coord) = jacobColomn[i].getProiz();
                 F(i,0) = jacobColomn[i].getValue();
@@ -135,7 +143,7 @@ float TestAutoRig::JacobianStep()
     for (int i = 0; i < angCount / 3; i++){
         nowRotations[i] = nowRotations[i] + SetDerive3DVector(.5 * QVector3D(step(i * 3, 0),step(i * 3 + 1, 0),step(i * 3 + 2, 0)));
     }
-    Derivable res = bendingRig->CompareWithMeshOnRotates(nowRotations, targetMeshes[targMeshInd]);
+    Derivable res = bendingRig->CompareWithMeshOnRotates(nowRotations, targetMeshes[targMeshInd]->bindMesh);
     _timecheck("Total", t);
     return res.getValue();
 }
