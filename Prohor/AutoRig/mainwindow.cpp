@@ -84,6 +84,10 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         qDebug() << "Distance is " << tar.JacobianStep() << " on iteration " << ++iteration;
         this->repaint();
     }
+    if (e->key() == Qt::Key_O){
+        tar.Uber();
+        this->repaint();
+    }
 
 
     if (tv.ModelCount() == 0 && e->key() == Qt::Key_Space){

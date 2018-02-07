@@ -150,5 +150,13 @@ float TestAutoRig::JacobianStep()
 
 bool TestAutoRig::Uber()
 {
+    qDebug() << "Uber << request to constructor";
+    LossFunction loss(bendingRig, targetMeshes[targMeshInd]->bindMesh);
 
+    QVector<float> firstAngles = QVector<float>(bendingRig->skeleton->joints.length() * 3);
+    firstAngles[0] = .1;
+    qDebug() << "Uber << created angles";
+
+    QVector<float> resAngles = QasiNewtone(loss, firstAngles, 1, 20);
+    qDebug() << "Uber << Qasi Newtone EXIT";
 }

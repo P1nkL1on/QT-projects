@@ -20,17 +20,24 @@ public:
         Q_ASSERT(rig->bindMesh->vertexes.length() == targetMesh->vertexes.length());
     }
 
-    QVector<Derivable> operator()(const QVector<Derivable> params, float& distance) const//QVector<Matrix<Derivable,1,3>> newRotations) const
+    QVector<Derivable> operator()(const QVector<Derivable> params/*, float& distance*/) const//QVector<Matrix<Derivable,1,3>> newRotations) const
     {
         Q_ASSERT(params.length() % 3 == 0);
-        qDebug() << "Called a method calculating a distances between all vertexes in rig->mesh and target mesh";
         QVector<Matrix<Derivable,1,3>> newRotations = QVector<Matrix<Derivable,1,3>>();
         for (int i = 0 ; i < params.length() / 3; i++)
             newRotations << Matrix<Derivable,1,3>(params[i * 3], params[i * 3 + 1], params[i * 3 + 2]);
         currentRig->skeleton->SetRotations(newRotations);
         currentRig->BendSkinToSkeleton();
-        distance = currentRig->bendedMesh->CompareWithAnotherMesh(targetMesh).getValue();
         return currentRig->bendedMesh->CompareWithAnotherMeshCoords(targetMesh);
+    }
+    float operator()(const QVector<float> params) const
+    {
+        QVector<Matrix<Derivable,1,3>> newRotations = QVector<Matrix<Derivable,1,3>>();
+        for (int i = 0 ; i < params.length() / 3; i++)
+            newRotations << Matrix<Derivable,1,3>(params[i * 3], params[i * 3 + 1], params[i * 3 + 2]);
+        currentRig->skeleton->SetRotations(newRotations);
+        currentRig->BendSkinToSkeleton();
+        return currentRig->bendedMesh->CompareWithAnotherMesh(targetMesh).getValue();
     }
 
 private:
@@ -39,11 +46,13 @@ private:
 };
 
 template <typename Function>
-bool CalculateJacobian (const QVector<float> currentParams, Matrix<float, -1, -1>& resJacobian, Matrix<float,-1,-1>& F, Function &loss){
+bool CalculateJacobian (QVector<float> currentParams, Matrix<float, -1, -1>& resJacobian, Matrix<float,-1,-1>& F, Function &loss){
+    QVector<Derivable> derCurParams;
+    //= currentParams;
+    for (int i = 0; i < currentParams.length(); i++)
+        derCurParams << Derivable(currentParams[i]);
 
-    float resDist = -1;
-    QVector<Derivable> derCurParams = currentParams,
-                       jacobColumn = loss(derCurParams, resDist);
+    QVector<Derivable> jacobColumn = loss(derCurParams);
 
     const unsigned int angCount = currentParams.length(),
                        vertCount = jacobColumn.length();
@@ -53,17 +62,18 @@ bool CalculateJacobian (const QVector<float> currentParams, Matrix<float, -1, -1
     for (int curParam = 0; curParam < derCurParams.length(); curParam ++)
     {
         derCurParams[curParam].setPrValue(1);
-        jacobColumn = loss(derCurParams, resDist);
+        jacobColumn = loss(derCurParams);
         for (int i = 0; i < jacobColumn.length(); i++){
             resJacobian(i, curParam) = jacobColumn[i].getProiz();
-            F(i,0) = jacobColumn[i].getValue();
+            F(i,0) = .5 * jacobColumn[i].getValue();
         }
         derCurParams[curParam].setPrValue(0);
     }
+    qDebug() << "Jacobian << calculated";
 }
 
-template <typename Function, typename JacobianCalculator>
-QVector<QVector3D> KvaziNewton (Function& func, const QVector<float> params,
+template <typename Function>
+QVector<float> QasiNewtone (Function& func, const QVector<float> params,
                                  const float epsilon, const int maxIterationCount){
     QVector<float> res = params;
     Matrix<float,-1,-1>
@@ -73,9 +83,9 @@ QVector<QVector3D> KvaziNewton (Function& func, const QVector<float> params,
             jacobTrans = Matrix<float, -1, -1>(jacobMatrix.rows(), jacobMatrix.cols()),
             step = Matrix<float,-1,-1>( jacobMatrix.cols(), 1);
 
-
     int iterationNumber = 0;
-    float currentDistance = 1000000;
+    float currentDistance = func(res); // set proto distance here
+
     do{
         qDebug() << "Iteration " << ++iterationNumber;
 
@@ -84,12 +94,15 @@ QVector<QVector3D> KvaziNewton (Function& func, const QVector<float> params,
         step = (jacobTrans * jacobMatrix).colPivHouseholderQr().solve(-jacobTrans * F);
 
         for (int i = 0; i < jacobMatrix.cols() / 3; i++)
-            res[i] = res[i] + .5 * step(i, 0);//+ SetDerive3DVector(.5 * QVector3D(step(i * 3, 0),step(i * 3 + 1, 0),step(i * 3 + 2, 0)));
+            res[i] = res[i] + step(i, 0);//+ SetDerive3DVector(.5 * QVector3D(step(i * 3, 0),step(i * 3 + 1, 0),step(i * 3 + 2, 0)));
 
-        func(res, currentDistance);
+        currentDistance = func(res);
         qDebug() << "Current distance is now " << currentDistance;
-        if (iterationNumber > maxIterationCount) break;
+        if (iterationNumber > maxIterationCount){ qDebug() << "@ Finish by too mych iteration count!";break;}
+
     } while (currentDistance > epsilon);
+    qDebug() << "@ Done!";
+    return res;
 }
 
 class TestAutoRig : public GraphicsObjectStruct::GraphicsObject
@@ -119,8 +132,6 @@ public:
     bool Uber ();
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
-
-
 
 
 #endif // TESTAUTORIG_H
