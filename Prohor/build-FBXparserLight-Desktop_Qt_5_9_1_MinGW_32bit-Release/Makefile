@@ -219,10 +219,14 @@ Makefile: ../../../../QT-serious/AutoRig/FBXparserLight.pro ../../../../progs/QT
 		../../../../QT-serious/modules/Stereometry/Stereometry.pri \
 		../../../../QT-serious/modules/TestViewer/TestViewer.pri \
 		../../../../QT-serious/modules/SceneTools/SceneTools.pri \
-		../../../../QT-serious/AutoRig/LoaderFBXlight/LoaderFBX.pri \
-		../../../../QT-serious/AutoRig/StructFBX/StructFBX.pri \
 		../../../../QT-serious/modules/Eigen/Eigen.pri \
 		../../../../QT-serious/modules/Derivable/Derivable.pri \
+		../../../../QT-serious/AutoRig/LoaderFBXlight/LoaderFBX.pri \
+		../../../../QT-serious/AutoRig/StructFBX/StructFBX.pri \
+		../../../../QT-serious/AutoRig/TestAutoRig/TestAutoRig.pri \
+		../../../../QT-serious/AutoRig/MeshComparer/MeshComparer.pri \
+		../../../../QT-serious/AutoRig/GaussNewton/GaussNewton.pri \
+		../../../../QT-serious/AutoRig/JacobianCalculator/JacobianCalculator.pri \
 		../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/resolve_config.prf \
 		../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/exclusive_builds_post.prf \
 		../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/default_post.prf \
@@ -404,10 +408,14 @@ Makefile: ../../../../QT-serious/AutoRig/FBXparserLight.pro ../../../../progs/QT
 ../../../../QT-serious/modules/Stereometry/Stereometry.pri:
 ../../../../QT-serious/modules/TestViewer/TestViewer.pri:
 ../../../../QT-serious/modules/SceneTools/SceneTools.pri:
-../../../../QT-serious/AutoRig/LoaderFBXlight/LoaderFBX.pri:
-../../../../QT-serious/AutoRig/StructFBX/StructFBX.pri:
 ../../../../QT-serious/modules/Eigen/Eigen.pri:
 ../../../../QT-serious/modules/Derivable/Derivable.pri:
+../../../../QT-serious/AutoRig/LoaderFBXlight/LoaderFBX.pri:
+../../../../QT-serious/AutoRig/StructFBX/StructFBX.pri:
+../../../../QT-serious/AutoRig/TestAutoRig/TestAutoRig.pri:
+../../../../QT-serious/AutoRig/MeshComparer/MeshComparer.pri:
+../../../../QT-serious/AutoRig/GaussNewton/GaussNewton.pri:
+../../../../QT-serious/AutoRig/JacobianCalculator/JacobianCalculator.pri:
 ../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/resolve_config.prf:
 ../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/exclusive_builds_post.prf:
 ../../../../progs/QT_creator/5.9.1/mingw53_32/mkspecs/features/default_post.prf:
