@@ -14,6 +14,14 @@ Molecule::Molecule(char* molName, int molAtomCount, Atom* molAtoms)
     name = molName;
 }
 
+Molecule::Molecule(const int l)
+{
+    Atom *atoms = new Atom[l];
+    for (int i = 0; i < l; i++)
+        atoms[i] = Atom( i % 18 + 1 );
+    *this = Molecule("Megashit", l, atoms);
+}
+
 void Molecule::Trace() const{
     int ac = -1;
     cout << "Name: " <<name  << endl << "  Formula: ";

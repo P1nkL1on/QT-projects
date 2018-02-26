@@ -12,6 +12,8 @@ private:
 public:
     Molecule();
     Molecule (char *molName, int molAtomCount, Atom *molAtoms);
+    Molecule (const int randomSize);
+
     void Trace() const;
 
     int CountAtomType (int type) const;

@@ -6,8 +6,8 @@ Atom::Atom()
 {
     name = "--";
     mass = 0;
-    levelCount = 0;
-    *level = NULL;
+    levelCount = 1;
+    level = new int[1]{1};
 }
 
 Atom::Atom(char *atomName, int atomMass, int atomLevelCount, int* atomLevel)
