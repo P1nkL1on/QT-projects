@@ -21,3 +21,13 @@ QVector3D RayStruct::Ray::To() const
 {
     return to;
 }
+
+QVector3D RayStruct::Ray::ray() const
+{
+    return to - from;
+}
+
+float RayStruct::Ray::GetAngleBetween(const RayStruct::Ray &another)
+{
+    return (ray().dotProduct(ray(), another.ray()) / (ray().length() * another.ray().length()));
+}

@@ -108,7 +108,7 @@ public:
         Color GetColor (const Vertex* point);
     // constructors
         Sphere (Vertex cent, double rad){
-            center = cent; Rad = rad;
+//            center = cent; Rad = rad;
             mirror = 0; color_self = Color(255,255,255);
         }
         Sphere (Vertex cent, double rad, double mirr, Color clr){
@@ -263,18 +263,7 @@ Vertex Reflect (const Vertex* current_ray_begin, const Vertex* current_intersect
                        , Mult(Diff(normal_end, normal_start), 2.0 * scalar)), 2.0));
     scalar = 1 / 60.0 * Dist( &res, current_intersect );
     return Summ (current_intersect, Mult(Diff(&res, current_intersect), 1.0 / scalar));
-    /* counting a scalar
-    =TPoint res = TPoint{
-                current_intersect->X + 2.0 * (+(current_intersect->X - current_ray_begin->X) + 2.0 * scalar * (normal_end->X - normal_start->X)),
-                current_intersect->Y + 2.0 * (+(current_intersect->Y - current_ray_begin->Y) + 2.0 * scalar * (normal_end->Y - normal_start->Y)),
-                current_intersect->Z + 2.0 * (+(current_intersect->Z - current_ray_begin->Z) + 2.0 * scalar * (normal_end->Z - normal_start->Z))
-                };
-    // return res;
-     //scalar = 1 / 60.0 * sqrt(pow(res.X - current_intersect->X,2) + pow(res.Y - current_intersect->Y,2) + pow(res.Z - current_intersect->Z,2));
 
-    //    return TPoint{  current_intersect->X  + side*(res.X - current_intersect->X ) / scalar,
-    //                    current_intersect->Y  + side*(res.Y - current_intersect->Y ) / scalar,
-    //                    current_intersect->Z  + side*(res.Z - current_intersect->Z ) / scalar};*/
 }
 
 void Triangle::CalculateParametric(){

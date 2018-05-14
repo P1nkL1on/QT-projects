@@ -1,21 +1,31 @@
 #include "graphicobject.h"
 
 #include "qdebug.h"
+#include "qvector2d.h"
 
 using namespace RayStruct;
 
 
 GraphicObjects::Sphere::Sphere()
 {
+    mirrority = 0;
     center = QVector3D();
     radius = 1;
 }
 
 GraphicObjects::Sphere::Sphere(QVector3D cent, float rad)
 {
+    mirrority = 0;
     center = cent;
     radius = rad;
     clr = QColor(200, 100, 0);
+}
+GraphicObjects::Sphere::Sphere(QVector3D cent, float rad, QColor color)
+{
+    mirrority = 0;
+    center = cent;
+    radius = rad;
+    clr = color;
 }
 
 bool GraphicObjects::Sphere::IntersectWithRay(const RayStruct::Ray *ray, QVector3D &intersection) const
@@ -28,7 +38,7 @@ bool GraphicObjects::Sphere::IntersectWithRay(const RayStruct::Ray *ray, QVector
         if (Disc < 1e-4){
             double d = -b / (2 * rayLength);
             intersection = ray->From() + (ray->To() - ray->From()) * d;
-            qDebug() << "Uniq " << intersection;
+            //qDebug() << "Uniq " << intersection;
             return true;
         }
         //
@@ -40,11 +50,22 @@ bool GraphicObjects::Sphere::IntersectWithRay(const RayStruct::Ray *ray, QVector
 
         intersection = (inter1.distanceToPoint(ray->From()) < inter2.distanceToPoint(ray->From()) ? inter1 : inter2);
 
-        if (intersection.distanceToPoint(ray->From()) > .1)
+        if (intersection.distanceToPoint(ray->From()) >= 1e-4)
             return true;
     }
     intersection = ray->To();
     return false;
+}
+
+bool GraphicObjects::Sphere::DrawOn2D(QPainter *qp, const QVector2D offset, const float scale) const
+{
+    qp->drawEllipse(QPoint((center.x() + offset.x()) * scale,(center.z() + offset.y()) * scale), (int)(radius * scale), (int)(radius * scale));
+    return true;
+}
+
+Ray GraphicObjects::Sphere::GetNormalRay(const QVector3D from) const
+{
+    return Ray(from, from + (from - center) / center.distanceToPoint(from));
 }
 
 void GraphicObjects::Sphere::Move(QVector3D translate)

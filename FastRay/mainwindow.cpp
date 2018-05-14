@@ -25,35 +25,43 @@ SceneViewer sv;
 QVector<Sphere> spheres;
 QVector<LightSourse> lights;
 
+int pictureResol = 10;
+
 void MainWindow::paintEvent(QPaintEvent *e){
     if (!generatedScene){
         sv = SceneViewer();
         generatedScene = true;
 
-        Sphere sp(QVector3D(5,-10,0), 9), sp2(QVector3D(0,0,0), 4), sp3(QVector3D(0, 2, 0), 2.5), sp4(QVector3D(0, 7, 0), 2), sp5(QVector3D(0, 10, 0), 1.5);
-        sp2.clr = QColor(255,0,0); sp3.clr = QColor(0,255,0); sp4.clr = QColor(255,255,0); sp5.clr = QColor(100,100,0);
+        spheres << Sphere(QVector3D(-10,0,0),10,Qt::red);
+        //spheres[0].mirrority = 1;
+//        int w = 5, h = 4, l = 2, rad = 2;
+//        for (int i = 0; i < w; i ++) for (int j = 0; j < h; j++)for (int k = 0; k < l; k++)
+//            spheres << Sphere(QVector3D(-w/2 + i, +h/2 -j, -l/2 + k) * rad * 2, (i+j+k)/2.0, QColor(255 * i / w, 255 * j / h, 255 * k / l));
+        spheres << Sphere(QVector3D(10,0,0), 5, Qt::white);
 
-        spheres << sp << sp2 << sp3 << sp4 << sp5;
         for (int i = 0; i < spheres.length(); i++)
             sv.objects<<&(spheres[i]);
 
-        lights << LightSourse(QVector3D(0, 0, -20), 20.0, 10.0, Qt::white);
+        lights << LightSourse(QVector3D(0, 0, -20), 100.0, 1.0, Qt::white);
+        //lights << LightSourse(QVector3D(-10,50,-10), 200, 1.0, Qt::white);
         for (int i = 0; i < lights.length(); i++)
             sv.light<<&(lights[i]);
 
-        sv.setCameraSize(250, 250, QVector3D(8,4,-50), .2);
+        sv.setCameraSize(1000 / pictureResol, 1000 / pictureResol, QVector3D(0,0,-50), pictureResol / 10.0);
     }
     QPainter qp(this);
-    bool err = sv.renderAndDraw(&qp);
+    bool err = sv.renderAndDraw(&qp, pictureResol);
 }
 float faza = 0.0;
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Space){
-        for (int i = 2; i < 5; i++){
-            //faza+=.2;
-            spheres[i].Move(QVector3D(sin(faza+=.2) * 2.0, 0, 0));
-        }
+        faza+=1;
+//        for (int i = 2; i < 5; i++){
+//            spheres[i].Move(QVector3D(sin(faza) * 2.0, 0, 0));
+//        }
+        float rad = 20.0 ;//+ sin(faza / 20.0) * 20.0;
+        lights[0].center = QVector3D(sin(faza/5.0)*rad, 0, cos(faza/5.0)*rad); faza+=.1;
         this->repaint();
     }
 }

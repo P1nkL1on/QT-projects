@@ -16,11 +16,11 @@ class SceneViewer
     int Width, Height;
 public:
     SceneViewer();
-    QVector<GraphicObject*> objects;
+    QVector<Primitive*> objects;
     QVector<LightSourse*> light;
     void setCameraSize (const int width, const int height, const QVector3D camCenter, const float step);
-    QColor renderPixel (const Ray ray) const;
-    bool renderAndDraw (QPainter* qp) const;
+    QColor renderPixel (const Ray ray, QPainter *qp, const QVector2D offset, const float scale, int level) const;
+    bool renderAndDraw (QPainter* qp, const int resol) const;
 };
 
 #endif // SCENEVIEWER_H

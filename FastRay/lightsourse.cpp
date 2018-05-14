@@ -1,8 +1,8 @@
 #include "lightsourse.h"
 #include "QDebug"
-
 LightSourse::LightSourse()
 {
+
     center = QVector3D();
     maxDist = 10.0;
     maxLight = 1.0;
@@ -53,4 +53,16 @@ QColor LightSourse::ColorAdd(QColor a, QColor b, float bk)
     return QColor((int)(min(a.red() + b.red() * bk, 255.0)),(int)(min(a.green() + b.green() * bk,255.0)),(int)(min(a.blue() + b.blue() * bk, 255.0)));
     //qDebug() << b.red() << b.green() << b.blue();
     //return res;
+}
+
+bool LightSourse::DrawOn2D(QPainter *qp, const QVector2D offset, const float scale) const
+{
+    qp->drawEllipse(QPoint((center.x() + offset.x()) * scale,(center.z() + offset.y()) * scale), 5, 5);
+    //qp->drawEllipse(QPoint((center.x() + offset.x()) * scale,(center.z() + offset.y()) * scale), (int)(scale*maxDist), (int)(scale*maxDist));
+    return true;
+}
+
+bool LightSourse::IntersectWithRay(const RayStruct::Ray *ray, QVector3D &intersection) const
+{
+    return false;
 }
