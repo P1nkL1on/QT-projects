@@ -21,9 +21,10 @@ bool DrawOn2DRay(QPainter *qp, const QVector2D offset, const float scale, const 
 {
     //return false;
     qp->setPen(QPen(clr, 1.0));
-    if (to.y() == 0 && from.y() == 0)
+    if (to.y() == 0 && from.y() == 0){
         qp->drawLine(QPoint((from.x() + offset.x()) * scale,(from.z() + offset.y()) * scale), QPoint((to.x() + offset.x()) * scale,(to.z() + offset.y()) * scale));
-    //qp->drawEllipse(QPoint((to.x() + offset.x()) * scale,(to.z() + offset.y()) * scale), 3,3);
+        qp->drawEllipse( QPoint((to.x() + offset.x()) * scale,(to.z() + offset.y()) * scale), 2,2);
+    }
     return true;
 }
 
@@ -32,7 +33,7 @@ Ray Reflect (Ray& currentRay, Ray& normal){
     QVector3D temp = nor * (cur.dotProduct(cur, nor)) * (-2),
               res = temp + cur;
     res.normalize();
-    return Ray(normal.From() + res * 1e-3, normal.From() + res * 100);
+    return Ray(normal.From() + res * 1e-10, normal.From() + res * 100);
 }
 
 QColor SceneViewer::renderPixel(const Ray ray, QPainter *qp, const QVector2D offset, const float scale, int level) const
@@ -62,7 +63,7 @@ QColor SceneViewer::renderPixel(const Ray ray, QPainter *qp, const QVector2D off
         }
         if (bestInd >= 0){
             //qp->setPen(QPen(Qt::red, level* 10 + 1));
-            DrawOn2DRay(qp, offset, scale, ray.From(), intersectPoints[bestI], Qt::green);
+            DrawOn2DRay(qp, offset, scale, ray.From(), intersectPoints[bestI], (level)? Qt::red : Qt::green);
 
             QColor summ = Qt::black;
             for (int i = 0; i < light.length(); i++){
@@ -78,30 +79,31 @@ QColor SceneViewer::renderPixel(const Ray ray, QPainter *qp, const QVector2D off
                 }
                 //
                 if (!isVisible){
-                    DrawOn2DRay(qp, offset, scale, lightBlock, intersectPoints[bestInd], Qt::darkRed);
+                    //DrawOn2DRay(qp, offset, scale, lightBlock, intersectPoints[bestI], Qt::darkRed);
                     continue;
                 }
-
 
                 float distToLight = intersectPoints[bestI].distanceToPoint(light[i]->center);
                 float normalKof = 1;//normalRay.GetAngleBetween(ray) * (-2); if (!(normalKof >= 0)) normalKof = 0;
 
                 summ = LightSourse::ColorAdd(summ, light[i]->AddColorOnDist(distToLight), light[i]->maxLight * normalKof);
-
             }
 
             /// trace a ray on 2D canvas
             QColor retColor = LightSourse::ColorMask(objects[bestInd]->clr, summ);
-            qp->setPen(QPen(retColor));
+            //qp->setPen(QPen(retColor));
 
-            Ray normalRay = objects[bestInd]->GetNormalRay(intersectPoints[bestInd]);
+            Ray normalRay = objects[bestInd]->GetNormalRay(intersectPoints[bestI]);
             //DrawOn2DRay(qp, offset, scale, normalRay.From(), normalRay.To(), Qt::blue);
-            Ray castedRay = Ray(ray.From(), normalRay.From()), reflectedRay = Reflect(castedRay, normalRay);
-            //DrawOn2DRay(qp, offset, scale, reflectedRay.From(), reflectedRay.To(), Qt::green);
+            Ray castedRay = Ray(ray.From(), normalRay.From());
+            //DrawOn2DRay(qp, offset, scale, reflectedRay.From(), reflectedRay.To(), Qt::red);
 
             if (objects[bestInd]->mirrority > 0 && level < 1){
-                //qDebug() << "reflected";
-                return Qt::green;//renderPixel(reflectedRay, qp, offset, scale, level + 1);
+                Ray reflectedRay = Reflect(castedRay, normalRay)/*.inverse()*/;
+                //return Qt::white;//renderPixel(reflectedRay, qp, offset, scale, level + 1);
+                QColor reflectedColor = renderPixel(reflectedRay, qp, offset, scale, level + 1);
+                //qDebug() << "reflected" << reflectedColor;
+                return LightSourse::ColorAdd(retColor, reflectedColor, objects[bestInd]->mirrority);
             }
             return retColor;
         }

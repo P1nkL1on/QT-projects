@@ -15,6 +15,7 @@ namespace  RayStruct {
         QVector3D From () const;
         QVector3D To () const;
         QVector3D ray () const;
+        Ray inverse () const;
         float GetAngleBetween (const Ray& another);
     };
 
