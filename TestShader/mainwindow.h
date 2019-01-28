@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include "planevectordrawer.h"
+#include "crossshading.h"
 namespace Ui {
 class MainWindow;
 }
@@ -17,11 +18,14 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    void intialise();
-    void updateCam();
+
+    PlaneVectorDrawer *p = new PlaneVectorDrawer();
+    const int imageSize = 300;
+    PlaneVector D = PlaneVector::testPlaneVector(imageSize, imageSize);
+    PlaneVector DS = PlaneVector(imageSize, imageSize);
+    CrossShading *cs = new CrossShading();
 protected:
     void paintEvent(QPaintEvent *e);
-    void keyPressEvent(QKeyEvent *e);
 };
 
 #endif // MAINWINDOW_H

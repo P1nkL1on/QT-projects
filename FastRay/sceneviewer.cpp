@@ -1,20 +1,32 @@
 #include "sceneviewer.h"
 #include "qdebug.h"
+#include "qmath.h"
 
 SceneViewer::SceneViewer()
 {
     cameraRays = QVector<Ray>();
 }
 
-void SceneViewer::setCameraSize(const int width, const int height, const QVector3D camCenter, const float step)
+void SceneViewer::setCameraSize(const int width, const int height, const QVector3D camCenter, const float step, const float angle, const float perspectiveDistance)
 {
     Width = width;
     Height = height;
+    Step = step;
+
+    makeRaysCamera(camCenter, angle, perspectiveDistance);
+}
+
+void SceneViewer::makeRaysCamera(const QVector3D camCenter, const float angle, const float perspectiveDistance)
+{
+    cameraRays.clear();
+    const QVector3D stepRigth = QVector3D(cos((double)angle),0,-sin((double)angle));
+    const QVector3D stepTop = QVector3D(0,-1,0);
+    const QVector3D perspective = QVector3D(perspectiveDistance * sin((double)angle), 0, perspectiveDistance * cos((double)angle));
 
     for (int i = 0; i < Height; i++)
         for (int j = 0; j < Width; j++)
-            cameraRays << Ray(camCenter + step * (QVector3D(1,0,0) * (j - Width / 2) + QVector3D(0,-1,0) * ( i - Height / 2)),
-                              camCenter + QVector3D(0,0, 100));
+            cameraRays << Ray(camCenter + Step * (stepRigth * (j - Width / 2) + stepTop * ( i - Height / 2)),
+                              camCenter + perspective);
 }
 
 bool DrawOn2DRay(QPainter *qp, const QVector2D offset, const float scale, const QVector3D from, const QVector3D to, const QColor clr)
@@ -33,7 +45,7 @@ Ray Reflect (Ray& currentRay, Ray& normal){
     QVector3D temp = nor * (cur.dotProduct(cur, nor)) * (-2),
               res = temp + cur;
     res.normalize();
-    return Ray(normal.From() + res * 1e-10, normal.From() + res * 100);
+    return Ray(normal.From() /*+ res * 1e-10*/, normal.From() + res * 100);
 }
 
 QColor SceneViewer::renderPixel(const Ray ray, QPainter *qp, const QVector2D offset, const float scale, int level) const
@@ -51,9 +63,11 @@ QColor SceneViewer::renderPixel(const Ray ray, QPainter *qp, const QVector2D off
         }
     }
 
+    DrawOn2DRay(qp, offset, scale, ray.From(), ray.To(), Qt::red);
+
     // SORT ON DIST and decide which one is intersected
     if (intersectIndexes.length() > 0){
-        float minDist = (ray.From() - ray.To()).length() + 1;
+        float minDist = (ray.From() - ray.To()).length() + .001;
         int bestInd = -1, bestI = -1;
         for (int i = 0; i < intersectIndexes.length(); i++)
         {
@@ -63,8 +77,9 @@ QColor SceneViewer::renderPixel(const Ray ray, QPainter *qp, const QVector2D off
         }
         if (bestInd >= 0){
             //qp->setPen(QPen(Qt::red, level* 10 + 1));
-            DrawOn2DRay(qp, offset, scale, ray.From(), intersectPoints[bestI], (level)? Qt::red : Qt::green);
-
+            if (level > 0){
+                DrawOn2DRay(qp, offset, scale, ray.From(), intersectPoints[bestI], (level)? Qt::red : Qt::green);
+            }
             QColor summ = Qt::black;
             for (int i = 0; i < light.length(); i++){
                 QVector3D lightBlock; bool isVisible = true;
@@ -84,7 +99,10 @@ QColor SceneViewer::renderPixel(const Ray ray, QPainter *qp, const QVector2D off
                 }
 
                 float distToLight = intersectPoints[bestI].distanceToPoint(light[i]->center);
-                float normalKof = 1;//normalRay.GetAngleBetween(ray) * (-2); if (!(normalKof >= 0)) normalKof = 0;
+
+                float normalKof = objects[bestInd]->GetNormalRay(intersectPoints[bestI])
+                        .GetAngleBetween(R) * (-1);
+                if (!(normalKof >= 0)) normalKof = 0;
 
                 summ = LightSourse::ColorAdd(summ, light[i]->AddColorOnDist(distToLight), light[i]->maxLight * normalKof);
             }
@@ -98,12 +116,11 @@ QColor SceneViewer::renderPixel(const Ray ray, QPainter *qp, const QVector2D off
             Ray castedRay = Ray(ray.From(), normalRay.From());
             //DrawOn2DRay(qp, offset, scale, reflectedRay.From(), reflectedRay.To(), Qt::red);
 
-            if (objects[bestInd]->mirrority > 0 && level < 1){
-                Ray reflectedRay = Reflect(castedRay, normalRay)/*.inverse()*/;
-                //return Qt::white;//renderPixel(reflectedRay, qp, offset, scale, level + 1);
+            if (objects[bestInd]->mirrority > 0 && level < maxLevel){
+                Ray reflectedRay = Reflect(castedRay, normalRay);//.inverse();
                 QColor reflectedColor = renderPixel(reflectedRay, qp, offset, scale, level + 1);
-                //qDebug() << "reflected" << reflectedColor;
-                return LightSourse::ColorAdd(retColor, reflectedColor, objects[bestInd]->mirrority);
+
+                return LightSourse::ColorAdd(retColor, reflectedColor, objects[bestInd]->mirrority * (maxLevel - level + 0.0)/maxLevel);
             }
             return retColor;
         }
@@ -113,7 +130,7 @@ QColor SceneViewer::renderPixel(const Ray ray, QPainter *qp, const QVector2D off
 
 bool SceneViewer::renderAndDraw(QPainter *qp, const int resol) const
 {
-    qp->setPen(QPen(QColor(0,0,0))); QVector2D offset = QVector2D(70,20); float scale = 20.0;
+    qp->setPen(QPen(QColor(0,0,0))); QVector2D offset = QVector2D(470,220); float scale = 3.0;
 
     int wid = resol;
     QPen pen = QPen();

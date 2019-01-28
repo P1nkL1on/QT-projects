@@ -43,14 +43,16 @@ bool GraphicObjects::Sphere::IntersectWithRay(const RayStruct::Ray *ray, QVector
         }
         //
         double d1 = (-b + sqrt(Disc)) / (2 * rayLength),
-               d2 = (-b - sqrt(Disc)) / (2 * rayLength);
+                d2 = (-b - sqrt(Disc)) / (2 * rayLength);
 
         QVector3D inter1 = ray->From() + (ray->To() - ray->From()) * d1,
-                  inter2 = ray->From() + (ray->To() - ray->From()) * d2;
+                inter2 = ray->From() + (ray->To() - ray->From()) * d2;
 
         intersection = (inter1.distanceToPoint(ray->From()) < inter2.distanceToPoint(ray->From()) ? inter1 : inter2);
 
-        if (intersection.distanceToPoint(ray->From()) >= 1e-4)
+        float df = intersection.distanceToPoint(ray->From()),
+              dl = intersection.distanceToPoint(ray->To()) + df - ray->To().distanceToPoint(ray->From());
+        if (df >= 1e-4 && (dl > -1e-3 && dl < 1e-3))
             return true;
     }
     intersection = ray->To();

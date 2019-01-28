@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "field.h"
+#include <QKeyEvent>
 
 namespace Ui {
 class MainWindow;
@@ -17,11 +19,15 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    void intialise();
-    void updateCam();
+    const int fX = 80;
+    const int fY = 60;
+    const int vero = 2000;
+    const int scale = 10;
+
+    Field f = Field(fX, fY, vero);
 protected:
     void paintEvent(QPaintEvent *e);
-    void keyPressEvent(QKeyEvent *e);
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // MAINWINDOW_H
